@@ -1,9 +1,10 @@
 <script setup>
-import { ref, computed, reactive } from 'vue';
+import { ref, computed, reactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useVuelidate } from '@vuelidate/core';
 import { required, url, helpers } from '@vuelidate/validators';
 import { getRegexp } from 'shared/helpers/Validators';
+import { useConversationRequiredAttributes } from 'dashboard/composables/useConversationRequiredAttributes';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
 import TextArea from 'next/textarea/TextArea.vue';
 import ComboBox from 'dashboard/components-next/combobox/ComboBox.vue';
@@ -14,9 +15,10 @@ import { ATTRIBUTE_TYPES } from './constants';
 const emit = defineEmits(['submit']);
 
 const { t } = useI18n();
+const { getVisibleAttributes } = useConversationRequiredAttributes();
 
 const dialogRef = ref(null);
-const visibleAttributes = ref([]);
+const allAttributes = ref([]);
 const formValues = reactive({});
 const conversationContext = ref(null);
 
@@ -32,13 +34,32 @@ const placeholders = computed(() => ({
 
 const getPlaceholder = type => placeholders.value[type] || '';
 
+const visibleGroups = computed(() => getVisibleAttributes(formValues));
+const unconditionalFields = computed(() => visibleGroups.value.unconditional);
+const visibleConditionalFields = computed(() => visibleGroups.value.conditional);
+const allVisibleFields = computed(() => [
+  ...unconditionalFields.value,
+  ...visibleConditionalFields.value,
+]);
+
+// Clear values of conditional fields when they become hidden
+watch(visibleConditionalFields, (newFields, oldFields) => {
+  if (!oldFields) return;
+  const newKeys = new Set(newFields.map(f => f.value));
+  oldFields.forEach(field => {
+    if (!newKeys.has(field.value)) {
+      formValues[field.value] =
+        field.type === ATTRIBUTE_TYPES.CHECKBOX ? null : '';
+    }
+  });
+});
+
 const validationRules = computed(() => {
   const rules = {};
-  visibleAttributes.value.forEach(attribute => {
+  allVisibleFields.value.forEach(attribute => {
     if (attribute.type === ATTRIBUTE_TYPES.LINK) {
       rules[attribute.value] = { required, url };
     } else if (attribute.type === ATTRIBUTE_TYPES.CHECKBOX) {
-      // Checkbox doesn't need validation - any selection is valid
       rules[attribute.value] = {};
     } else {
       rules[attribute.value] = { required };
@@ -75,22 +96,20 @@ const getErrorMessage = attributeKey => {
 };
 
 const isFormComplete = computed(() =>
-  visibleAttributes.value.every(attribute => {
+  allVisibleFields.value.every(attribute => {
     const value = formValues[attribute.value];
 
-    // For checkbox attributes, ensure the agent has explicitly selected a value
     if (attribute.type === ATTRIBUTE_TYPES.CHECKBOX) {
       return formValues[attribute.value] !== null;
     }
 
-    // For other attribute types, check for valid non-empty values
     return value !== undefined && value !== null && String(value).trim() !== '';
   })
 );
 
 const comboBoxOptions = computed(() => {
   const options = {};
-  visibleAttributes.value.forEach(attribute => {
+  allAttributes.value.forEach(attribute => {
     if (attribute.type === ATTRIBUTE_TYPES.LIST) {
       options[attribute.value] = (attribute.attributeValues || []).map(
         option => ({
@@ -110,7 +129,7 @@ const close = () => {
 };
 
 const open = (attributes = [], initialValues = {}, context = null) => {
-  visibleAttributes.value = attributes;
+  allAttributes.value = attributes;
   conversationContext.value = context;
 
   // Clear existing formValues
@@ -124,8 +143,6 @@ const open = (attributes = [], initialValues = {}, context = null) => {
     if (presetValue !== undefined && presetValue !== null) {
       formValues[attribute.value] = presetValue;
     } else {
-      // For checkbox attributes, initialize to null to avoid pre-selection
-      // For other attributes, initialize to empty string
       formValues[attribute.value] =
         attribute.type === ATTRIBUTE_TYPES.CHECKBOX ? null : '';
     }
@@ -141,8 +158,14 @@ const handleConfirm = async () => {
     return;
   }
 
+  // Only submit values for currently visible fields
+  const visibleValues = {};
+  allVisibleFields.value.forEach(attr => {
+    visibleValues[attr.value] = formValues[attr.value];
+  });
+
   emit('submit', {
-    attributes: { ...formValues },
+    attributes: visibleValues,
     context: conversationContext.value,
   });
   close();
@@ -169,8 +192,9 @@ defineExpose({ open, close });
     @confirm="handleConfirm"
   >
     <div class="flex flex-col gap-4">
+      <!-- Unconditional (always visible) attributes -->
       <div
-        v-for="attribute in visibleAttributes"
+        v-for="attribute in unconditionalFields"
         :key="attribute.value"
         class="flex flex-col gap-2"
       >
@@ -243,6 +267,85 @@ defineExpose({ open, close });
           <ChoiceToggle v-model="formValues[attribute.value]" />
         </template>
       </div>
+
+      <!-- Divider + conditional attributes -->
+      <template v-if="visibleConditionalFields.length">
+        <div class="border-t border-n-weak" />
+        <div
+          v-for="attribute in visibleConditionalFields"
+          :key="attribute.value"
+          class="flex flex-col gap-2"
+        >
+          <div class="flex justify-between items-center">
+            <label class="mb-0.5 text-sm font-medium text-n-slate-12">
+              {{ attribute.label }}
+            </label>
+          </div>
+
+          <template v-if="attribute.type === ATTRIBUTE_TYPES.TEXT">
+            <TextArea
+              v-model="formValues[attribute.value]"
+              class="w-full"
+              :placeholder="getPlaceholder(ATTRIBUTE_TYPES.TEXT)"
+              :message="getErrorMessage(attribute.value)"
+              :message-type="v$[attribute.value].$error ? 'error' : 'info'"
+              @blur="v$[attribute.value].$touch"
+            />
+          </template>
+
+          <template v-else-if="attribute.type === ATTRIBUTE_TYPES.NUMBER">
+            <Input
+              v-model="formValues[attribute.value]"
+              type="number"
+              size="md"
+              :placeholder="getPlaceholder(ATTRIBUTE_TYPES.NUMBER)"
+              :message="getErrorMessage(attribute.value)"
+              :message-type="v$[attribute.value].$error ? 'error' : 'info'"
+              @blur="v$[attribute.value].$touch"
+            />
+          </template>
+
+          <template v-else-if="attribute.type === ATTRIBUTE_TYPES.LINK">
+            <Input
+              v-model="formValues[attribute.value]"
+              type="url"
+              size="md"
+              :placeholder="getPlaceholder(ATTRIBUTE_TYPES.LINK)"
+              :message="getErrorMessage(attribute.value)"
+              :message-type="v$[attribute.value].$error ? 'error' : 'info'"
+              @blur="v$[attribute.value].$touch"
+            />
+          </template>
+
+          <template v-else-if="attribute.type === ATTRIBUTE_TYPES.DATE">
+            <Input
+              v-model="formValues[attribute.value]"
+              type="date"
+              size="md"
+              :placeholder="getPlaceholder(ATTRIBUTE_TYPES.DATE)"
+              :message="getErrorMessage(attribute.value)"
+              :message-type="v$[attribute.value].$error ? 'error' : 'info'"
+              @blur="v$[attribute.value].$touch"
+            />
+          </template>
+
+          <template v-else-if="attribute.type === ATTRIBUTE_TYPES.LIST">
+            <ComboBox
+              v-model="formValues[attribute.value]"
+              :options="comboBoxOptions[attribute.value]"
+              :placeholder="getPlaceholder(ATTRIBUTE_TYPES.LIST)"
+              :message="getErrorMessage(attribute.value)"
+              :message-type="v$[attribute.value].$error ? 'error' : 'info'"
+              :has-error="v$[attribute.value].$error"
+              class="w-full"
+            />
+          </template>
+
+          <template v-else-if="attribute.type === ATTRIBUTE_TYPES.CHECKBOX">
+            <ChoiceToggle v-model="formValues[attribute.value]" />
+          </template>
+        </div>
+      </template>
     </div>
   </Dialog>
 </template>

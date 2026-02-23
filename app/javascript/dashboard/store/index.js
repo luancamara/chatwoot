@@ -48,6 +48,8 @@ import teamMembers from './modules/teamMembers';
 import teams from './modules/teams';
 import userNotificationSettings from './modules/userNotificationSettings';
 import webhooks from './modules/webhooks';
+import crm from './modules/crm';
+import followUpReminders from './modules/followUpReminders';
 import captainAssistants from './captain/assistant';
 import captainDocuments from './captain/document';
 import captainResponses from './captain/response';
@@ -89,6 +91,8 @@ export default createStore({
     conversationStats,
     conversationTypingStatus,
     conversationWatchers,
+    crm,
+    followUpReminders,
     csat,
     customRole,
     customViews,

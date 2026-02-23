@@ -23,6 +23,8 @@ import ShopifyOrdersList from 'dashboard/components/widgets/conversation/Shopify
 import SidebarActionsHeader from 'dashboard/components-next/SidebarActionsHeader.vue';
 import LinearIssuesList from 'dashboard/components/widgets/conversation/linear/IssuesList.vue';
 import LinearSetupCTA from 'dashboard/components/widgets/conversation/linear/LinearSetupCTA.vue';
+import ConversationInsight from './ConversationInsight.vue';
+import FollowUpReminders from './FollowUpReminders.vue';
 
 const props = defineProps({
   conversationId: {
@@ -283,6 +285,40 @@ onMounted(() => {
               "
             >
               <ShopifyOrdersList :contact-id="contactId" />
+            </AccordionItem>
+          </div>
+          <div v-else-if="element.name === 'conversation_insight'">
+            <AccordionItem
+              :title="
+                $t('CONVERSATION_SIDEBAR.ACCORDION.CONVERSATION_INSIGHT')
+              "
+              :is-open="
+                isContactSidebarItemOpen('is_conversation_insight_open')
+              "
+              compact
+              @toggle="
+                value =>
+                  toggleSidebarUIState('is_conversation_insight_open', value)
+              "
+            >
+              <ConversationInsight :conversation-id="conversationId" />
+            </AccordionItem>
+          </div>
+          <div v-else-if="element.name === 'follow_up_reminders'">
+            <AccordionItem
+              :title="
+                $t('CONVERSATION_SIDEBAR.ACCORDION.FOLLOW_UP_REMINDERS')
+              "
+              :is-open="
+                isContactSidebarItemOpen('is_follow_up_reminders_open')
+              "
+              compact
+              @toggle="
+                value =>
+                  toggleSidebarUIState('is_follow_up_reminders_open', value)
+              "
+            >
+              <FollowUpReminders :conversation-id="conversationId" />
             </AccordionItem>
           </div>
           <div v-else-if="element.name === 'contact_notes'">

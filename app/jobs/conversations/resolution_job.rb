@@ -9,11 +9,15 @@ class Conversations::ResolutionJob < ApplicationJob
       # do this is account.auto_resolve_message is set
       ::MessageTemplates::Template::AutoResolve.new(conversation: conversation).perform if account.auto_resolve_message.present?
       conversation.add_labels(account.auto_resolve_label) if account.auto_resolve_label.present?
+      auto_fill_crm_disposition(conversation, account)
       conversation.toggle_status
     end
   end
 
   private
+
+  # No-op in OSS; overridden by Enterprise to auto-fill CRM disposition
+  def auto_fill_crm_disposition(_conversation, _account); end
 
   def conversation_scope(account)
     base_scope = if account.auto_resolve_ignore_waiting
@@ -25,3 +29,5 @@ class Conversations::ResolutionJob < ApplicationJob
     base_scope.where.not(contact_id: nil)
   end
 end
+
+Conversations::ResolutionJob.prepend_mod_with('Conversations::ResolutionJob')

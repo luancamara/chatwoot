@@ -10,6 +10,7 @@ import { useSidebarKeyboardShortcuts } from './useSidebarKeyboardShortcuts';
 import { vOnClickOutside } from '@vueuse/components';
 import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 import { useWindowSize, useEventListener } from '@vueuse/core';
+import { useAdmin } from 'dashboard/composables/useAdmin';
 import { emitter } from 'shared/helpers/mitt';
 import { BUS_EVENTS } from 'shared/constants/busEvents';
 
@@ -39,6 +40,7 @@ const emit = defineEmits([
 ]);
 
 const { accountScopedRoute, isOnChatwootCloud } = useAccount();
+const { isAdmin } = useAdmin();
 const store = useStore();
 const searchShortcut = useKbd([`$mod`, 'k']);
 const { t } = useI18n();
@@ -466,6 +468,32 @@ const menuItems = computed(() => {
         },
       ],
     },
+    ...(isAdmin.value
+      ? [
+          {
+            name: 'CRM',
+            label: t('SIDEBAR.CRM_TITLE'),
+            icon: 'i-lucide-kanban',
+            children: [
+              {
+                name: 'Pipeline',
+                label: t('SIDEBAR.CRM_PIPELINE'),
+                to: accountScopedRoute('crm_pipeline'),
+              },
+              {
+                name: 'Funnel',
+                label: t('SIDEBAR.CRM_FUNNEL'),
+                to: accountScopedRoute('crm_funnel'),
+              },
+              {
+                name: 'Sales Reports',
+                label: t('SIDEBAR.CRM_SALES_REPORTS'),
+                to: accountScopedRoute('crm_sales_reports'),
+              },
+            ],
+          },
+        ]
+      : []),
     {
       name: 'Reports',
       label: t('SIDEBAR.REPORTS'),

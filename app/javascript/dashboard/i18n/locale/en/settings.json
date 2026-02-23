@@ -381,6 +381,10 @@
     "DOCS": "Read docs",
     "SECURITY": "Security",
     "CAPTAIN_AI": "Captain",
+    "CRM_TITLE": "CRM",
+    "CRM_PIPELINE": "Pipeline",
+    "CRM_FUNNEL": "Sales Funnel",
+    "CRM_SALES_REPORTS": "Sales Reports",
     "CONVERSATION_WORKFLOW": "Conversation Workflow"
   },
   "CAPTAIN_SETTINGS": {

@@ -158,7 +158,8 @@ const {
   attributeModel: 'conversation_attribute',
 });
 
-const { checkMissingAttributes } = useConversationRequiredAttributes();
+const { checkMissingAttributes, requiredAttributes } =
+  useConversationRequiredAttributes();
 
 // computed
 const intersectionObserverOptions = computed(() => {
@@ -776,8 +777,9 @@ function handleResolveConversation(conversationId, status, snoozedUntil) {
       id: conversationId,
       snoozedUntil,
     };
+    // Pass all required attributes so the modal can evaluate conditions
     resolveAttributesModalRef.value?.open(
-      missing,
+      requiredAttributes.value,
       currentCustomAttributes,
       conversationContext
     );

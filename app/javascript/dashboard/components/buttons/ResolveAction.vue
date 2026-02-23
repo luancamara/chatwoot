@@ -23,7 +23,8 @@ import ConversationResolveAttributesModal from 'dashboard/components-next/Conver
 const store = useStore();
 const getters = useStoreGetters();
 const { t } = useI18n();
-const { checkMissingAttributes } = useConversationRequiredAttributes();
+const { checkMissingAttributes, requiredAttributes } =
+  useConversationRequiredAttributes();
 
 const arrowDownButtonRef = ref(null);
 const isLoading = ref(false);
@@ -128,8 +129,9 @@ const onCmdResolveConversation = () => {
       id: currentChat.value.id,
       snoozedUntil: null,
     };
+    // Pass all required attributes so the modal can evaluate conditions
     resolveAttributesModalRef.value?.open(
-      missing,
+      requiredAttributes.value,
       currentCustomAttributes,
       conversationContext
     );

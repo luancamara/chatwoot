@@ -360,7 +360,9 @@
       "PREVIOUS_CONVERSATION": "Previous Conversations",
       "MACROS": "Macros",
       "LINEAR_ISSUES": "Linked Linear Issues",
-      "SHOPIFY_ORDERS": "Shopify Orders"
+      "SHOPIFY_ORDERS": "Shopify Orders",
+      "CONVERSATION_INSIGHT": "Conversation Insight",
+      "FOLLOW_UP_REMINDERS": "Follow-up Reminders"
     },
     "SHOPIFY": {
       "ORDER_ID": "Order #{id}",

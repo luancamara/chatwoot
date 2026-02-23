@@ -155,6 +155,12 @@ Rails.application.routes.draw do
               get :inbox_assistant
               get :reporting_events if ChatwootApp.enterprise?
             end
+            resource :insight, only: [:show], controller: 'conversation_insights' if ChatwootApp.enterprise?
+            if ChatwootApp.enterprise?
+              scope module: :conversations do
+                resources :follow_up_reminders, only: [:index, :create, :update, :destroy]
+              end
+            end
           end
 
           resources :search, only: [:index] do
@@ -454,6 +460,17 @@ Rails.application.routes.draw do
             collection do
               get :conversation_metrics
               get :grouped_conversation_metrics
+            end
+          end
+
+          if ChatwootApp.enterprise?
+            resources :crm_reports, only: [], controller: 'enterprise/api/v2/accounts/crm_reports' do
+              collection do
+                get :funnel
+                get :pipeline_summary
+                get :agent_performance
+                get :disposition_breakdown
+              end
             end
           end
         end

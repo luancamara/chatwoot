@@ -5,10 +5,41 @@ import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 import { ATTRIBUTE_TYPES } from 'dashboard/components-next/ConversationWorkflow/constants';
 
 /**
+ * Evaluates whether a condition is met based on current form values.
+ *
+ * Supports two formats:
+ * - Simple: { depends_on, when_value } (equals check)
+ * - Extended: { depends_on, operator, value } (equals/not_equals)
+ *
+ * @param {Object} condition - The condition definition
+ * @param {Object} formValues - Current form values keyed by attribute key
+ * @returns {boolean} - Whether the condition is satisfied
+ */
+const isConditionMet = (condition, formValues) => {
+  if (!condition) return true;
+  const {
+    depends_on: dependsOn,
+    when_value: whenValue,
+    operator,
+    value,
+  } = condition;
+  const currentValue = formValues[dependsOn];
+
+  // Simple format: { depends_on, when_value }
+  if (whenValue !== undefined) return currentValue === whenValue;
+  // Extended format: { depends_on, operator, value }
+  if (operator === 'equals') return currentValue === value;
+  if (operator === 'not_equals') return currentValue !== value;
+  return true;
+};
+
+/**
  * Composable for managing conversation required attributes workflow
  *
  * This handles the logic for checking if conversations have all required
  * custom attributes filled before they can be resolved.
+ * Supports conditional attributes that only appear when a parent attribute
+ * has a specific value.
  */
 export function useConversationRequiredAttributes() {
   const { currentAccount, accountId } = useAccount();
@@ -33,6 +64,14 @@ export function useConversationRequiredAttributes() {
     );
   });
 
+  const requiredAttributeConditions = computed(() => {
+    if (!isFeatureEnabled.value) return {};
+    return (
+      currentAccount.value?.settings
+        ?.conversation_required_attribute_conditions || {}
+    );
+  });
+
   const allAttributeOptions = computed(() =>
     (conversationAttributes.value || []).map(attribute => ({
       ...attribute,
@@ -44,17 +83,51 @@ export function useConversationRequiredAttributes() {
   );
 
   /**
-   * Get the full attribute definitions for only the required attributes
-   * Filters allAttributeOptions to only include attributes marked as required
+   * All attribute keys that participate in the required workflow.
+   * Combines the base required keys with any conditionally-required keys.
    */
-  const requiredAttributes = computed(
-    () =>
-      requiredAttributeKeys.value
-        .map(key =>
-          allAttributeOptions.value.find(attribute => attribute.value === key)
-        )
-        .filter(Boolean) // Remove any undefined attributes (deleted attributes)
+  const allRequiredKeys = computed(() => {
+    const baseKeys = requiredAttributeKeys.value;
+    const conditionKeys = Object.keys(requiredAttributeConditions.value);
+    const combined = new Set([...baseKeys, ...conditionKeys]);
+    return [...combined];
+  });
+
+  /**
+   * Get the full attribute definitions for all required/conditional attributes
+   */
+  const requiredAttributes = computed(() =>
+    allRequiredKeys.value
+      .map(key =>
+        allAttributeOptions.value.find(attribute => attribute.value === key)
+      )
+      .filter(Boolean)
   );
+
+  /**
+   * Get visible attributes based on current form values and conditions.
+   * Unconditional attributes are always visible; conditional attributes
+   * are only visible when their condition is met.
+   *
+   * @param {Object} formValues - Current form values keyed by attribute key
+   * @returns {Object} - { unconditional: [], conditional: [] }
+   */
+  const getVisibleAttributes = (formValues = {}) => {
+    const conditions = requiredAttributeConditions.value;
+    const unconditional = [];
+    const conditional = [];
+
+    requiredAttributes.value.forEach(attr => {
+      const condition = conditions[attr.value];
+      if (!condition) {
+        unconditional.push(attr);
+      } else if (isConditionMet(condition, formValues)) {
+        conditional.push(attr);
+      }
+    });
+
+    return { unconditional, conditional };
+  };
 
   /**
    * Check if a conversation is missing any required attributes
@@ -68,8 +141,14 @@ export function useConversationRequiredAttributes() {
       return { hasMissing: false, missing: [] };
     }
 
+    // Only check attributes that are currently visible given existing values
+    const { unconditional, conditional } = getVisibleAttributes(
+      conversationCustomAttributes
+    );
+    const visibleAttrs = [...unconditional, ...conditional];
+
     // Find attributes that are missing or empty
-    const missing = requiredAttributes.value.filter(attribute => {
+    const missing = visibleAttrs.filter(attribute => {
       const value = conversationCustomAttributes[attribute.value];
 
       // For checkbox/boolean attributes, only check if the key exists
@@ -92,6 +171,8 @@ export function useConversationRequiredAttributes() {
   return {
     requiredAttributeKeys,
     requiredAttributes,
+    requiredAttributeConditions,
+    getVisibleAttributes,
     checkMissingAttributes,
   };
 }
