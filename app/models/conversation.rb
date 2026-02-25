@@ -125,6 +125,8 @@ class Conversation < ApplicationRecord
   delegate :auto_resolve_after, to: :account
 
   def can_reply?
+    return false unless inbox
+
     Conversations::MessageWindowService.new(self).can_reply?
   end
 
