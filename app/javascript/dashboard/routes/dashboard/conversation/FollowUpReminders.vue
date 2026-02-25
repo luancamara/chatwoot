@@ -5,7 +5,6 @@ import { useStore } from 'dashboard/composables/store';
 import { useAlert } from 'dashboard/composables';
 import Button from 'dashboard/components-next/button/Button.vue';
 import Input from 'dashboard/components-next/input/Input.vue';
-import TextArea from 'dashboard/components-next/textarea/TextArea.vue';
 import ScheduledMessagesAPI from 'dashboard/api/scheduledMessages';
 
 const props = defineProps({
@@ -239,36 +238,32 @@ onMounted(() => fetchAll(props.conversationId));
       </div>
 
       <!-- Add form -->
-      <div v-if="showForm" class="mt-2 flex flex-col gap-2.5">
-        <div class="flex flex-col gap-1">
-          <label class="text-xs font-medium text-n-slate-11">
-            {{ t('CRM.FOLLOW_UP_REMINDERS.FORM.DUE_AT') }}
-          </label>
-          <Input v-model="newRemindAt" type="datetime-local" size="sm" />
-        </div>
-        <div class="flex flex-col gap-1">
-          <label class="text-xs font-medium text-n-slate-11">
-            {{ t('CRM.FOLLOW_UP_REMINDERS.FORM.DESCRIPTION') }}
-          </label>
-          <TextArea
-            v-model="newNotes"
-            class="w-full"
-            :placeholder="
-              t('CRM.FOLLOW_UP_REMINDERS.FORM.DESCRIPTION_PLACEHOLDER')
-            "
-          />
-        </div>
+      <div v-if="showForm" class="mt-2 flex flex-col gap-2">
+        <Input
+          v-model="newRemindAt"
+          type="datetime-local"
+          size="sm"
+          :placeholder="t('CRM.FOLLOW_UP_REMINDERS.FORM.DUE_AT')"
+        />
+        <textarea
+          v-model="newNotes"
+          rows="2"
+          class="w-full resize-none rounded-lg border border-n-weak bg-n-alpha-1 px-2.5 py-2 text-xs text-n-slate-12 placeholder:text-n-slate-9 focus:border-n-brand focus:outline-none"
+          :placeholder="
+            t('CRM.FOLLOW_UP_REMINDERS.FORM.DESCRIPTION_PLACEHOLDER')
+          "
+        />
         <div class="flex gap-2">
           <Button
             :label="t('CRM.FOLLOW_UP_REMINDERS.FORM.SAVE')"
-            size="sm"
+            size="xs"
             color="primary"
             :is-loading="uiFlags.isCreating"
             @click="handleCreate"
           />
           <Button
             :label="t('CRM.FOLLOW_UP_REMINDERS.FORM.CANCEL')"
-            size="sm"
+            size="xs"
             ghost
             slate
             @click="showForm = false"
