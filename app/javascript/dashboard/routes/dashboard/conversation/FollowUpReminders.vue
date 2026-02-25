@@ -124,10 +124,10 @@ const handleDelete = async reminder => {
 const handleCancelScheduled = async sm => {
   try {
     await ScheduledMessagesAPI.cancel(props.conversationId, sm.id);
-    useAlert(t('CONVERSATION.SCHEDULE_MESSAGE.CANCEL_SUCCESS'));
+    useAlert(t('SCHEDULE_MESSAGE.CANCEL_SUCCESS'));
     fetchScheduledMessages(props.conversationId);
   } catch {
-    useAlert(t('CONVERSATION.SCHEDULE_MESSAGE.API.ERROR'));
+    useAlert(t('SCHEDULE_MESSAGE.API.ERROR'));
   }
 };
 
@@ -158,7 +158,7 @@ onMounted(() => fetchAll(props.conversationId));
       <!-- Scheduled Messages -->
       <div v-if="scheduledMessages.length" class="mb-3 flex flex-col gap-2">
         <span class="text-xs font-medium text-n-slate-10">
-          {{ t('CONVERSATION.SCHEDULE_MESSAGE.SCHEDULED_MESSAGES') }}
+          {{ t('SCHEDULE_MESSAGE.SCHEDULED_MESSAGES') }}
         </span>
         <div
           v-for="sm in scheduledMessages"

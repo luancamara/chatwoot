@@ -45,11 +45,11 @@ const handleSchedule = async () => {
       content: messageText.value,
       scheduled_at: new Date(scheduledAt.value).toISOString(),
     });
-    useAlert(t('CONVERSATION.SCHEDULE_MESSAGE.API.SUCCESS'));
+    useAlert(t('SCHEDULE_MESSAGE.API.SUCCESS'));
     emit('scheduled');
     emit('close');
   } catch {
-    useAlert(t('CONVERSATION.SCHEDULE_MESSAGE.API.ERROR'));
+    useAlert(t('SCHEDULE_MESSAGE.API.ERROR'));
   } finally {
     isSubmitting.value = false;
   }
@@ -58,53 +58,55 @@ const handleSchedule = async () => {
 
 <template>
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
     @click.self="$emit('close')"
   >
     <div
-      class="mx-4 w-full max-w-md rounded-xl border border-n-weak bg-white p-5 shadow-xl dark:bg-n-solid-2"
+      class="w-full max-w-md overflow-hidden rounded-xl border border-n-weak bg-white shadow-xl dark:bg-n-solid-2"
     >
-      <div class="mb-4 flex items-center gap-2">
-        <span class="i-lucide-clock text-n-blue-11" />
-        <h3 class="text-sm font-semibold text-n-slate-12">
-          {{ t('CONVERSATION.SCHEDULE_MESSAGE.TITLE') }}
-        </h3>
-      </div>
-
-      <div class="flex flex-col gap-3">
-        <div class="flex flex-col gap-1">
-          <label class="text-xs font-medium text-n-slate-11">
-            {{ t('CONVERSATION.SCHEDULE_MESSAGE.MESSAGE_LABEL') }}
-          </label>
-          <textarea
-            v-model="messageText"
-            rows="3"
-            class="w-full resize-none rounded-lg border border-n-weak bg-n-alpha-1 px-3 py-2 text-sm text-n-slate-12 placeholder:text-n-slate-9 focus:border-n-brand focus:outline-none"
-            :placeholder="
-              t('CONVERSATION.SCHEDULE_MESSAGE.MESSAGE_PLACEHOLDER')
-            "
-          />
+      <div class="p-5">
+        <div class="mb-4 flex items-center gap-2">
+          <span class="i-lucide-clock text-n-blue-11" />
+          <h3 class="text-sm font-semibold text-n-slate-12">
+            {{ t('SCHEDULE_MESSAGE.TITLE') }}
+          </h3>
         </div>
 
-        <div class="flex flex-col gap-1">
-          <label class="text-xs font-medium text-n-slate-11">
-            {{ t('CONVERSATION.SCHEDULE_MESSAGE.DATE_LABEL') }}
-          </label>
-          <input
-            v-model="scheduledAt"
-            type="datetime-local"
-            :min="minDateTime"
-            class="w-full rounded-lg border border-n-weak bg-n-alpha-1 px-3 py-2 text-sm text-n-slate-12 focus:border-n-brand focus:outline-none"
-          />
+        <div class="flex flex-col gap-3">
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-medium text-n-slate-11">
+              {{ t('SCHEDULE_MESSAGE.MESSAGE_LABEL') }}
+            </label>
+            <textarea
+              v-model="messageText"
+              rows="3"
+              class="w-full resize-none rounded-lg border border-n-weak bg-n-alpha-1 px-3 py-2 text-sm text-n-slate-12 placeholder:text-n-slate-9 focus:border-n-brand focus:outline-none"
+              :placeholder="t('SCHEDULE_MESSAGE.MESSAGE_PLACEHOLDER')"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-medium text-n-slate-11">
+              {{ t('SCHEDULE_MESSAGE.DATE_LABEL') }}
+            </label>
+            <input
+              v-model="scheduledAt"
+              type="datetime-local"
+              :min="minDateTime"
+              class="w-full rounded-lg border border-n-weak bg-n-alpha-1 px-3 py-2 text-sm text-n-slate-12 focus:border-n-brand focus:outline-none"
+            />
+          </div>
         </div>
       </div>
 
-      <div class="mt-4 flex justify-end gap-2">
+      <div
+        class="flex justify-end gap-2 border-t border-n-weak bg-n-alpha-1 px-5 py-3"
+      >
         <button
           class="rounded-lg px-3 py-1.5 text-sm text-n-slate-11 hover:bg-n-alpha-2"
           @click="$emit('close')"
         >
-          {{ t('CONVERSATION.SCHEDULE_MESSAGE.CANCEL') }}
+          {{ t('SCHEDULE_MESSAGE.CANCEL') }}
         </button>
         <button
           :disabled="!isValid || isSubmitting"
@@ -116,7 +118,7 @@ const handleSchedule = async () => {
             class="i-lucide-loader-circle animate-spin"
           />
           <span v-else class="i-lucide-clock" />
-          {{ t('CONVERSATION.SCHEDULE_MESSAGE.CONFIRM') }}
+          {{ t('SCHEDULE_MESSAGE.CONFIRM') }}
         </button>
       </div>
     </div>
