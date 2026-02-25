@@ -88,8 +88,11 @@ onMounted(() => fetchInsight(props.conversationId));
 </script>
 
 <template>
-  <div class="py-2">
-    <div v-if="isLoading" class="flex items-center gap-2 text-sm text-n-slate-11">
+  <div class="px-4 py-2">
+    <div
+      v-if="isLoading"
+      class="flex items-center gap-2 text-sm text-n-slate-11"
+    >
       <span class="i-lucide-loader-circle animate-spin" />
       {{ t('CRM.CONVERSATION_INSIGHT.LOADING') }}
     </div>
@@ -102,7 +105,7 @@ onMounted(() => fetchInsight(props.conversationId));
       {{ t('CRM.CONVERSATION_INSIGHT.EMPTY') }}
     </div>
 
-    <div v-else class="flex flex-col gap-3">
+    <div v-else class="flex min-w-0 flex-col gap-3 overflow-hidden">
       <!-- Quality Score -->
       <div class="flex flex-col gap-1.5">
         <div class="flex items-center justify-between">
@@ -110,7 +113,7 @@ onMounted(() => fetchInsight(props.conversationId));
             {{ t('CRM.CONVERSATION_INSIGHT.SCORE') }}
           </span>
           <span class="text-sm font-semibold" :class="scoreTextColor">
-            {{ insight.quality_score }}/10
+            {{ `${insight.quality_score}/10` }}
             <span class="text-xs font-normal">{{ scoreLabel }}</span>
           </span>
         </div>

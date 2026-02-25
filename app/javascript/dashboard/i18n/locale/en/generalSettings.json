@@ -104,6 +104,14 @@
           "ERROR": "Failed to update audio transcription setting"
         }
       },
+      "AUTO_FIX_GRAMMAR": {
+        "TITLE": "Correção automática de gramática",
+        "NOTE": "Corrige automaticamente a gramática e ortografia de todas as mensagens enviadas pelos agentes antes do envio. Apenas administradores podem ativar ou desativar esta configuração.",
+        "API": {
+          "SUCCESS": "Configuração de correção automática atualizada com sucesso",
+          "ERROR": "Erro ao atualizar configuração de correção automática"
+        }
+      },
       "AUTO_RESOLVE_DURATION": {
         "LABEL": "Inactivity duration for resolution",
         "HELP": "Duration after a conversation should auto resolve if there is no activity",

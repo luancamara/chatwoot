@@ -1,6 +1,8 @@
 class Captain::Llm::ConversationInsightService < Llm::BaseAiService
   include Integrations::LlmInstrumentation
 
+  VALID_FUNNEL_STAGES = %w[Lead Qualificado Orcamento Negociacao Venda Perda].freeze
+
   def initialize(assistant, conversation)
     super()
     @assistant = assistant
@@ -22,12 +24,25 @@ class Captain::Llm::ConversationInsightService < Llm::BaseAiService
       quality_breakdown: data['quality_breakdown'] || {},
       raw_llm_response: data
     )
+
+    auto_set_funnel_stage(data['suggested_funnel_stage']) if data['suggested_funnel_stage'].present?
+
     insight
   end
 
   private
 
   attr_reader :content
+
+  def auto_set_funnel_stage(suggested_stage)
+    current_stage = @conversation.custom_attributes&.dig('crm_funnel_stage')
+    return if current_stage.present?
+    return unless VALID_FUNNEL_STAGES.include?(suggested_stage)
+
+    @conversation.update!(
+      custom_attributes: (@conversation.custom_attributes || {}).merge('crm_funnel_stage' => suggested_stage)
+    )
+  end
 
   def generate_insight
     response = instrument_llm_call(instrumentation_params) do
@@ -75,7 +90,8 @@ class Captain::Llm::ConversationInsightService < Llm::BaseAiService
           "product_presentation": 2,
           "objection_handling": 1,
           "closing_attempt": 0
-        }
+        },
+        "suggested_funnel_stage": "Lead"
       }
 
       Regras:
@@ -85,6 +101,13 @@ class Captain::Llm::ConversationInsightService < Llm::BaseAiService
       - key_topics: lista dos principais assuntos discutidos
       - quality_score: nota de 1 a 10 para qualidade do atendimento
       - quality_breakdown: nota de 0 a 2 para cada criterio (0=nao fez, 1=parcial, 2=completo)
+      - suggested_funnel_stage: etapa sugerida do funil de vendas. Opcoes EXATAS (sem acentos):
+        "Lead" = primeiro contato, sem interesse claro
+        "Qualificado" = demonstrou interesse em produto especifico
+        "Orcamento" = pediu preco, orcamento ou condicoes de pagamento
+        "Negociacao" = discutindo desconto, prazo, condicoes
+        "Venda" = confirmou compra ou fechou negocio
+        "Perda" = desistiu, nao respondeu, ou recusou
     SYSTEM_PROMPT
   end
 

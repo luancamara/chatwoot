@@ -133,6 +133,7 @@ export default {
     'selectWhatsappTemplate',
     'selectContentTemplate',
     'toggleQuotedReply',
+    'scheduleMessage',
   ],
   setup(props) {
     const { setSignatureFlagForInbox, fetchSignatureFlagFromUISettings } =
@@ -360,6 +361,15 @@ export default {
         sm
         :aria-pressed="quotedReplyEnabled"
         @click="$emit('toggleQuotedReply')"
+      />
+      <NextButton
+        v-if="!isOnPrivateNote"
+        v-tooltip.top-end="$t('CONVERSATION.FOOTER.SCHEDULE_MESSAGE')"
+        icon="i-lucide-clock"
+        slate
+        faded
+        sm
+        @click="$emit('scheduleMessage')"
       />
       <NextButton
         v-if="enableWhatsAppTemplates"

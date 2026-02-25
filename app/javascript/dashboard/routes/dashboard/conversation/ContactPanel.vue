@@ -25,6 +25,7 @@ import LinearIssuesList from 'dashboard/components/widgets/conversation/linear/I
 import LinearSetupCTA from 'dashboard/components/widgets/conversation/linear/LinearSetupCTA.vue';
 import ConversationInsight from './ConversationInsight.vue';
 import FollowUpReminders from './FollowUpReminders.vue';
+import { useAdmin } from 'dashboard/composables/useAdmin';
 
 const props = defineProps({
   conversationId: {
@@ -44,6 +45,7 @@ const {
   toggleSidebarUIState,
 } = useUISettings();
 
+const { isAdmin } = useAdmin();
 const dragging = ref(false);
 const conversationSidebarItems = ref([]);
 
@@ -287,11 +289,9 @@ onMounted(() => {
               <ShopifyOrdersList :contact-id="contactId" />
             </AccordionItem>
           </div>
-          <div v-else-if="element.name === 'conversation_insight'">
+          <div v-else-if="element.name === 'conversation_insight' && isAdmin">
             <AccordionItem
-              :title="
-                $t('CONVERSATION_SIDEBAR.ACCORDION.CONVERSATION_INSIGHT')
-              "
+              :title="$t('CONVERSATION_SIDEBAR.ACCORDION.CONVERSATION_INSIGHT')"
               :is-open="
                 isContactSidebarItemOpen('is_conversation_insight_open')
               "
@@ -306,12 +306,8 @@ onMounted(() => {
           </div>
           <div v-else-if="element.name === 'follow_up_reminders'">
             <AccordionItem
-              :title="
-                $t('CONVERSATION_SIDEBAR.ACCORDION.FOLLOW_UP_REMINDERS')
-              "
-              :is-open="
-                isContactSidebarItemOpen('is_follow_up_reminders_open')
-              "
+              :title="$t('CONVERSATION_SIDEBAR.ACCORDION.FOLLOW_UP_REMINDERS')"
+              :is-open="isContactSidebarItemOpen('is_follow_up_reminders_open')"
               compact
               @toggle="
                 value =>

@@ -1,4 +1,5 @@
 class Api::V1::Accounts::ConversationInsightsController < Api::V1::Accounts::EnterpriseAccountsController
+  before_action :check_admin_authorization?
   before_action :set_conversation
   before_action :set_insight, only: [:show]
 

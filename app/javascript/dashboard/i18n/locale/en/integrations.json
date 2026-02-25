@@ -141,79 +141,79 @@
       "CREATE_ERROR": "There was an error creating a meeting link, please try again"
     },
     "OPEN_AI": {
-      "AI_ASSIST": "AI Assist",
-      "WITH_AI": " {option} with AI ",
+      "AI_ASSIST": "Assistente IA",
+      "WITH_AI": " {option} com IA ",
       "OPTIONS": {
-        "REPLY_SUGGESTION": "Reply Suggestion",
-        "SUMMARIZE": "Summarize",
-        "REPHRASE": "Improve Writing",
-        "FIX_SPELLING_GRAMMAR": "Fix Spelling and Grammar",
-        "SHORTEN": "Shorten",
-        "EXPAND": "Expand",
-        "MAKE_FRIENDLY": "Change message tone to friendly",
-        "MAKE_FORMAL": "Use formal tone",
-        "SIMPLIFY": "Simplify",
-        "CONFIDENT": "Use confident tone",
-        "PROFESSIONAL": "Use professional tone",
-        "CASUAL": "Use casual tone",
-        "STRAIGHTFORWARD": "Use straightforward tone"
+        "REPLY_SUGGESTION": "Sugestão de Resposta",
+        "SUMMARIZE": "Resumir",
+        "REPHRASE": "Melhorar Escrita",
+        "FIX_SPELLING_GRAMMAR": "Corrigir Ortografia e Gramática",
+        "SHORTEN": "Encurtar",
+        "EXPAND": "Expandir",
+        "MAKE_FRIENDLY": "Usar tom amigável",
+        "MAKE_FORMAL": "Usar tom formal",
+        "SIMPLIFY": "Simplificar",
+        "CONFIDENT": "Usar tom confiante",
+        "PROFESSIONAL": "Usar tom profissional",
+        "CASUAL": "Usar tom casual",
+        "STRAIGHTFORWARD": "Usar tom direto"
       },
       "REPLY_OPTIONS": {
-        "IMPROVE_REPLY": "Improve reply",
-        "IMPROVE_REPLY_SELECTION": "Improve the selection",
+        "IMPROVE_REPLY": "Melhorar resposta",
+        "IMPROVE_REPLY_SELECTION": "Melhorar a seleção",
         "CHANGE_TONE": {
-          "TITLE": "Change tone",
+          "TITLE": "Alterar tom",
           "OPTIONS": {
-            "PROFESSIONAL": "Professional",
+            "PROFESSIONAL": "Profissional",
             "CASUAL": "Casual",
-            "STRAIGHTFORWARD": "Straightforward",
-            "CONFIDENT": "Confident",
-            "FRIENDLY": "Friendly"
+            "STRAIGHTFORWARD": "Direto",
+            "CONFIDENT": "Confiante",
+            "FRIENDLY": "Amigável"
           }
         },
-        "GRAMMAR": "Fix grammar & spelling",
-        "SUGGESTION": "Suggest a reply",
-        "SUMMARIZE": "Summarize the conversation",
-        "ASK_COPILOT": "Ask Copilot"
+        "GRAMMAR": "Corrigir gramática e ortografia",
+        "SUGGESTION": "Sugerir uma resposta",
+        "SUMMARIZE": "Resumir a conversa",
+        "ASK_COPILOT": "Perguntar ao Copilot"
       },
       "ASSISTANCE_MODAL": {
-        "DRAFT_TITLE": "Draft content",
-        "GENERATED_TITLE": "Generated content",
-        "AI_WRITING": "AI is writing",
+        "DRAFT_TITLE": "Rascunho",
+        "GENERATED_TITLE": "Conteúdo gerado",
+        "AI_WRITING": "IA está escrevendo",
         "BUTTONS": {
-          "APPLY": "Use this suggestion",
-          "CANCEL": "Cancel"
+          "APPLY": "Usar esta sugestão",
+          "CANCEL": "Cancelar"
         }
       },
       "CTA_MODAL": {
-        "TITLE": "Integrate with OpenAI",
-        "DESC": "Bring advanced AI features to your dashboard with OpenAI's GPT models. To begin, enter the API key from your OpenAI account.",
-        "KEY_PLACEHOLDER": "Enter your OpenAI API key",
+        "TITLE": "Integrar com OpenAI",
+        "DESC": "Adicione recursos avançados de IA ao seu painel com os modelos GPT da OpenAI. Para começar, insira a chave de API da sua conta OpenAI.",
+        "KEY_PLACEHOLDER": "Insira sua chave de API OpenAI",
         "BUTTONS": {
-          "NEED_HELP": "Need help?",
-          "DISMISS": "Dismiss",
-          "FINISH": "Finish Setup"
+          "NEED_HELP": "Precisa de ajuda?",
+          "DISMISS": "Dispensar",
+          "FINISH": "Concluir Configuração"
         },
-        "DISMISS_MESSAGE": "You can setup OpenAI integration later Whenever you want.",
-        "SUCCESS_MESSAGE": "OpenAI integration setup successfully"
+        "DISMISS_MESSAGE": "Você pode configurar a integração com OpenAI mais tarde.",
+        "SUCCESS_MESSAGE": "Integração com OpenAI configurada com sucesso"
       },
-      "TITLE": "Improve With AI",
-      "SUMMARY_TITLE": "Summary with AI",
-      "REPLY_TITLE": "Reply suggestion with AI",
-      "SUBTITLE": "An improved reply will be generated using AI, based on your current draft.",
+      "TITLE": "Melhorar com IA",
+      "SUMMARY_TITLE": "Resumo com IA",
+      "REPLY_TITLE": "Sugestão de resposta com IA",
+      "SUBTITLE": "Uma resposta melhorada será gerada pela IA, com base no seu rascunho atual.",
       "TONE": {
-        "TITLE": "Tone",
+        "TITLE": "Tom",
         "OPTIONS": {
-          "PROFESSIONAL": "Professional",
-          "FRIENDLY": "Friendly"
+          "PROFESSIONAL": "Profissional",
+          "FRIENDLY": "Amigável"
         }
       },
       "BUTTONS": {
-        "GENERATE": "Generate",
-        "GENERATING": "Generating...",
-        "CANCEL": "Cancel"
+        "GENERATE": "Gerar",
+        "GENERATING": "Gerando...",
+        "CANCEL": "Cancelar"
       },
-      "GENERATE_ERROR": "There was an error processing the content, please verify your OpenAI API key and try again"
+      "GENERATE_ERROR": "Houve um erro ao processar o conteúdo. Verifique sua chave de API OpenAI e tente novamente"
     },
     "DELETE": {
       "BUTTON_TEXT": "Delete",

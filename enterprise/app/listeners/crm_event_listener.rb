@@ -4,6 +4,16 @@ class CrmEventListener < BaseListener
     ConversationInsightJob.perform_later(conversation)
   end
 
+  def message_created(event)
+    message = extract_message_and_account(event)[0]
+    return unless message.incoming?
+
+    conversation = message.conversation
+    return unless conversation.open?
+
+    Captain::Llm::ConversationAutoLabelService.schedule_debounce(conversation)
+  end
+
   def conversation_updated(event)
     conversation = extract_conversation_and_account(event)[0]
     changed = event.data[:changed_attributes]

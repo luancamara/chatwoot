@@ -31,6 +31,7 @@ import {
 } from '@chatwoot/utils';
 import WhatsappTemplates from './WhatsappTemplates/Modal.vue';
 import ContentTemplates from './ContentTemplates/ContentTemplatesModal.vue';
+import ScheduleMessageModal from './ScheduleMessageModal.vue';
 import { MESSAGE_MAX_LENGTH } from 'shared/helpers/MessageTypeHelper';
 import inboxMixin, { INBOX_FEATURES } from 'shared/mixins/inboxMixin';
 import { trimContent, debounce, getRecipients } from '@chatwoot/utils';
@@ -53,6 +54,7 @@ import {
 } from 'dashboard/helper/editorHelper';
 import { useCopilotReply } from 'dashboard/composables/useCopilotReply';
 import { useKbd } from 'dashboard/composables/utils/useKbd';
+import TasksAPI from 'dashboard/api/captain/tasks';
 import { isFileTypeAllowedForChannel } from 'shared/helpers/FileHelper';
 
 import { LOCAL_STORAGE_KEYS } from 'dashboard/constants/localStorage';
@@ -76,6 +78,7 @@ export default {
     ReplyTopPanel,
     ContentTemplates,
     WhatsappTemplates,
+    ScheduleMessageModal,
     WootMessageEditor,
     QuotedEmailPreview,
     CopilotEditorSection,
@@ -140,6 +143,8 @@ export default {
       showArticleSearchPopover: false,
       hasRecordedAudio: false,
       copilotAcceptedMessages: {},
+      isFixingGrammar: false,
+      showScheduleModal: false,
     };
   },
   computed: {
@@ -152,6 +157,12 @@ export default {
       accountId: 'getCurrentAccountId',
       isFeatureEnabledonAccount: 'accounts/isFeatureEnabledonAccount',
     }),
+    autoFixGrammarEnabled() {
+      const account = this.$store.getters['accounts/getAccount'](
+        this.accountId
+      );
+      return !!account?.settings?.auto_fix_grammar;
+    },
     currentContact() {
       const senderId = this.currentChat?.meta?.sender?.id;
       if (!senderId) return {};
@@ -729,6 +740,16 @@ export default {
     toggleVariablesMenu(value) {
       this.showVariablesMenu = value;
     },
+    openScheduleModal() {
+      this.showScheduleModal = true;
+    },
+    hideScheduleModal() {
+      this.showScheduleModal = false;
+    },
+    onMessageScheduled() {
+      this.clearMessage();
+      this.hideScheduleModal();
+    },
     openWhatsappTemplateModal() {
       this.showWhatsAppTemplatesModal = true;
     },
@@ -741,30 +762,52 @@ export default {
     hideContentTemplatesModal() {
       this.showContentTemplatesModal = false;
     },
-    confirmOnSendReply() {
+    async confirmOnSendReply() {
       if (this.isReplyButtonDisabled) {
         return;
       }
       if (!this.showMentions) {
+        let messageToSend = this.message;
+
+        // Auto-fix grammar if enabled and not a private note
+        if (
+          this.autoFixGrammarEnabled &&
+          !this.isPrivate &&
+          messageToSend?.trim()
+        ) {
+          try {
+            this.isFixingGrammar = true;
+            const { data } = await TasksAPI.rewrite({
+              content: messageToSend,
+              operation: 'fix_spelling_grammar',
+              conversationId: this.currentChat?.id,
+            });
+            if (data?.message) {
+              messageToSend = data.message;
+            }
+          } catch {
+            // If grammar fix fails, send original message
+          } finally {
+            this.isFixingGrammar = false;
+          }
+        }
+
         const copilotAcceptedMessage = this.getCopilotAcceptedMessage();
         const isOnWhatsApp =
           this.isATwilioWhatsAppChannel ||
           this.isAWhatsAppCloudChannel ||
           this.is360DialogWhatsAppChannel;
-        // When users send messages containing both text and attachments on Instagram, Instagram treats them as separate messages.
-        // Although Chatwoot combines these into a single message, Instagram sends separate echo events for each component.
-        // This can create duplicate messages in Chatwoot. To prevent this issue, we'll handle text and attachments as separate messages.
         const isOnInstagram = this.isAnInstagramChannel;
         if ((isOnWhatsApp || isOnInstagram) && !this.isPrivate) {
           this.sendMessageAsMultipleMessages(
-            this.message,
+            messageToSend,
             copilotAcceptedMessage
           );
         } else {
-          const messagePayload = this.getMessagePayload(this.message);
+          const messagePayload = this.getMessagePayload(messageToSend);
           this.sendMessage(
             messagePayload,
-            this.message,
+            messageToSend,
             copilotAcceptedMessage
           );
         }
@@ -1405,6 +1448,7 @@ export default {
         :new-conversation-modal-active="newConversationModalActive"
         @select-whatsapp-template="openWhatsappTemplateModal"
         @select-content-template="openContentTemplateModal"
+        @schedule-message="openScheduleModal"
         @replace-text="replaceText"
         @toggle-insert-article="toggleInsertArticle"
         @toggle-quoted-reply="toggleQuotedReply"
@@ -1425,6 +1469,14 @@ export default {
       @close="hideContentTemplatesModal"
       @on-send="onSendContentTemplateReply"
       @cancel="hideContentTemplatesModal"
+    />
+
+    <ScheduleMessageModal
+      v-if="showScheduleModal"
+      :conversation-id="currentChat.id"
+      :message-content="message"
+      @close="hideScheduleModal"
+      @scheduled="onMessageScheduled"
     />
 
     <woot-confirm-modal

@@ -193,9 +193,10 @@
       "MESSAGING_RESTRICTED": "You cannot reply to this conversation",
       "MESSAGING_RESTRICTED_WHATSAPP": "You can only reply using a template message due to 24-hour message window restriction",
       "MESSAGE_SIGNATURE_NOT_CONFIGURED": "Message signature is not configured, please configure it in profile settings.",
-      "COPILOT_MSG_INPUT": "Give copilot additional prompts, or ask anything else... Press enter to send follow-up",
+      "COPILOT_MSG_INPUT": "Dê instruções adicionais ao Copilot ou pergunte qualquer coisa... Pressione Enter para enviar",
       "CLICK_HERE": "Click here to update",
-      "WHATSAPP_TEMPLATES": "Whatsapp Templates"
+      "WHATSAPP_TEMPLATES": "Whatsapp Templates",
+      "SCHEDULE_MESSAGE": "Agendar mensagem"
     },
     "REPLYBOX": {
       "REPLY": "Reply",
@@ -213,7 +214,7 @@
       "DRAG_DROP": "Drag and drop here to attach",
       "START_AUDIO_RECORDING": "Start audio recording",
       "STOP_AUDIO_RECORDING": "Stop audio recording",
-      "COPILOT_THINKING": "Copilot is thinking",
+      "COPILOT_THINKING": "Copilot está pensando",
       "EMAIL_HEAD": {
         "TO": "TO",
         "ADD_BCC": "Add bcc",
@@ -341,6 +342,19 @@
       "TITLE": "Create canned responses",
       "DESCRIPTION": "Pre-written quick reply templates help you quickly respond to a conversation. Agents can type the '/' character followed by the shortcode to insert a response.",
       "NEW_LINK": "Click here to create a canned response"
+    },
+    "SCHEDULE_MESSAGE": {
+      "TITLE": "Agendar mensagem",
+      "PREVIEW": "Mensagem:",
+      "DATE_LABEL": "Data e horário de envio",
+      "CONFIRM": "Agendar",
+      "CANCEL": "Cancelar",
+      "CANCEL_SUCCESS": "Mensagem agendada cancelada",
+      "SCHEDULED_MESSAGES": "Mensagens agendadas",
+      "API": {
+        "SUCCESS": "Mensagem agendada com sucesso",
+        "ERROR": "Erro ao agendar mensagem"
+      }
     }
   },
   "CONVERSATION_SIDEBAR": {
@@ -444,7 +458,7 @@
     "MULTIPLE": "{user} and {count} others are typing"
   },
   "COPILOT": {
-    "TRY_THESE_PROMPTS": "Try these prompts"
+    "TRY_THESE_PROMPTS": "Experimente estes comandos"
   },
   "GALLERY_VIEW": {
     "ERROR_DOWNLOADING": "Unable to download attachment. Please try again"

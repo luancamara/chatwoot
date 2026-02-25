@@ -135,6 +135,7 @@ Rails.application.routes.draw do
                   post :retry
                 end
               end
+              resources :scheduled_messages, only: [:index, :create, :destroy]
               resources :assignments, only: [:create]
               resources :labels, only: [:create, :index]
               resource :participants, only: [:show, :create, :update, :destroy]

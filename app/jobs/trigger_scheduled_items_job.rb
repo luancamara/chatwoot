@@ -19,6 +19,11 @@ class TriggerScheduledItemsJob < ApplicationJob
 
     # Job to sync whatsapp templates
     Channels::Whatsapp::TemplatesSyncSchedulerJob.perform_later
+
+    # Job to send scheduled messages
+    ScheduledMessage.ready_to_send.find_each(batch_size: 100) do |scheduled_message|
+      ScheduledMessageSendJob.perform_later(scheduled_message)
+    end
   end
 end
 

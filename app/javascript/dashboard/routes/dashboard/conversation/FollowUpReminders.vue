@@ -6,6 +6,7 @@ import { useAlert } from 'dashboard/composables';
 import Button from 'dashboard/components-next/button/Button.vue';
 import Input from 'dashboard/components-next/input/Input.vue';
 import TextArea from 'dashboard/components-next/textarea/TextArea.vue';
+import ScheduledMessagesAPI from 'dashboard/api/scheduledMessages';
 
 const props = defineProps({
   conversationId: {
@@ -20,6 +21,8 @@ const store = useStore();
 const showForm = ref(false);
 const newRemindAt = ref('');
 const newNotes = ref('');
+const scheduledMessages = ref([]);
+const isLoadingScheduled = ref(false);
 
 const reminders = computed(
   () =>
@@ -32,13 +35,24 @@ const pendingReminders = computed(() =>
   reminders.value.filter(r => r.status === 'pending')
 );
 
-const uiFlags = computed(
-  () => store.getters['followUpReminders/getUIFlags']
-);
+const uiFlags = computed(() => store.getters['followUpReminders/getUIFlags']);
 
 const fetchReminders = conversationId => {
   if (!conversationId) return;
   store.dispatch('followUpReminders/fetch', conversationId);
+};
+
+const fetchScheduledMessages = async conversationId => {
+  if (!conversationId) return;
+  try {
+    isLoadingScheduled.value = true;
+    const { data } = await ScheduledMessagesAPI.index(conversationId);
+    scheduledMessages.value = data || [];
+  } catch {
+    scheduledMessages.value = [];
+  } finally {
+    isLoadingScheduled.value = false;
+  }
 };
 
 const formatDate = dateStr => {
@@ -60,6 +74,11 @@ const reminderTypeLabel = type => {
     manual: 'Manual',
   };
   return labels[type] || type;
+};
+
+const truncate = (text, max = 80) => {
+  if (!text || text.length <= max) return text;
+  return `${text.slice(0, max)}...`;
 };
 
 const handleCreate = async () => {
@@ -103,16 +122,31 @@ const handleDelete = async reminder => {
   }
 };
 
+const handleCancelScheduled = async sm => {
+  try {
+    await ScheduledMessagesAPI.cancel(props.conversationId, sm.id);
+    useAlert(t('CONVERSATION.SCHEDULE_MESSAGE.CANCEL_SUCCESS'));
+    fetchScheduledMessages(props.conversationId);
+  } catch {
+    useAlert(t('CONVERSATION.SCHEDULE_MESSAGE.API.ERROR'));
+  }
+};
+
+const fetchAll = conversationId => {
+  fetchReminders(conversationId);
+  fetchScheduledMessages(conversationId);
+};
+
 watch(
   () => props.conversationId,
-  newId => fetchReminders(newId)
+  newId => fetchAll(newId)
 );
 
-onMounted(() => fetchReminders(props.conversationId));
+onMounted(() => fetchAll(props.conversationId));
 </script>
 
 <template>
-  <div class="py-2">
+  <div class="px-4 py-2">
     <div
       v-if="uiFlags.isFetching"
       class="flex items-center justify-center gap-2 py-4 text-sm text-n-slate-11"
@@ -122,6 +156,36 @@ onMounted(() => fetchReminders(props.conversationId));
     </div>
 
     <template v-else>
+      <!-- Scheduled Messages -->
+      <div v-if="scheduledMessages.length" class="mb-3 flex flex-col gap-2">
+        <span class="text-xs font-medium text-n-slate-10">
+          {{ t('CONVERSATION.SCHEDULE_MESSAGE.SCHEDULED_MESSAGES') }}
+        </span>
+        <div
+          v-for="sm in scheduledMessages"
+          :key="sm.id"
+          class="flex items-start gap-2 rounded-lg border border-n-blue-6 bg-n-blue-2 p-2.5"
+        >
+          <span class="i-lucide-clock mt-0.5 shrink-0 text-n-blue-11" />
+          <div class="flex min-w-0 flex-1 flex-col gap-1">
+            <span class="text-xs font-semibold text-n-slate-12">
+              {{ formatDate(sm.scheduled_at) }}
+            </span>
+            <span class="text-xs leading-relaxed text-n-slate-11">
+              {{ truncate(sm.content) }}
+            </span>
+          </div>
+          <Button
+            icon="i-lucide-x"
+            size="xs"
+            ghost
+            slate
+            @click="handleCancelScheduled(sm)"
+          />
+        </div>
+      </div>
+
+      <!-- Follow-up Reminders -->
       <div v-if="pendingReminders.length" class="flex flex-col gap-2">
         <div
           v-for="reminder in pendingReminders"
@@ -168,7 +232,7 @@ onMounted(() => fetchReminders(props.conversationId));
       </div>
 
       <div
-        v-else-if="!showForm"
+        v-else-if="!showForm && !scheduledMessages.length"
         class="py-2 text-center text-sm text-n-slate-11"
       >
         {{ t('CRM.FOLLOW_UP_REMINDERS.EMPTY') }}
@@ -180,11 +244,7 @@ onMounted(() => fetchReminders(props.conversationId));
           <label class="text-xs font-medium text-n-slate-11">
             {{ t('CRM.FOLLOW_UP_REMINDERS.FORM.DUE_AT') }}
           </label>
-          <Input
-            v-model="newRemindAt"
-            type="datetime-local"
-            size="sm"
-          />
+          <Input v-model="newRemindAt" type="datetime-local" size="sm" />
         </div>
         <div class="flex flex-col gap-1">
           <label class="text-xs font-medium text-n-slate-11">
@@ -193,7 +253,9 @@ onMounted(() => fetchReminders(props.conversationId));
           <TextArea
             v-model="newNotes"
             class="w-full"
-            :placeholder="t('CRM.FOLLOW_UP_REMINDERS.FORM.DESCRIPTION_PLACEHOLDER')"
+            :placeholder="
+              t('CRM.FOLLOW_UP_REMINDERS.FORM.DESCRIPTION_PLACEHOLDER')
+            "
           />
         </div>
         <div class="flex gap-2">
