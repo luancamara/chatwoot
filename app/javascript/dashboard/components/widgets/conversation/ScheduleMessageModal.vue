@@ -1,9 +1,7 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAlert } from 'dashboard/composables';
-import Button from 'dashboard/components-next/button/Button.vue';
-import Input from 'dashboard/components-next/input/Input.vue';
 import ScheduledMessagesAPI from 'dashboard/api/scheduledMessages';
 
 const props = defineProps({
@@ -21,7 +19,12 @@ const emit = defineEmits(['close', 'scheduled']);
 
 const { t } = useI18n();
 const scheduledAt = ref('');
+const messageText = ref('');
 const isSubmitting = ref(false);
+
+onMounted(() => {
+  messageText.value = props.messageContent || '';
+});
 
 const minDateTime = computed(() => {
   const now = new Date();
@@ -29,13 +32,8 @@ const minDateTime = computed(() => {
   return now.toISOString().slice(0, 16);
 });
 
-const previewContent = computed(() => {
-  const content = props.messageContent || '';
-  return content.length > 200 ? `${content.slice(0, 200)}...` : content;
-});
-
 const isValid = computed(() => {
-  return scheduledAt.value && props.messageContent?.trim();
+  return scheduledAt.value && messageText.value?.trim();
 });
 
 const handleSchedule = async () => {
@@ -44,7 +42,7 @@ const handleSchedule = async () => {
   try {
     isSubmitting.value = true;
     await ScheduledMessagesAPI.create(props.conversationId, {
-      content: props.messageContent,
+      content: messageText.value,
       scheduled_at: new Date(scheduledAt.value).toISOString(),
     });
     useAlert(t('CONVERSATION.SCHEDULE_MESSAGE.API.SUCCESS'));
@@ -60,55 +58,66 @@ const handleSchedule = async () => {
 
 <template>
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center bg-n-alpha-3"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
     @click.self="$emit('close')"
   >
     <div
-      class="w-full max-w-md rounded-xl border border-n-weak bg-n-solid-2 p-6 shadow-lg"
+      class="mx-4 w-full max-w-md rounded-xl border border-n-weak bg-white p-5 shadow-xl dark:bg-n-solid-2"
     >
-      <h3 class="mb-4 text-base font-semibold text-n-slate-12">
-        {{ t('CONVERSATION.SCHEDULE_MESSAGE.TITLE') }}
-      </h3>
-
-      <div
-        v-if="previewContent"
-        class="mb-4 rounded-lg bg-n-alpha-1 p-3 text-sm text-n-slate-11"
-      >
-        <span class="mb-1 block text-xs font-medium text-n-slate-10">
-          {{ t('CONVERSATION.SCHEDULE_MESSAGE.PREVIEW') }}
-        </span>
-        {{ previewContent }}
+      <div class="mb-4 flex items-center gap-2">
+        <span class="i-lucide-clock text-n-blue-11" />
+        <h3 class="text-sm font-semibold text-n-slate-12">
+          {{ t('CONVERSATION.SCHEDULE_MESSAGE.TITLE') }}
+        </h3>
       </div>
 
-      <div class="mb-4 flex flex-col gap-1">
-        <label class="text-xs font-medium text-n-slate-11">
-          {{ t('CONVERSATION.SCHEDULE_MESSAGE.DATE_LABEL') }}
-        </label>
-        <Input
-          v-model="scheduledAt"
-          type="datetime-local"
-          :min="minDateTime"
-          size="sm"
-        />
+      <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-n-slate-11">
+            {{ t('CONVERSATION.SCHEDULE_MESSAGE.MESSAGE_LABEL') }}
+          </label>
+          <textarea
+            v-model="messageText"
+            rows="3"
+            class="w-full resize-none rounded-lg border border-n-weak bg-n-alpha-1 px-3 py-2 text-sm text-n-slate-12 placeholder:text-n-slate-9 focus:border-n-brand focus:outline-none"
+            :placeholder="
+              t('CONVERSATION.SCHEDULE_MESSAGE.MESSAGE_PLACEHOLDER')
+            "
+          />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-n-slate-11">
+            {{ t('CONVERSATION.SCHEDULE_MESSAGE.DATE_LABEL') }}
+          </label>
+          <input
+            v-model="scheduledAt"
+            type="datetime-local"
+            :min="minDateTime"
+            class="w-full rounded-lg border border-n-weak bg-n-alpha-1 px-3 py-2 text-sm text-n-slate-12 focus:border-n-brand focus:outline-none"
+          />
+        </div>
       </div>
 
-      <div class="flex justify-end gap-2">
-        <Button
-          :label="t('CONVERSATION.SCHEDULE_MESSAGE.CANCEL')"
-          size="sm"
-          ghost
-          slate
+      <div class="mt-4 flex justify-end gap-2">
+        <button
+          class="rounded-lg px-3 py-1.5 text-sm text-n-slate-11 hover:bg-n-alpha-2"
           @click="$emit('close')"
-        />
-        <Button
-          :label="t('CONVERSATION.SCHEDULE_MESSAGE.CONFIRM')"
-          size="sm"
-          color="primary"
-          icon="i-lucide-clock"
-          :is-loading="isSubmitting"
-          :disabled="!isValid"
+        >
+          {{ t('CONVERSATION.SCHEDULE_MESSAGE.CANCEL') }}
+        </button>
+        <button
+          :disabled="!isValid || isSubmitting"
+          class="flex items-center gap-1.5 rounded-lg bg-n-brand px-3 py-1.5 text-sm font-medium text-white disabled:opacity-40"
           @click="handleSchedule"
-        />
+        >
+          <span
+            v-if="isSubmitting"
+            class="i-lucide-loader-circle animate-spin"
+          />
+          <span v-else class="i-lucide-clock" />
+          {{ t('CONVERSATION.SCHEDULE_MESSAGE.CONFIRM') }}
+        </button>
       </div>
     </div>
   </div>

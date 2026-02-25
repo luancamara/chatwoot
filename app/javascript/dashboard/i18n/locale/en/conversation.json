@@ -345,9 +345,10 @@
     },
     "SCHEDULE_MESSAGE": {
       "TITLE": "Agendar mensagem",
-      "PREVIEW": "Mensagem:",
+      "MESSAGE_LABEL": "Mensagem",
+      "MESSAGE_PLACEHOLDER": "Digite a mensagem a ser enviada...",
       "DATE_LABEL": "Data e horário de envio",
-      "CONFIRM": "Agendar",
+      "CONFIRM": "Agendar envio",
       "CANCEL": "Cancelar",
       "CANCEL_SUCCESS": "Mensagem agendada cancelada",
       "SCHEDULED_MESSAGES": "Mensagens agendadas",
