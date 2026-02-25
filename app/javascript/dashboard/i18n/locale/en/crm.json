@@ -1,101 +1,101 @@
 {
   "CRM": {
     "CONVERSATION_INSIGHT": {
-      "TITLE": "Sales Insight",
-      "SCORE": "Quality Score",
-      "SIGNALS": "Key Signals",
-      "ESTIMATED_VALUE": "Estimated Value",
-      "PRODUCT_CATEGORY": "Product Category",
-      "SENTIMENT": "Customer Sentiment",
-      "KEY_TOPICS": "Key Topics",
-      "QUALITY_BREAKDOWN": "Quality Breakdown",
-      "LOADING": "Analyzing conversation...",
-      "EMPTY": "No insight available for this conversation",
-      "ERROR": "Failed to load conversation insight",
+      "TITLE": "Análise da Conversa",
+      "SCORE": "Score de Qualidade",
+      "SIGNALS": "Sinais Importantes",
+      "ESTIMATED_VALUE": "Valor Estimado",
+      "PRODUCT_CATEGORY": "Categoria do Produto",
+      "SENTIMENT": "Sentimento do Cliente",
+      "KEY_TOPICS": "Tópicos Principais",
+      "QUALITY_BREAKDOWN": "Detalhamento da Qualidade",
+      "LOADING": "Analisando conversa...",
+      "EMPTY": "Nenhuma análise disponível para esta conversa",
+      "ERROR": "Erro ao carregar análise da conversa",
       "SCORE_LABELS": {
-        "HIGH": "High",
-        "MEDIUM": "Medium",
-        "LOW": "Low"
+        "HIGH": "Alto",
+        "MEDIUM": "Médio",
+        "LOW": "Baixo"
       },
       "SENTIMENT_LABELS": {
-        "positive": "Positive",
-        "neutral": "Neutral",
-        "negative": "Negative"
+        "positive": "Positivo",
+        "neutral": "Neutro",
+        "negative": "Negativo"
       },
       "BREAKDOWN_LABELS": {
-        "greeting": "Greeting",
-        "needs_identification": "Needs Identification",
-        "product_presentation": "Product Presentation",
-        "objection_handling": "Objection Handling",
-        "closing_attempt": "Closing Attempt"
+        "greeting": "Saudação",
+        "needs_identification": "Identificação de Necessidades",
+        "product_presentation": "Apresentação do Produto",
+        "objection_handling": "Tratamento de Objeções",
+        "closing_attempt": "Tentativa de Fechamento"
       }
     },
     "FOLLOW_UP_REMINDERS": {
-      "TITLE": "Follow-up Reminders",
-      "ADD": "Add reminder",
-      "EMPTY": "No reminders set",
-      "ERROR": "Failed to load reminders",
-      "DELETE_CONFIRM": "Are you sure you want to delete this reminder?",
+      "TITLE": "Lembretes de Follow-up",
+      "ADD": "Adicionar lembrete",
+      "EMPTY": "Nenhum lembrete configurado",
+      "ERROR": "Erro ao carregar lembretes",
+      "DELETE_CONFIRM": "Tem certeza que deseja excluir este lembrete?",
       "FORM": {
-        "DUE_AT": "Due date",
-        "DESCRIPTION": "Description",
-        "DESCRIPTION_PLACEHOLDER": "Enter reminder details...",
-        "SAVE": "Save reminder",
-        "CANCEL": "Cancel"
+        "DUE_AT": "Data e hora",
+        "DESCRIPTION": "Descrição",
+        "DESCRIPTION_PLACEHOLDER": "Descreva o motivo do follow-up...",
+        "SAVE": "Salvar lembrete",
+        "CANCEL": "Cancelar"
       },
       "API": {
-        "CREATE_SUCCESS": "Reminder created successfully",
-        "CREATE_ERROR": "Failed to create reminder",
-        "DELETE_SUCCESS": "Reminder deleted successfully",
-        "DELETE_ERROR": "Failed to delete reminder"
+        "CREATE_SUCCESS": "Lembrete criado com sucesso",
+        "CREATE_ERROR": "Erro ao criar lembrete",
+        "DELETE_SUCCESS": "Lembrete excluído com sucesso",
+        "DELETE_ERROR": "Erro ao excluir lembrete"
       }
     },
     "CONDITIONAL_ATTRIBUTES": {
-      "DIVIDER_LABEL": "Additional information"
+      "DIVIDER_LABEL": "Informações adicionais"
     },
     "PIPELINE": {
       "TITLE": "Pipeline",
-      "DESCRIPTION": "Drag conversations between stages to update their funnel position",
-      "NO_DATA": "No conversations in the pipeline for the selected filters",
-      "UNKNOWN_CONTACT": "Unknown contact",
-      "MOVE_SUCCESS": "Conversation moved to %{stage}",
-      "MOVE_ERROR": "Failed to move conversation"
+      "DESCRIPTION": "Arraste as conversas entre os estágios para atualizar a posição no funil",
+      "NO_DATA": "Nenhuma conversa no pipeline para os filtros selecionados",
+      "UNKNOWN_CONTACT": "Contato desconhecido",
+      "MOVE_SUCCESS": "Conversa movida para %{stage}",
+      "MOVE_ERROR": "Erro ao mover conversa"
     },
     "FUNNEL": {
-      "TITLE": "Sales Funnel",
-      "DESCRIPTION": "Conversion rates across funnel stages",
-      "STAGE": "Stage",
-      "COUNT": "Conversations",
-      "CONVERSION_RATE": "Conversion Rate",
-      "PIPELINE_SUMMARY": "Pipeline Summary",
-      "ESTIMATED_VALUE": "Estimated Value",
-      "NO_DATA": "No funnel data available for the selected period"
+      "TITLE": "Funil de Vendas",
+      "DESCRIPTION": "Taxas de conversão entre os estágios do funil",
+      "STAGE": "Estágio",
+      "COUNT": "Conversas",
+      "CONVERSION_RATE": "Taxa de Conversão",
+      "PIPELINE_SUMMARY": "Resumo do Pipeline",
+      "ESTIMATED_VALUE": "Valor Estimado",
+      "NO_DATA": "Nenhum dado de funil disponível para o período selecionado"
     },
     "SALES_REPORTS": {
-      "TITLE": "Sales Reports",
-      "DESCRIPTION": "Agent performance and disposition analysis",
-      "AGENT_RANKING": "Agent Ranking",
-      "DISPOSITION_BREAKDOWN": "Disposition Breakdown",
-      "LOSS_REASONS": "Loss Reasons",
-      "TOTAL_CONVERSATIONS": "Total Conversations",
-      "RESOLVED": "Resolved",
-      "VENDAS": "Sales",
-      "CONVERSION_RATE": "Conversion Rate",
-      "AVG_QUALITY_SCORE": "Avg Quality Score",
-      "TOTAL_REVENUE": "Total Revenue",
-      "NO_DATA": "No data available for the selected period",
-      "AGENT": "Agent",
-      "NA": "N/A"
+      "TITLE": "Relatórios de Vendas",
+      "DESCRIPTION": "Desempenho dos agentes e análise de disposição",
+      "AGENT_RANKING": "Ranking de Agentes",
+      "DISPOSITION_BREAKDOWN": "Resultado das Conversas",
+      "LOSS_REASONS": "Motivos de Perda",
+      "TOTAL_CONVERSATIONS": "Total de Conversas",
+      "RESOLVED": "Resolvidas",
+      "VENDAS": "Vendas",
+      "CONVERSION_RATE": "Taxa de Conversão",
+      "AVG_QUALITY_SCORE": "Score Médio de Qualidade",
+      "TOTAL_REVENUE": "Receita Total",
+      "NO_DATA": "Nenhum dado disponível para o período selecionado",
+      "AGENT": "Agente",
+      "NA": "N/D"
     },
     "FILTERS": {
-      "DATE_RANGE": "Date Range",
-      "AGENT": "Agent",
-      "TEAM": "Team",
-      "INBOX": "Inbox",
-      "ALL_AGENTS": "All Agents",
-      "ALL_TEAMS": "All Teams",
-      "ALL_INBOXES": "All Inboxes",
-      "APPLY": "Apply Filters"
+      "DATE_RANGE": "Período",
+      "AGENT": "Agente",
+      "TEAM": "Equipe",
+      "INBOX": "Caixa de Entrada",
+      "ALL_AGENTS": "Todos os Agentes",
+      "ALL_TEAMS": "Todas as Equipes",
+      "ALL_INBOXES": "Todas as Caixas",
+      "APPLY": "Aplicar Filtros"
     }
   }
 }

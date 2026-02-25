@@ -1,7 +1,6 @@
 import { computed } from 'vue';
 import { useMapGetter } from 'dashboard/composables/store';
 import { useAccount } from 'dashboard/composables/useAccount';
-import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 import { ATTRIBUTE_TYPES } from 'dashboard/components-next/ConversationWorkflow/constants';
 
 /**
@@ -43,29 +42,17 @@ const isConditionMet = (condition, formValues) => {
  */
 export function useConversationRequiredAttributes() {
   const { currentAccount, accountId } = useAccount();
-  const isFeatureEnabledonAccount = useMapGetter(
-    'accounts/isFeatureEnabledonAccount'
-  );
   const conversationAttributes = useMapGetter(
     'attributes/getConversationAttributes'
   );
 
-  const isFeatureEnabled = computed(() =>
-    isFeatureEnabledonAccount.value(
-      accountId.value,
-      FEATURE_FLAGS.CONVERSATION_REQUIRED_ATTRIBUTES
-    )
-  );
-
   const requiredAttributeKeys = computed(() => {
-    if (!isFeatureEnabled.value) return [];
     return (
       currentAccount.value?.settings?.conversation_required_attributes || []
     );
   });
 
   const requiredAttributeConditions = computed(() => {
-    if (!isFeatureEnabled.value) return {};
     return (
       currentAccount.value?.settings
         ?.conversation_required_attribute_conditions || {}

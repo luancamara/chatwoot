@@ -361,8 +361,8 @@
       "MACROS": "Macros",
       "LINEAR_ISSUES": "Linked Linear Issues",
       "SHOPIFY_ORDERS": "Shopify Orders",
-      "CONVERSATION_INSIGHT": "Conversation Insight",
-      "FOLLOW_UP_REMINDERS": "Follow-up Reminders"
+      "CONVERSATION_INSIGHT": "Análise da Conversa",
+      "FOLLOW_UP_REMINDERS": "Lembretes de Follow-up"
     },
     "SHOPIFY": {
       "ORDER_ID": "Order #{id}",
