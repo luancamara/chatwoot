@@ -256,14 +256,14 @@ onMounted(() => fetchAll(props.conversationId));
         <div class="flex gap-2">
           <Button
             :label="t('CRM.FOLLOW_UP_REMINDERS.FORM.SAVE')"
-            size="xs"
-            color="primary"
+            xs
+            blue
             :is-loading="uiFlags.isCreating"
             @click="handleCreate"
           />
           <Button
             :label="t('CRM.FOLLOW_UP_REMINDERS.FORM.CANCEL')"
-            size="xs"
+            xs
             ghost
             slate
             @click="showForm = false"
