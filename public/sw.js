@@ -1,5 +1,15 @@
 /* eslint-disable no-restricted-globals, no-console */
 /* globals clients */
+
+// Force new service worker to activate immediately
+self.addEventListener('install', event => {
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(clients.claim());
+});
+
 self.addEventListener('push', event => {
   let notification = event.data && event.data.json();
 

@@ -15,12 +15,21 @@ export const verifyServiceWorkerExistence = (callback = () => {}) => {
   }
 
   navigator.serviceWorker
-    .register('/sw.js')
-    .then(registration => callback(registration))
+    .register('/sw.js', { updateViaCache: 'none' })
+    .then(registration => {
+      // Check for updates every 5 minutes
+      setInterval(() => registration.update(), 5 * 60 * 1000);
+      callback(registration);
+    })
     .catch(registrationError => {
       // eslint-disable-next-line
       console.log('SW registration failed: ', registrationError);
     });
+
+  // Reload when a new service worker takes control
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    window.location.reload();
+  });
 };
 
 export const hasPushPermissions = () => {
