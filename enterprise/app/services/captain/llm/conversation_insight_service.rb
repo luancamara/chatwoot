@@ -1,38 +1,105 @@
-class Captain::Llm::ConversationInsightService < Llm::BaseAiService
-  include Integrations::LlmInstrumentation
-
+class Captain::Llm::ConversationInsightService
   VALID_FUNNEL_STAGES = %w[Lead Qualificado Orcamento Negociacao Venda Perda].freeze
 
   def initialize(assistant, conversation)
-    super()
     @assistant = assistant
     @conversation = conversation
-    @content = "#Conversation\n\n#{@conversation.to_llm_text}"
   end
 
   def generate_and_save_insight
-    data = generate_insight
-    return if data.blank?
+    # Layer 1: Automatic metrics (pure Ruby, no LLM)
+    metrics = ConversationInsight::AutomaticMetricsCalculator.new(@conversation).calculate
 
-    insight = @conversation.conversation_insight || @conversation.build_conversation_insight(account: @conversation.account)
-    insight.update!(
-      estimated_value: data['estimated_value'],
-      product_category: data['product_category'],
-      customer_sentiment: data['customer_sentiment'],
-      key_topics: data['key_topics'] || [],
-      quality_score: data['quality_score'],
-      quality_breakdown: data['quality_breakdown'] || {},
-      raw_llm_response: data
-    )
+    # Layer 2: Qualitative analysis (LLM)
+    llm_analysis = ConversationInsight::QualitativeAnalysisService.new(@assistant, @conversation).analyze
 
-    auto_set_funnel_stage(data['suggested_funnel_stage']) if data['suggested_funnel_stage'].present?
+    # Layer 3: Score calculation (pure Ruby)
+    score_result = ConversationInsight::ScoreCalculator.new(
+      automatic_metrics: metrics,
+      llm_analysis: llm_analysis
+    ).calculate
 
-    insight
+    save_insight(metrics, llm_analysis, score_result)
+  rescue StandardError => e
+    ChatwootExceptionTracker.new(e, account: @conversation.account).capture_exception
+    # If LLM failed but metrics succeeded, save partial insight
+    save_partial_insight(metrics) if metrics.present?
+    nil
   end
 
   private
 
-  attr_reader :content
+  def save_insight(metrics, llm_analysis, score_result)
+    insight = find_or_build_insight
+
+    attrs = build_metrics_attrs(metrics)
+    attrs.merge!(build_llm_attrs(llm_analysis)) if llm_analysis.present?
+    attrs.merge!(build_score_attrs(score_result))
+    attrs[:raw_llm_response] = llm_analysis || {}
+
+    insight.update!(attrs)
+
+    auto_set_funnel_stage(llm_analysis['suggested_funnel_stage']) if llm_analysis&.dig('suggested_funnel_stage').present?
+
+    insight
+  end
+
+  def save_partial_insight(metrics)
+    insight = find_or_build_insight
+
+    attrs = build_metrics_attrs(metrics)
+    attrs[:raw_llm_response] = {}
+
+    # Calculate score with metrics only (no LLM criteria)
+    score_result = ConversationInsight::ScoreCalculator.new(
+      automatic_metrics: metrics,
+      llm_analysis: nil
+    ).calculate
+    attrs.merge!(build_score_attrs(score_result))
+
+    insight.update!(attrs)
+    insight
+  end
+
+  def find_or_build_insight
+    @conversation.conversation_insight || @conversation.build_conversation_insight(account: @conversation.account)
+  end
+
+  def build_metrics_attrs(metrics)
+    {
+      no_response: metrics[:no_response] || false,
+      abandonment_severity: metrics[:abandonment_severity],
+      media_sent: metrics[:media_sent] || false,
+      automatic_metrics: {
+        tpr_seconds: metrics[:tpr_seconds],
+        tpr_score: metrics[:tpr_score],
+        tmer_seconds: metrics[:tmer_seconds],
+        message_count: metrics[:message_count],
+        human_response_count: metrics[:human_response_count],
+        incoming_count: metrics[:incoming_count]
+      }
+    }
+  end
+
+  def build_llm_attrs(analysis)
+    {
+      conversation_classification: analysis['conversation_classification'],
+      estimated_value: analysis['estimated_value'],
+      product_category: analysis['product_category'],
+      customer_sentiment: analysis['customer_sentiment'],
+      key_topics: analysis['key_topics'] || [],
+      quality_breakdown: analysis['criteria'] || {},
+      feedback_summary: analysis['feedback_summary']
+    }
+  end
+
+  def build_score_attrs(score_result)
+    {
+      final_score: score_result[:final_score],
+      quality_score: score_result[:final_score],
+      penalties: score_result[:penalties] || []
+    }
+  end
 
   def auto_set_funnel_stage(suggested_stage)
     current_stage = @conversation.custom_attributes&.dig('crm_funnel_stage')
@@ -42,81 +109,5 @@ class Captain::Llm::ConversationInsightService < Llm::BaseAiService
     @conversation.update!(
       custom_attributes: (@conversation.custom_attributes || {}).merge('crm_funnel_stage' => suggested_stage)
     )
-  end
-
-  def generate_insight
-    response = instrument_llm_call(instrumentation_params) do
-      chat
-        .with_params(response_format: { type: 'json_object' })
-        .with_instructions(system_prompt)
-        .ask(@content)
-    end
-    parse_response(response.content)
-  rescue RubyLLM::Error => e
-    ChatwootExceptionTracker.new(e, account: @conversation.account).capture_exception
-    nil
-  end
-
-  def instrumentation_params
-    {
-      span_name: 'llm.captain.conversation_insight',
-      model: @model,
-      temperature: @temperature,
-      account_id: @conversation.account_id,
-      conversation_id: @conversation.display_id,
-      feature_name: 'conversation_insight',
-      messages: [
-        { role: 'system', content: system_prompt },
-        { role: 'user', content: @content }
-      ],
-      metadata: { assistant_id: @assistant.id }
-    }
-  end
-
-  def system_prompt
-    <<~SYSTEM_PROMPT
-      Voce e um analista de vendas de uma loja de moveis. Analise a conversa e extraia informacoes comerciais.
-      Responda SOMENTE em JSON valido com a seguinte estrutura:
-
-      {
-        "estimated_value": 0.00,
-        "product_category": "string",
-        "customer_sentiment": "positive|neutral|negative",
-        "key_topics": ["topic1", "topic2"],
-        "quality_score": 7,
-        "quality_breakdown": {
-          "greeting": 2,
-          "needs_identification": 2,
-          "product_presentation": 2,
-          "objection_handling": 1,
-          "closing_attempt": 0
-        },
-        "suggested_funnel_stage": "Lead"
-      }
-
-      Regras:
-      - estimated_value: valor estimado em reais (0 se nao mencionado)
-      - product_category: categoria do produto (ex: "Sofa", "Mesa", "Cama", "Guarda-roupa", "Outro")
-      - customer_sentiment: sentimento geral do cliente
-      - key_topics: lista dos principais assuntos discutidos
-      - quality_score: nota de 1 a 10 para qualidade do atendimento
-      - quality_breakdown: nota de 0 a 2 para cada criterio (0=nao fez, 1=parcial, 2=completo)
-      - suggested_funnel_stage: etapa sugerida do funil de vendas. Opcoes EXATAS (sem acentos):
-        "Lead" = primeiro contato, sem interesse claro
-        "Qualificado" = demonstrou interesse em produto especifico
-        "Orcamento" = pediu preco, orcamento ou condicoes de pagamento
-        "Negociacao" = discutindo desconto, prazo, condicoes
-        "Venda" = confirmou compra ou fechou negocio
-        "Perda" = desistiu, nao respondeu, ou recusou
-    SYSTEM_PROMPT
-  end
-
-  def parse_response(response)
-    return nil if response.nil?
-
-    JSON.parse(response.strip)
-  rescue JSON::ParserError => e
-    Rails.logger.error "Error parsing conversation insight response: #{e.message}"
-    nil
   end
 end

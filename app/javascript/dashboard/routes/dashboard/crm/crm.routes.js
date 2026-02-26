@@ -4,6 +4,7 @@ const CrmWrapper = () => import('./CrmWrapper.vue');
 const PipelineView = () => import('./PipelineView.vue');
 const FunnelAnalytics = () => import('./FunnelAnalytics.vue');
 const SalesReports = () => import('./SalesReports.vue');
+const EvaluationReports = () => import('./EvaluationReports.vue');
 
 export const routes = [
   {
@@ -33,6 +34,14 @@ export const routes = [
           permissions: ['administrator'],
         },
         component: SalesReports,
+      },
+      {
+        path: 'evaluation-reports',
+        name: 'crm_evaluation_reports',
+        meta: {
+          permissions: ['administrator'],
+        },
+        component: EvaluationReports,
       },
     ],
   },

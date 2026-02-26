@@ -111,6 +111,11 @@ Rails.application.routes.draw do
           end
           resources :sla_policies, only: [:index, :create, :show, :update, :destroy]
           resources :custom_roles, only: [:index, :create, :show, :update, :destroy]
+          resources :agent_working_hours, only: [:index] do
+            collection do
+              patch :update, action: :update
+            end
+          end if ChatwootApp.enterprise?
           resources :agent_capacity_policies, only: [:index, :create, :show, :update, :destroy] do
             scope module: :agent_capacity_policies do
               resources :users, only: [:index, :create, :destroy]
@@ -156,7 +161,7 @@ Rails.application.routes.draw do
               get :inbox_assistant
               get :reporting_events if ChatwootApp.enterprise?
             end
-            resource :insight, only: [:show], controller: 'conversation_insights' if ChatwootApp.enterprise?
+            resource :insight, only: [:show, :create], controller: 'conversation_insights' if ChatwootApp.enterprise?
             if ChatwootApp.enterprise?
               scope module: :conversations do
                 resources :follow_up_reminders, only: [:index, :create, :update, :destroy]
@@ -471,6 +476,9 @@ Rails.application.routes.draw do
                 get :pipeline_summary
                 get :agent_performance
                 get :disposition_breakdown
+                get :evaluation_reports
+                get :agent_evaluation
+                get :management_evaluation
               end
             end
           end

@@ -122,6 +122,16 @@
           "INPUT": "Search for agents"
         }
       }
+    },
+    "WORKING_HOURS": {
+      "TITLE": "Horário de Trabalho do Agente",
+      "DESCRIPTION": "Defina o horário de expediente deste agente. As métricas de tempo de resposta serão calculadas com base neste horário.",
+      "LOADING": "Carregando horários...",
+      "SAVE": "Salvar Horários",
+      "API": {
+        "SUCCESS": "Horários atualizados com sucesso",
+        "ERROR": "Erro ao atualizar horários"
+      }
     }
   }
 }

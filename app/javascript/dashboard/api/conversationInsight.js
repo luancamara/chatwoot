@@ -15,6 +15,12 @@ class ConversationInsightAPI {
       `${this.accountUrl}/conversations/${conversationId}/insight`
     );
   }
+
+  regenerate(conversationId) {
+    return axios.post(
+      `${this.accountUrl}/conversations/${conversationId}/insight`
+    );
+  }
 }
 
 export default new ConversationInsightAPI();

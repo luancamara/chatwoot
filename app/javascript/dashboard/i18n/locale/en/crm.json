@@ -3,6 +3,7 @@
     "CONVERSATION_INSIGHT": {
       "TITLE": "Análise da Conversa",
       "SCORE": "Score de Qualidade",
+      "FINAL_SCORE": "Nota Final",
       "SIGNALS": "Sinais Importantes",
       "ESTIMATED_VALUE": "Valor Estimado",
       "PRODUCT_CATEGORY": "Categoria do Produto",
@@ -12,6 +13,14 @@
       "LOADING": "Analisando conversa...",
       "EMPTY": "Nenhuma análise disponível para esta conversa",
       "ERROR": "Erro ao carregar análise da conversa",
+      "VIEW_FULL_ANALYSIS": "Ver Análise Completa",
+      "REGENERATE": "Regerar Análise",
+      "REGENERATE_SUCCESS": "Análise será regenerada em breve",
+      "REGENERATE_ERROR": "Erro ao solicitar nova análise",
+      "NOT_APPLICABLE": "N/A",
+      "NO_RESPONSE_LABEL": "Sem Resposta",
+      "ABANDONMENT_LABEL": "Abandono",
+      "MEDIA_SENT_LABEL": "Mídia Enviada",
       "SCORE_LABELS": {
         "HIGH": "Alto",
         "MEDIUM": "Médio",
@@ -22,12 +31,63 @@
         "neutral": "Neutro",
         "negative": "Negativo"
       },
+      "CLASSIFICATION_LABELS": {
+        "complete_consultation": "Consulta Completa",
+        "quick_consultation": "Consulta Rápida",
+        "return_client": "Retorno de Cliente",
+        "non_commercial": "Não Comercial"
+      },
       "BREAKDOWN_LABELS": {
         "greeting": "Saudação",
         "needs_identification": "Identificação de Necessidades",
         "product_presentation": "Apresentação do Produto",
         "objection_handling": "Tratamento de Objeções",
         "closing_attempt": "Tentativa de Fechamento"
+      },
+      "AUTOMATIC_METRICS": {
+        "TITLE": "Métricas Automáticas",
+        "TPR": "Tempo de Primeira Resposta",
+        "TPR_SHORT": "TPR",
+        "TMER": "Tempo Médio Entre Respostas",
+        "TMER_SHORT": "TMER",
+        "NO_RESPONSE": "Conversa sem resposta humana",
+        "ABANDONMENT_LIGHT": "Abandono leve (4-12h úteis)",
+        "ABANDONMENT_SEVERE": "Abandono grave (>12h úteis)",
+        "MEDIA_SENT": "Mídia enviada pelo vendedor",
+        "MEDIA_NOT_SENT": "Nenhuma mídia enviada",
+        "MINUTES": "min",
+        "HOURS": "h",
+        "MESSAGES": "mensagens",
+        "HUMAN_RESPONSES": "respostas humanas"
+      },
+      "CRITERIA_LABELS": {
+        "TITLE": "Análise Qualitativa",
+        "needs_qualification": "Qualificação da Necessidade",
+        "closing_conduct": "Condução para Fechamento",
+        "media_usage": "Uso de Mídia",
+        "personalization": "Personalização",
+        "unfulfilled_promises": "Promessas Não Cumpridas",
+        "alternatives_offered": "Oferta de Alternativas",
+        "tone_communication": "Tom e Comunicação",
+        "return_client_continuity": "Continuidade em Retorno",
+        "cross_sell": "Cross-sell"
+      },
+      "PENALTIES": {
+        "TITLE": "Penalidades",
+        "no_response": "Sem resposta - nota automática 0",
+        "severe_abandonment": "Abandono grave (>12h úteis)",
+        "light_abandonment": "Abandono leve (4-12h úteis)",
+        "unfulfilled_promises": "Promessa não cumprida",
+        "PENALTY_VALUE": "-2.0",
+        "SCORE_DISPLAY": "%{score}/10",
+        "SCORE_FRACTION": "%{score}/%{max}"
+      },
+      "FEEDBACK": {
+        "TITLE": "Feedback para o Agente"
+      },
+      "COMMERCIAL_INFO": {
+        "TITLE": "Informações Comerciais",
+        "FUNNEL_STAGE": "Estágio do Funil"
       }
     },
     "FOLLOW_UP_REMINDERS": {
@@ -86,6 +146,46 @@
       "NO_DATA": "Nenhum dado disponível para o período selecionado",
       "AGENT": "Agente",
       "NA": "N/D"
+    },
+    "EVALUATION_REPORTS": {
+      "TITLE": "Relatórios de Avaliação",
+      "DESCRIPTION": "Avaliação detalhada do atendimento por vendedor",
+      "TAB_AGENTS": "Vendedores",
+      "TAB_MANAGEMENT": "Gerencial",
+      "TAB_CONVERSATIONS": "Conversas",
+      "NO_DATA": "Nenhum dado disponível para o período selecionado",
+      "AGENT_RANKING": "Ranking de Vendedores",
+      "AVG_SCORE": "Nota Média",
+      "TREND": "Tendência",
+      "TREND_UP": "Melhorando",
+      "TREND_DOWN": "Piorando",
+      "TREND_STABLE": "Estável",
+      "TOTAL_EVALUATED": "Conversas Avaliadas",
+      "NO_RESPONSE_COUNT": "Sem Resposta",
+      "ABANDONMENT_COUNT": "Abandonos",
+      "AVG_TPR": "TPR Médio",
+      "BEST_CRITERIA": "Melhores Critérios",
+      "WORST_CRITERIA": "Piores Critérios",
+      "WEEKLY_GOAL": "Meta da Semana",
+      "ALERTS": "Alertas",
+      "MANAGEMENT": {
+        "TEAM_AVG": "Nota Média da Equipe",
+        "TPR_AVG": "TPR Médio da Equipe",
+        "ABANDONMENT_RATE": "Taxa de Abandono",
+        "NO_RESPONSE_RATE": "Taxa Sem Resposta",
+        "WORST_CONVERSATIONS": "Piores Conversas",
+        "BEST_CONVERSATIONS": "Melhores Conversas",
+        "SYSTEMIC_ISSUES": "Problemas Sistêmicos",
+        "WEEKLY_EVOLUTION": "Evolução Semanal",
+        "SYSTEMIC_ISSUE_DETAIL": "%{avgPercent}% média | %{agentsCount} agentes abaixo de 50%"
+      },
+      "PERIOD": {
+        "THIS_WEEK": "Esta Semana",
+        "LAST_WEEK": "Semana Passada",
+        "THIS_MONTH": "Este Mês",
+        "LAST_MONTH": "Mês Passado",
+        "CUSTOM": "Personalizado"
+      }
     },
     "FILTERS": {
       "DATE_RANGE": "Período",

@@ -74,3 +74,10 @@ remove_orphan_conversations_job:
   cron: '0 */12 * * *'
   class: 'Internal::RemoveOrphanConversationsJob'
   queue: housekeeping
+
+# executed every Monday at 06:00 UTC
+# generates weekly evaluation reports for all accounts
+generate_weekly_evaluation_reports_job:
+  cron: '0 6 * * 1'
+  class: 'Crm::WeeklyEvaluationReportJob'
+  queue: scheduled_jobs
