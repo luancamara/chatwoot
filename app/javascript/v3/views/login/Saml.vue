@@ -123,10 +123,5 @@ onMounted(async () => {
         />
       </form>
     </section>
-    <p class="mt-6 text-sm text-center text-n-slate-11">
-      <router-link to="/app/login" class="text-link text-n-brand">
-        {{ t('LOGIN.SAML.BACK_TO_LOGIN') }}
-      </router-link>
-    </p>
   </main>
 </template>
