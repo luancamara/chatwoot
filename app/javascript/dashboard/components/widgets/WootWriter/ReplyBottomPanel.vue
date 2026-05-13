@@ -128,7 +128,6 @@ export default {
     },
   },
   emits: [
-    'replaceText',
     'toggleInsertArticle',
     'selectWhatsappTemplate',
     'selectContentTemplate',
@@ -277,9 +276,6 @@ export default {
   methods: {
     toggleMessageSignature() {
       this.setSignatureFlagForInbox(this.channelType, !this.sendWithSignature);
-    },
-    replaceText(text) {
-      this.$emit('replaceText', text);
     },
     toggleInsertArticle() {
       this.$emit('toggleInsertArticle');

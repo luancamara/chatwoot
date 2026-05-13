@@ -5,6 +5,7 @@ module Enterprise::Concerns::Conversation
     belongs_to :sla_policy, optional: true
     has_one :applied_sla, dependent: :destroy_async
     has_many :sla_events, dependent: :destroy_async
+    has_many :calls, dependent: :destroy_async
     has_many :captain_responses, class_name: 'Captain::AssistantResponse', dependent: :nullify, as: :documentable
     has_one :conversation_insight, dependent: :destroy
     has_many :follow_up_reminders, dependent: :destroy
