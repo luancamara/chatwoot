@@ -1,0 +1,140 @@
+name: Armazém — Build & Deploy
+
+# Fork-specific pipeline (Armazém de Minas).
+# Independente dos workflows upstream (publish_foss_docker.yml etc.),
+# que pushavam para chatwoot/chatwoot e não funcionam com credenciais do fork.
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+      - master
+    tags:
+      - v*
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: luancamara/chatwoot-armazem
+
+jobs:
+  build-and-deploy:
+    name: Build image & trigger deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Resolve image tags
+        id: tags
+        run: |
+          # latest only for branch pushes/dispatch; tag refs become the literal tag
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "tags=${{ env.IMAGE_NAME }}:${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          else
+            {
+              echo "tags<<EOF"
+              echo "${{ env.IMAGE_NAME }}:latest"
+              echo "${{ env.IMAGE_NAME }}:${{ github.sha }}"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: true
+          tags: ${{ steps.tags.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Deploy to Portainer
+        if: github.event_name != 'workflow_dispatch' && github.ref_type == 'branch' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        env:
+          PORTAINER_URL: ${{ secrets.PORTAINER_URL }}
+          PORTAINER_TOKEN: ${{ secrets.PORTAINER_API_TOKEN }}
+          ENDPOINT_ID: ${{ secrets.PORTAINER_ENDPOINT_ID || '1' }}
+        run: |
+          # Force-update each Swarm service to pull the new image.
+          # Matches the chatwoot_app and chatwoot_worker services defined in stack.yml.
+          SERVICE_PATTERNS="chatwoot_app chatwoot_worker"
+
+          ALL_SERVICES_JSON=$(curl -s -k -H "X-API-Key: $PORTAINER_TOKEN" \
+            "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/services")
+
+          if ! echo "$ALL_SERVICES_JSON" | jq -e 'type == "array"' >/dev/null 2>&1; then
+            echo "::error::Portainer API did not return a service list."
+            echo "Response: $ALL_SERVICES_JSON" | head -c 500
+            exit 1
+          fi
+
+          echo "--- Services visible to Portainer (endpoint $ENDPOINT_ID) ---"
+          echo "$ALL_SERVICES_JSON" | jq -r '.[] | .Spec.Name' | sort
+          echo "---"
+
+          UPDATED_ANY=0
+
+          for PATTERN in $SERVICE_PATTERNS; do
+            echo "=== Looking for pattern: $PATTERN ==="
+
+            SVC_NAME=$(echo "$ALL_SERVICES_JSON" | jq -r \
+              --arg p "$PATTERN" \
+              '.[] | select(.Spec.Name | ascii_downcase | contains($p | ascii_downcase)) | .Spec.Name' \
+              | head -n1)
+
+            if [ -z "$SVC_NAME" ]; then
+              echo "::warning::No service matching '$PATTERN' found — skipping"
+              continue
+            fi
+
+            SVC_ID=$(echo "$ALL_SERVICES_JSON" | jq -r \
+              --arg n "$SVC_NAME" \
+              '.[] | select(.Spec.Name == $n) | .ID')
+
+            echo "  Matched: $SVC_NAME ($SVC_ID)"
+
+            SVC_DATA=$(curl -s -k -H "X-API-Key: $PORTAINER_TOKEN" \
+              "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/services/$SVC_ID")
+
+            VERSION=$(echo "$SVC_DATA" | jq '.Version.Index')
+            echo "  Version: $VERSION"
+
+            UPDATED_SPEC=$(echo "$SVC_DATA" | jq \
+              --arg img "${{ env.IMAGE_NAME }}:${{ github.sha }}" \
+              '.Spec | .TaskTemplate.ContainerSpec.Image = $img | .TaskTemplate.ForceUpdate += 1')
+
+            HTTP_CODE=$(echo "$UPDATED_SPEC" | curl -s -k -o /tmp/update-resp.txt -w "%{http_code}" \
+              -X POST \
+              -H "X-API-Key: $PORTAINER_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d @- \
+              "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/services/$SVC_ID/update?version=$VERSION")
+
+            if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
+              echo "  Updated successfully (HTTP $HTTP_CODE)"
+              UPDATED_ANY=1
+            else
+              echo "::error::Failed to update $SVC_NAME (HTTP $HTTP_CODE)"
+              echo "Response: $(cat /tmp/update-resp.txt)"
+              exit 1
+            fi
+          done
+
+          if [ "$UPDATED_ANY" -eq 0 ]; then
+            echo "::error::No services matched any pattern. Check service names above."
+            exit 1
+          fi
+
+          echo "All matching services updated."
