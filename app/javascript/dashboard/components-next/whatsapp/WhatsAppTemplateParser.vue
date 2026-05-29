@@ -23,6 +23,7 @@ import {
   COMPONENT_TYPES,
   MEDIA_FORMATS,
   findComponentByType,
+  processVariable,
 } from 'dashboard/helper/templateHelper';
 
 const props = defineProps({
@@ -63,9 +64,21 @@ const bodyText = computed(() => {
   return bodyComponent.value?.text || '';
 });
 
+const headerText = computed(() => {
+  return headerComponent.value?.text || '';
+});
+
 const hasMediaHeader = computed(() =>
   MEDIA_FORMATS.includes(headerComponent.value?.format)
 );
+
+const headerVariables = computed(() => {
+  if (hasMediaHeader.value) return [];
+  const matched = headerText.value.match(/{{([^}]+)}}/g) || [];
+  return matched.map(processVariable);
+});
+
+const hasHeaderVariables = computed(() => headerVariables.value.length > 0);
 
 const formatType = computed(() => {
   const format = headerComponent.value?.format;
@@ -85,10 +98,18 @@ const renderedTemplate = computed(() => {
 });
 
 const isFormInvalid = computed(() => {
-  if (!hasVariables.value && !hasMediaHeader.value) return false;
+  if (!hasVariables.value && !hasMediaHeader.value && !hasHeaderVariables.value)
+    return false;
 
   if (hasMediaHeader.value && !processedParams.value.header?.media_url) {
     return true;
+  }
+
+  if (hasHeaderVariables.value) {
+    const hasEmptyHeaderVariable = headerVariables.value.some(
+      key => !processedParams.value.header?.[key]
+    );
+    if (hasEmptyHeaderVariable) return true;
   }
 
   if (hasVariables.value && processedParams.value.body) {
@@ -214,7 +235,30 @@ defineExpose({
       </div>
     </div>
 
-    <div v-if="hasVariables || hasMediaHeader">
+    <div v-if="hasVariables || hasMediaHeader || hasHeaderVariables">
+      <!-- Header Variables Section -->
+      <div v-if="hasHeaderVariables" class="mb-4">
+        <p class="mb-2.5 text-sm font-semibold">
+          {{ $t('WHATSAPP_TEMPLATES.PARSER.HEADER_VARIABLES_LABEL') }}
+        </p>
+        <div
+          v-for="key in headerVariables"
+          :key="`header-${key}`"
+          class="flex items-center mb-2.5"
+        >
+          <Input
+            v-model="processedParams.header[key]"
+            type="text"
+            class="flex-1"
+            :placeholder="
+              t('WHATSAPP_TEMPLATES.PARSER.VARIABLE_PLACEHOLDER', {
+                variable: key,
+              })
+            "
+          />
+        </div>
+      </div>
+
       <div v-if="hasMediaHeader" class="mb-4">
         <p class="mb-2.5 text-sm font-semibold">
           {{

@@ -56,6 +56,15 @@ export const buildTemplateParameters = (template, hasMediaHeaderValue) => {
     if (headerComponent.format.toLowerCase() === 'document') {
       allVariables.header.media_name = '';
     }
+  } else if (headerComponent?.text) {
+    // Process text header variables (e.g. "Hello {{1}}")
+    const matchedHeaderVariables = headerComponent.text.match(/{{([^}]+)}}/g);
+    if (matchedHeaderVariables) {
+      allVariables.header = {};
+      matchedHeaderVariables.forEach(variable => {
+        allVariables.header[processVariable(variable)] = '';
+      });
+    }
   }
 
   // Process button variables
