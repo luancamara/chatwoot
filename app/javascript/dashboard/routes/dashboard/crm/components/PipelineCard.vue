@@ -1,7 +1,8 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Avatar from 'dashboard/components-next/avatar/Avatar.vue';
+import Input from 'dashboard/components-next/input/Input.vue';
 import { formatDistanceToNow } from 'date-fns';
 
 const props = defineProps({
@@ -10,6 +11,8 @@ const props = defineProps({
     required: true,
   },
 });
+
+const emit = defineEmits(['open', 'updateValue']);
 
 const { t } = useI18n();
 
@@ -37,11 +40,13 @@ const lastMessagePreview = computed(() => {
   return content.length > 60 ? `${content.slice(0, 60)}...` : content;
 });
 
+const rawValue = computed(
+  () => props.conversation.custom_attributes?.crm_estimated_value
+);
+
 const estimatedValue = computed(() => {
-  const value =
-    props.conversation.custom_attributes?.crm_estimated_value;
-  if (!value) return '';
-  return `R$ ${Number(value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+  if (!rawValue.value) return '';
+  return `R$ ${Number(rawValue.value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
 });
 
 const timeInStage = computed(() => {
@@ -51,6 +56,27 @@ const timeInStage = computed(() => {
 });
 
 const displayId = computed(() => `#${props.conversation.display_id}`);
+
+const isEditingValue = ref(false);
+const draftValue = ref('');
+const valueInput = ref(null);
+
+const startEditValue = async () => {
+  draftValue.value = rawValue.value ?? '';
+  isEditingValue.value = true;
+  await nextTick();
+  valueInput.value?.$el?.querySelector('input')?.focus();
+};
+
+const saveValue = () => {
+  if (!isEditingValue.value) return;
+  isEditingValue.value = false;
+  const parsed = parseFloat(String(draftValue.value).replace(',', '.'));
+  const next = Number.isNaN(parsed) ? null : parsed;
+  if (next !== (rawValue.value ?? null)) {
+    emit('updateValue', next);
+  }
+};
 </script>
 
 <template>
@@ -64,9 +90,20 @@ const displayId = computed(() => `#${props.conversation.display_id}`);
           {{ contactName }}
         </span>
       </div>
-      <span class="text-xs text-n-slate-10 flex-shrink-0">
-        {{ displayId }}
-      </span>
+      <div class="flex items-center gap-1.5 flex-shrink-0">
+        <span class="text-xs text-n-slate-10">
+          {{ displayId }}
+        </span>
+        <button
+          type="button"
+          class="flex items-center justify-center size-5 rounded text-n-slate-10 hover:text-n-slate-12 hover:bg-n-solid-3"
+          :title="t('CRM.PIPELINE.OPEN_CONVERSATION')"
+          @click.stop="emit('open')"
+          @mousedown.stop
+        >
+          <span class="i-lucide-external-link size-3.5" />
+        </button>
+      </div>
     </div>
 
     <p
@@ -88,13 +125,27 @@ const displayId = computed(() => `#${props.conversation.display_id}`);
           {{ assigneeName }}
         </span>
       </div>
-      <div class="flex items-center gap-2">
-        <span
-          v-if="estimatedValue"
-          class="text-xs font-medium text-n-teal-11"
+      <div class="flex items-center gap-2" @mousedown.stop @click.stop>
+        <Input
+          v-if="isEditingValue"
+          ref="valueInput"
+          v-model="draftValue"
+          type="number"
+          size="sm"
+          class="w-24"
+          :placeholder="t('CRM.PIPELINE.VALUE_PLACEHOLDER')"
+          @keyup.enter="saveValue"
+          @blur="saveValue"
+        />
+        <button
+          v-else
+          type="button"
+          class="text-xs font-medium rounded px-1 py-0.5 hover:bg-n-solid-3"
+          :class="estimatedValue ? 'text-n-teal-11' : 'text-n-slate-10'"
+          @click="startEditValue"
         >
-          {{ estimatedValue }}
-        </span>
+          {{ estimatedValue || t('CRM.PIPELINE.ADD_VALUE') }}
+        </button>
         <span v-if="timeInStage" class="text-xs text-n-slate-10">
           {{ timeInStage }}
         </span>

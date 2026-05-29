@@ -59,11 +59,31 @@ const updateConversationStage = async (conversation, toStage) => {
     await ConversationApi.updateCustomAttributes({
       conversationId: conversation.id,
       customAttributes: {
+        ...conversation.custom_attributes,
         crm_funnel_stage: toStage,
         crm_stage_changed_at: new Date().toISOString(),
       },
     });
   } catch {
+    fetchConversations();
+  }
+};
+
+const updateConversationValue = async (conversation, value) => {
+  const customAttributes = { ...conversation.custom_attributes };
+  if (value === null) {
+    delete customAttributes.crm_estimated_value;
+  } else {
+    customAttributes.crm_estimated_value = value;
+  }
+  conversation.custom_attributes = customAttributes;
+  try {
+    await ConversationApi.updateCustomAttributes({
+      conversationId: conversation.id,
+      customAttributes,
+    });
+  } catch {
+    useAlert(t('CRM.PIPELINE.VALUE_ERROR'));
     fetchConversations();
   }
 };
@@ -135,7 +155,11 @@ onMounted(() => {
         >
           <template #item="{ element }">
             <div @dblclick="openConversation(element)">
-              <PipelineCard :conversation="element" />
+              <PipelineCard
+                :conversation="element"
+                @open="openConversation(element)"
+                @update-value="value => updateConversationValue(element, value)"
+              />
             </div>
           </template>
         </Draggable>

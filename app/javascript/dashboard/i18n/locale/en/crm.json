@@ -120,7 +120,11 @@
       "UNKNOWN_CONTACT": "Contato desconhecido",
       "MOVE_SUCCESS": "Conversa movida para %{stage}",
       "MOVE_ERROR": "Erro ao mover conversa",
-      "LOAD_ERROR": "Erro ao carregar o pipeline"
+      "LOAD_ERROR": "Erro ao carregar o pipeline",
+      "OPEN_CONVERSATION": "Abrir conversa",
+      "ADD_VALUE": "+ Valor",
+      "VALUE_PLACEHOLDER": "Valor",
+      "VALUE_ERROR": "Erro ao salvar o valor"
     },
     "FUNNEL": {
       "TITLE": "Funil de Vendas",
