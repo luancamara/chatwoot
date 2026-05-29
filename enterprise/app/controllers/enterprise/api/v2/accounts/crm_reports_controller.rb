@@ -11,6 +11,11 @@ class Enterprise::Api::V2::Accounts::CrmReportsController < Api::V1::Accounts::B
     render json: builder.pipeline_summary
   end
 
+  def pipeline
+    builder = V2::CrmReports::FunnelBuilder.new(account: Current.account, params: report_params)
+    render json: { payload: builder.pipeline }
+  end
+
   def agent_performance
     builder = V2::CrmReports::AgentPerformanceBuilder.new(account: Current.account, params: report_params)
     render json: builder.build

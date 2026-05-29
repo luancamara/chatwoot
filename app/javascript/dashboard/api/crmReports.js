@@ -14,6 +14,10 @@ class CrmReportsAPI extends ApiClient {
     return axios.get(`${this.url}/pipeline_summary`, { params });
   }
 
+  getPipeline(params) {
+    return axios.get(`${this.url}/pipeline`, { params });
+  }
+
   getAgentPerformance(params) {
     return axios.get(`${this.url}/agent_performance`, { params });
   }

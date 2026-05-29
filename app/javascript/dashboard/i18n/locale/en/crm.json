@@ -119,7 +119,8 @@
       "NO_DATA": "Nenhuma conversa no pipeline para os filtros selecionados",
       "UNKNOWN_CONTACT": "Contato desconhecido",
       "MOVE_SUCCESS": "Conversa movida para %{stage}",
-      "MOVE_ERROR": "Erro ao mover conversa"
+      "MOVE_ERROR": "Erro ao mover conversa",
+      "LOAD_ERROR": "Erro ao carregar o pipeline"
     },
     "FUNNEL": {
       "TITLE": "Funil de Vendas",

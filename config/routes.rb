@@ -525,6 +525,7 @@ Rails.application.routes.draw do
               collection do
                 get :funnel
                 get :pipeline_summary
+                get :pipeline
                 get :agent_performance
                 get :disposition_breakdown
                 get :evaluation_reports

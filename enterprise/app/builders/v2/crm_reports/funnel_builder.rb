@@ -2,12 +2,26 @@ class V2::CrmReports::FunnelBuilder
   include DateRangeHelper
 
   STAGES = %w[Lead Qualificado Orcamento Negociacao Venda Perda].freeze
+  PIPELINE_PER_STAGE_LIMIT = 50
 
   attr_reader :account, :params
 
   def initialize(account:, params:)
     @account = account
     @params = params
+  end
+
+  # Returns the conversation cards for each funnel stage, grouped by stage.
+  # Queries the JSONB attribute directly so it doesn't depend on a registered
+  # custom_attribute_definition (unlike the generic conversation filter API).
+  def pipeline
+    STAGES.index_with do |stage|
+      stage_conversations(stage)
+        .includes(:contact, :assignee)
+        .order(last_activity_at: :desc)
+        .limit(PIPELINE_PER_STAGE_LIMIT)
+        .map { |conversation| serialize_card(conversation) }
+    end
   end
 
   def build
@@ -73,5 +87,37 @@ class V2::CrmReports::FunnelBuilder
       .sum(:estimated_value)
   rescue StandardError
     0
+  end
+
+  def serialize_card(conversation)
+    {
+      id: conversation.display_id,
+      display_id: conversation.display_id,
+      custom_attributes: conversation.custom_attributes,
+      meta: {
+        sender: contact_card(conversation.contact),
+        assignee: agent_card(conversation.assignee)
+      },
+      last_non_activity_message: last_message_card(conversation)
+    }
+  end
+
+  def contact_card(contact)
+    return {} if contact.blank?
+
+    { name: contact.name, thumbnail: contact.avatar_url }
+  end
+
+  def agent_card(assignee)
+    return nil if assignee.blank?
+
+    { name: assignee.name, thumbnail: assignee.avatar_url }
+  end
+
+  def last_message_card(conversation)
+    message = conversation.messages.non_activity_messages.first
+    return nil if message.blank?
+
+    { content: message.content }
   end
 end

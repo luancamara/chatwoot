@@ -3,8 +3,10 @@ import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useAccount } from 'dashboard/composables/useAccount';
+import { useAlert } from 'dashboard/composables';
 import Draggable from 'vuedraggable';
 import ConversationApi from 'dashboard/api/inbox/conversation';
+import CrmReportsAPI from 'dashboard/api/crmReports';
 import CrmFilters from './components/CrmFilters.vue';
 import PipelineCard from './components/PipelineCard.vue';
 import Spinner from 'dashboard/components-next/spinner/Spinner.vue';
@@ -34,34 +36,14 @@ const filterParams = ref({});
 const fetchConversations = async () => {
   isLoading.value = true;
   try {
-    const promises = FUNNEL_STAGES.map(stage => {
-      const queryData = {
-        payload: [
-          {
-            attribute_key: 'crm_funnel_stage',
-            attribute_model: 'custom_attribute',
-            filter_operator: 'equal_to',
-            values: [stage],
-            custom_attribute_type: 'conversation_attribute',
-            query_operator: null,
-          },
-        ],
-      };
-      return ConversationApi.filter({
-        queryData,
-        page: 1,
-        ...filterParams.value,
-      }).then(res => ({ stage, data: res.data?.data?.payload || [] }));
-    });
-
-    const results = await Promise.all(promises);
-    const newColumns = {};
-    results.forEach(({ stage, data }) => {
-      newColumns[stage] = data;
-    });
-    columns.value = newColumns;
+    const { data } = await CrmReportsAPI.getPipeline(filterParams.value);
+    const payload = data?.payload || {};
+    columns.value = FUNNEL_STAGES.reduce((acc, stage) => {
+      acc[stage] = payload[stage] || [];
+      return acc;
+    }, {});
   } catch {
-    // Handle error silently
+    useAlert(t('CRM.PIPELINE.LOAD_ERROR'));
   } finally {
     isLoading.value = false;
   }
