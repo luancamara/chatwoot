@@ -521,7 +521,7 @@ Rails.application.routes.draw do
           end
 
           if ChatwootApp.enterprise?
-            resources :crm_reports, only: [], controller: 'enterprise/api/v2/accounts/crm_reports' do
+            resources :crm_reports, only: [], controller: '/enterprise/api/v2/accounts/crm_reports' do
               collection do
                 get :funnel
                 get :pipeline_summary
