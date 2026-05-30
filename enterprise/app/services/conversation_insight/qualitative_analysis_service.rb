@@ -3,7 +3,7 @@ class ConversationInsight::QualitativeAnalysisService < Llm::BaseAiService
 
   VALID_CLASSIFICATIONS = %w[complete_consultation quick_consultation return_client non_commercial].freeze
   VALID_SENTIMENTS = %w[positive neutral negative].freeze
-  VALID_FUNNEL_STAGES = %w[Lead Qualificado Orcamento Negociacao Venda Perda].freeze
+  VALID_FUNNEL_STAGES = Crm::Constants::STAGES
 
   CRITERIA_KEYS = %w[
     needs_qualification closing_conduct media_usage personalization
@@ -133,7 +133,7 @@ class ConversationInsight::QualitativeAnalysisService < Llm::BaseAiService
         "product_category": "string",
         "customer_sentiment": "positive|neutral|negative",
         "key_topics": ["topic1", "topic2"],
-        "suggested_funnel_stage": "Lead|Qualificado|Orcamento|Negociacao|Venda|Perda",
+        "suggested_funnel_stage": "Lead|Qualificado|Orcamento|Negociacao|Ganho|Perdido",
         "criteria": {
           "needs_qualification": { "score": 0-5, "justification": "citacao ou explicacao..." },
           "closing_conduct": { "score": 0-5, "justification": "..." },
@@ -224,7 +224,7 @@ class ConversationInsight::QualitativeAnalysisService < Llm::BaseAiService
       - Sempre justifique com trecho especifico da conversa ou ausencia de comportamento esperado
       - Use null para criterios nao aplicaveis ao contexto
       - feedback_summary: sempre comece com ponto positivo, depois 1-2 melhorias especificas e acionaveis
-      - suggested_funnel_stage opcoes EXATAS: Lead, Qualificado, Orcamento, Negociacao, Venda, Perda
+      - suggested_funnel_stage opcoes EXATAS: Lead, Qualificado, Orcamento, Negociacao, Ganho, Perdido
     SYSTEM_PROMPT
   end
   # rubocop:enable Metrics/MethodLength

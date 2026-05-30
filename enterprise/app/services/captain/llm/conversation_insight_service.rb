@@ -1,5 +1,5 @@
 class Captain::Llm::ConversationInsightService
-  VALID_FUNNEL_STAGES = %w[Lead Qualificado Orcamento Negociacao Venda Perda].freeze
+  VALID_FUNNEL_STAGES = Crm::Constants::STAGES
 
   def initialize(assistant, conversation)
     @assistant = assistant

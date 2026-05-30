@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 import Avatar from 'dashboard/components-next/avatar/Avatar.vue';
 import Input from 'dashboard/components-next/input/Input.vue';
 import { formatDistanceToNow } from 'date-fns';
+import { dispositionLabel, lossReasonLabel } from '../constants';
 
 const props = defineProps({
   conversation: {
@@ -56,6 +57,14 @@ const timeInStage = computed(() => {
 });
 
 const displayId = computed(() => `#${props.conversation.display_id}`);
+
+const disposition = computed(
+  () => props.conversation.custom_attributes?.crm_disposition_result || ''
+);
+
+const lossReason = computed(
+  () => props.conversation.custom_attributes?.crm_loss_reason || ''
+);
 
 const isEditingValue = ref(false);
 const draftValue = ref('');
@@ -112,6 +121,21 @@ const saveValue = () => {
     >
       {{ lastMessagePreview }}
     </p>
+
+    <div v-if="disposition || lossReason" class="flex items-center gap-1.5 flex-wrap">
+      <span
+        v-if="disposition"
+        class="text-xs font-medium rounded px-1.5 py-0.5 bg-n-solid-3 text-n-slate-11"
+      >
+        {{ dispositionLabel(disposition) }}
+      </span>
+      <span
+        v-if="lossReason"
+        class="text-xs font-medium rounded px-1.5 py-0.5 bg-n-ruby-3 text-n-ruby-11"
+      >
+        {{ lossReasonLabel(lossReason) }}
+      </span>
+    </div>
 
     <div class="flex items-center justify-between gap-2">
       <div class="flex items-center gap-1">

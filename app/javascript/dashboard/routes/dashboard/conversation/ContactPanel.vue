@@ -25,6 +25,7 @@ import SidebarActionsHeader from 'dashboard/components-next/SidebarActionsHeader
 import LinearIssuesList from 'dashboard/components/widgets/conversation/linear/IssuesList.vue';
 import LinearSetupCTA from 'dashboard/components/widgets/conversation/linear/LinearSetupCTA.vue';
 import ConversationInsight from './ConversationInsight.vue';
+import ConversationCrmPanel from './ConversationCrmPanel.vue';
 import FollowUpReminders from './FollowUpReminders.vue';
 import { useAdmin } from 'dashboard/composables/useAdmin';
 
@@ -288,6 +289,16 @@ onMounted(() => {
               "
             >
               <ShopifyOrdersList :contact-id="contactId" />
+            </AccordionItem>
+          </div>
+          <div v-else-if="element.name === 'crm_deal'">
+            <AccordionItem
+              :title="$t('CRM.DEAL.SIDEBAR_TITLE')"
+              :is-open="isContactSidebarItemOpen('is_crm_deal_open')"
+              compact
+              @toggle="value => toggleSidebarUIState('is_crm_deal_open', value)"
+            >
+              <ConversationCrmPanel :conversation-id="conversationId" />
             </AccordionItem>
           </div>
           <div v-else-if="element.name === 'conversation_insight' && isAdmin">

@@ -5,6 +5,7 @@ import { useStore, useMapGetter } from 'dashboard/composables/store';
 import CrmFilters from './components/CrmFilters.vue';
 import SalesMetricCard from './components/SalesMetricCard.vue';
 import Spinner from 'dashboard/components-next/spinner/Spinner.vue';
+import { dispositionLabel, lossReasonLabel } from './constants';
 
 const { t } = useI18n();
 const store = useStore();
@@ -180,7 +181,7 @@ const onFilterChange = params => {
             class="flex items-center gap-3"
           >
             <span class="w-28 text-sm text-n-slate-12 shrink-0 truncate">
-              {{ item.result }}
+              {{ dispositionLabel(item.result) }}
             </span>
             <div class="flex-1 h-6 bg-n-alpha-1 rounded-md overflow-hidden">
               <div
@@ -220,7 +221,7 @@ const onFilterChange = params => {
             class="flex items-center gap-3"
           >
             <span class="w-28 text-sm text-n-slate-12 shrink-0 truncate">
-              {{ item.reason }}
+              {{ lossReasonLabel(item.reason) }}
             </span>
             <div class="flex-1 h-6 bg-n-alpha-1 rounded-md overflow-hidden">
               <div

@@ -110,6 +110,19 @@
         "DELETE_ERROR": "Erro ao excluir lembrete"
       }
     },
+    "DEAL": {
+      "SIDEBAR_TITLE": "Negócio (CRM)",
+      "STAGE": "Etapa do funil",
+      "STAGE_PLACEHOLDER": "Selecione a etapa",
+      "VALUE": "Valor do negócio (R$)",
+      "VALUE_PLACEHOLDER": "0,00",
+      "DISPOSITION": "Resultado",
+      "DISPOSITION_PLACEHOLDER": "Selecione o resultado",
+      "LOSS_REASON": "Motivo da perda",
+      "LOSS_REASON_PLACEHOLDER": "Selecione o motivo",
+      "NONE": "Não definido",
+      "UPDATE_ERROR": "Erro ao atualizar o negócio"
+    },
     "CONDITIONAL_ATTRIBUTES": {
       "DIVIDER_LABEL": "Informações adicionais"
     },

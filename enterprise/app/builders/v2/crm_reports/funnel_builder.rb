@@ -1,7 +1,7 @@
 class V2::CrmReports::FunnelBuilder
   include DateRangeHelper
 
-  STAGES = %w[Lead Qualificado Orcamento Negociacao Venda Perda].freeze
+  STAGES = Crm::Constants::STAGES
   PIPELINE_PER_STAGE_LIMIT = 50
 
   attr_reader :account, :params
