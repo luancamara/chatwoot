@@ -14,19 +14,35 @@ RSpec.describe 'Api::V1::Auth', type: :request do
   end
 
   describe 'POST /api/v1/auth/saml_login' do
-    context 'when email is blank' do
-      it 'returns bad request' do
-        post '/api/v1/auth/saml_login', params: { email: '' }
+    context 'when email is omitted and a SAML-enabled account exists' do
+      before do
+        create(:account_saml_settings, account: account)
+      end
 
-        expect(response).to have_http_status(:bad_request)
+      it 'starts SSO using the first SAML-enabled account' do
+        post '/api/v1/auth/saml_login', params: {}
+
+        expect(response.location).to include("/auth/saml?account_id=#{account.id}")
       end
     end
 
-    context 'when email is nil' do
-      it 'returns bad request' do
+    context 'when email is blank and a SAML-enabled account exists' do
+      before do
+        create(:account_saml_settings, account: account)
+      end
+
+      it 'starts SSO using the first SAML-enabled account' do
+        post '/api/v1/auth/saml_login', params: { email: '' }
+
+        expect(response.location).to include("/auth/saml?account_id=#{account.id}")
+      end
+    end
+
+    context 'when email is omitted and no SAML-enabled account exists' do
+      it 'redirects to SSO login page with error' do
         post '/api/v1/auth/saml_login', params: {}
 
-        expect(response).to have_http_status(:bad_request)
+        expect(response.location).to eq('http://www.example.com/app/login/sso?error=saml-authentication-failed')
       end
     end
 

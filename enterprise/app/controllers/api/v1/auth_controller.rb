@@ -19,17 +19,24 @@ class Api::V1::AuthController < Api::BaseController
   private
 
   def find_user_and_account
-    return unless validate_email_presence
+    @email = params[:email]&.downcase&.strip
+
+    # When no email is provided, start SSO straight away by picking any account
+    # that has SAML configured. All accounts share the same IdP, so the IdP
+    # itself resolves the user; we only need a SAML-enabled account to load the
+    # strategy settings.
+    return find_first_saml_enabled_account if @email.blank?
 
     find_saml_enabled_account
   end
 
-  def validate_email_presence
-    @email = params[:email]&.downcase&.strip
-    return true if @email.present?
+  def find_first_saml_enabled_account
+    @account = Account.joins(:saml_settings)
+                      .where.not(saml_settings: { sso_url: [nil, ''] })
+                      .where.not(saml_settings: { certificate: [nil, ''] })
+                      .find { |account| account.feature_enabled?('saml') }
 
-    render json: { error: I18n.t('auth.saml.invalid_email') }, status: :bad_request
-    false
+    render_saml_error if @account.nil?
   end
 
   def find_saml_enabled_account

@@ -1,13 +1,10 @@
 <script setup>
 import { ref, nextTick, computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
-import { required, email } from '@vuelidate/validators';
-import { useVuelidate } from '@vuelidate/core';
 import { useI18n } from 'vue-i18n';
 import { useAlert } from 'dashboard/composables';
 
 // components
-import FormInput from '../../components/Form/Input.vue';
 import NextButton from 'dashboard/components-next/button/Button.vue';
 
 const props = defineProps({
@@ -24,10 +21,6 @@ const props = defineProps({
 const store = useStore();
 const { t } = useI18n();
 
-const credentials = ref({
-  email: '',
-});
-
 const loginApi = ref({
   showLoading: false,
   hasErrored: false,
@@ -43,19 +36,9 @@ const handleAuthError = () => {
   loginApi.value.hasErrored = true;
 };
 
-const validations = {
-  credentials: {
-    email: {
-      required,
-      email,
-    },
-  },
-};
-
-const v$ = useVuelidate(validations, { credentials });
-
 const globalConfig = computed(() => store.getters['globalConfig/get']);
 const csrfToken = ref('');
+const ssoForm = ref(null);
 
 onMounted(async () => {
   csrfToken.value =
@@ -64,6 +47,13 @@ onMounted(async () => {
       ?.getAttribute('content') || '';
 
   await nextTick(handleAuthError);
+
+  // No email is required: kick off the SSO flow straight away unless we landed
+  // here because of an auth error (then let the user retry manually).
+  if (!props.authError) {
+    loginApi.value.showLoading = true;
+    ssoForm.value?.submit();
+  }
 });
 </script>
 
@@ -93,18 +83,12 @@ onMounted(async () => {
         'animate-wiggle': loginApi.hasErrored,
       }"
     >
-      <form class="space-y-5" method="POST" action="/api/v1/auth/saml_login">
-        <FormInput
-          v-model="credentials.email"
-          name="email"
-          type="text"
-          :tabindex="1"
-          required
-          :label="t('LOGIN.SAML.WORK_EMAIL.LABEL')"
-          :placeholder="t('LOGIN.SAML.WORK_EMAIL.PLACEHOLDER')"
-          :has-error="v$.credentials.email.$error"
-          @input="v$.credentials.email.$touch"
-        />
+      <form
+        ref="ssoForm"
+        class="space-y-5"
+        method="POST"
+        action="/api/v1/auth/saml_login"
+      >
         <input
           type="hidden"
           class="h-0"
@@ -116,7 +100,7 @@ onMounted(async () => {
           lg
           type="submit"
           class="w-full"
-          :tabindex="2"
+          :tabindex="1"
           :label="t('LOGIN.SAML.SUBMIT')"
           :disabled="loginApi.showLoading"
           :is-loading="loginApi.showLoading"

@@ -100,6 +100,16 @@ export default {
     showSamlLogin() {
       return this.allowedLoginMethods.includes('saml');
     },
+    showEmailLogin() {
+      return this.allowedLoginMethods.includes('email');
+    },
+    csrfToken() {
+      return (
+        document
+          .querySelector('meta[name="csrf-token"]')
+          ?.getAttribute('content') || ''
+      );
+    },
   },
   created() {
     if (this.ssoAuthToken) {
@@ -276,9 +286,20 @@ export default {
       <div v-if="!email">
         <div class="flex flex-col gap-4">
           <GoogleOAuthButton v-if="showGoogleOAuth" />
-          <div v-if="showSamlLogin" class="text-center">
-            <router-link
-              to="/app/login/sso"
+          <form
+            v-if="showSamlLogin"
+            method="POST"
+            action="/api/v1/auth/saml_login"
+          >
+            <input
+              type="hidden"
+              class="h-0"
+              name="authenticity_token"
+              :value="csrfToken"
+            />
+            <input type="hidden" class="h-0" name="target" value="web" />
+            <button
+              type="submit"
               class="inline-flex justify-center w-full px-4 py-3 items-center bg-n-background dark:bg-n-solid-3 rounded-md shadow-sm ring-1 ring-inset ring-n-container dark:ring-n-container focus:outline-offset-0 hover:bg-n-alpha-2 dark:hover:bg-n-alpha-2"
             >
               <Icon
@@ -288,15 +309,19 @@ export default {
               <span class="ml-2 text-base font-medium text-n-slate-12">
                 {{ $t('LOGIN.SAML.LABEL') }}
               </span>
-            </router-link>
-          </div>
+            </button>
+          </form>
           <SimpleDivider
-            v-if="showGoogleOAuth || showSamlLogin"
+            v-if="showEmailLogin && (showGoogleOAuth || showSamlLogin)"
             :label="$t('COMMON.OR')"
             class="uppercase"
           />
         </div>
-        <form class="space-y-5" @submit.prevent="submitFormLogin">
+        <form
+          v-if="showEmailLogin"
+          class="space-y-5"
+          @submit.prevent="submitFormLogin"
+        >
           <FormInput
             v-model="credentials.email"
             name="email_address"

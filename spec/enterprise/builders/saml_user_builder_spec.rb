@@ -24,56 +24,27 @@ RSpec.describe SamlUserBuilder do
 
   describe '#perform' do
     context 'when user does not exist' do
-      it 'creates a new user' do
-        expect { builder.perform }.to change(User, :count).by(1)
+      it 'does not create a new user (SSO is restricted to pre-provisioned users)' do
+        expect { builder.perform rescue nil }.not_to change(User, :count)
       end
 
-      it 'creates user with correct attributes' do
-        user = builder.perform
-
-        expect(user.email).to eq(email)
-        expect(user.name).to eq('SAML User')
-        expect(user.display_name).to eq('SAML')
-        expect(user.provider).to eq('saml')
-        expect(user.uid).to eq(email) # User model sets uid to email in before_validation callback
-        expect(user.confirmed_at).to be_present
-      end
-
-      it 'creates user with a random password' do
-        user = builder.perform
-        expect(user.encrypted_password).to be_present
-      end
-
-      it 'adds user to the account' do
-        user = builder.perform
-        expect(user.accounts).to include(account)
-      end
-
-      it 'sets default role as agent' do
-        user = builder.perform
-        account_user = AccountUser.find_by(user: user, account: account)
-        expect(account_user.role).to eq('agent')
-      end
-
-      context 'when name is not provided' do
-        let(:auth_hash) do
-          {
-            'provider' => 'saml',
-            'uid' => 'saml-uid-123',
-            'info' => {
-              'email' => email
-            }
-          }
+      it 'raises an authentication failure' do
+        expect { builder.perform }.to raise_error do |error|
+          expect(error.class.name).to eq('SamlUserBuilder::AuthenticationFailed')
+          expect(error.message).to eq(I18n.t('auth.saml.authentication_failed'))
         end
+      end
 
-        it 'derives name from email' do
-          user = builder.perform
-          expect(user.name).to eq('saml.user')
-        end
+      it 'does not create any account association' do
+        expect do
+          builder.perform
+        rescue SamlUserBuilder::AuthenticationFailed
+          nil
+        end.not_to change(AccountUser, :count)
       end
     end
 
-    context 'when user already exists' do
+    context 'when user already exists and belongs to the account' do
       let!(:existing_user) { create(:user, email: email, account: account) }
 
       it 'does not create a new user' do
@@ -108,35 +79,6 @@ RSpec.describe SamlUserBuilder do
         expect { builder.perform }.not_to change(AccountUser, :count)
       end
 
-      context 'when the user does not belong to the target account' do
-        let!(:other_account) { create(:account) }
-        let!(:existing_user) { create(:user, email: email, account: other_account) }
-
-        it 'raises an authentication failure' do
-          expect { builder.perform }.to raise_error do |error|
-            expect(error.class.name).to eq('SamlUserBuilder::AuthenticationFailed')
-            expect(error.message).to eq(I18n.t('auth.saml.authentication_failed'))
-          end
-        end
-
-        it 'does not add the user to the target account' do
-          expect do
-            builder.perform
-          rescue SamlUserBuilder::AuthenticationFailed
-            nil
-          end.not_to change(AccountUser, :count)
-          expect(existing_user.reload.accounts).not_to include(account)
-        end
-
-        it 'does not convert the user provider to saml' do
-          expect do
-            builder.perform
-          rescue SamlUserBuilder::AuthenticationFailed
-            nil
-          end.not_to(change { existing_user.reload.provider })
-        end
-      end
-
       context 'when user is not confirmed' do
         let(:unconfirmed_email) { 'unconfirmed_saml_user@example.com' }
         let(:unconfirmed_auth_hash) do
@@ -148,11 +90,6 @@ RSpec.describe SamlUserBuilder do
               'name' => 'SAML User',
               'first_name' => 'SAML',
               'last_name' => 'User'
-            },
-            'extra' => {
-              'raw_info' => {
-                'groups' => %w[Administrators Users]
-              }
             }
           }
         end
@@ -172,23 +109,29 @@ RSpec.describe SamlUserBuilder do
           expect(existing_user.reload.confirmed?).to be true
         end
       end
+    end
 
-      context 'when user is already confirmed' do
-        let!(:existing_user) { create(:user, email: email, account: account, confirmed_at: Time.current) }
+    context 'when user exists but does not belong to the bootstrap account' do
+      let!(:other_account) { create(:account) }
+      let!(:existing_user) { create(:user, email: email, account: other_account) }
 
-        it 'keeps already confirmed user confirmed' do
-          expect(existing_user.confirmed?).to be true
-          original_confirmed_at = existing_user.confirmed_at
+      it 'returns the existing user without raising' do
+        expect(builder.perform).to eq(existing_user)
+      end
 
-          builder.perform
+      it 'does not add the user to the bootstrap account' do
+        expect { builder.perform }.not_to change(AccountUser, :count)
+        expect(existing_user.reload.accounts).not_to include(account)
+      end
 
-          expect(existing_user.reload.confirmed?).to be true
-          expect(existing_user.reload.confirmed_at).to be_within(2.seconds).of(original_confirmed_at)
-        end
+      it 'still converts the user provider to saml' do
+        builder.perform
+        expect(existing_user.reload.provider).to eq('saml')
       end
     end
 
-    context 'with role mappings' do
+    context 'with role mappings for an existing member' do
+      let!(:existing_user) { create(:user, email: email, account: account) }
       let(:saml_settings) do
         create(:account_saml_settings,
                account: account,
@@ -242,49 +185,11 @@ RSpec.describe SamlUserBuilder do
           }
         end
 
-        it 'keeps default agent role' do
+        it 'keeps the existing role' do
           user = builder.perform
           account_user = AccountUser.find_by(user: user, account: account)
           expect(account_user.role).to eq('agent')
         end
-      end
-    end
-
-    context 'with different group attribute names' do
-      let(:auth_hash) do
-        {
-          'provider' => 'saml',
-          'uid' => 'saml-uid-123',
-          'info' => {
-            'email' => email,
-            'name' => 'SAML User'
-          },
-          'extra' => {
-            'raw_info' => {
-              'memberOf' => ['CN=Administrators,OU=Groups,DC=example,DC=com']
-            }
-          }
-        }
-      end
-
-      it 'reads groups from memberOf attribute' do
-        builder_instance = described_class.new(auth_hash, account_id: account.id)
-        allow(builder_instance).to receive(:saml_groups).and_return(['CN=Administrators,OU=Groups,DC=example,DC=com'])
-        user = builder_instance.perform
-        expect(user).to be_persisted
-      end
-    end
-
-    context 'when there are errors' do
-      it 'returns unsaved user object when user creation fails' do
-        allow(User).to receive(:create).and_return(User.new(email: email))
-        user = builder.perform
-        expect(user.persisted?).to be false
-      end
-
-      it 'does not create account association for failed user' do
-        allow(User).to receive(:create).and_return(User.new(email: email))
-        expect { builder.perform }.not_to change(AccountUser, :count)
       end
     end
   end

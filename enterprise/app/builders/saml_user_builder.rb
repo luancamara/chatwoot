@@ -18,20 +18,17 @@ class SamlUserBuilder
   def find_or_create_user
     user = User.from_email(auth_attribute('email'))
 
-    return create_user unless user
-    return existing_user_for_account(user) if user_belongs_to_account?(user)
+    # SSO is restricted to pre-provisioned users: a person who does not already
+    # exist in Chatwoot cannot self-provision through SAML.
+    raise AuthenticationFailed, I18n.t('auth.saml.authentication_failed') unless user
 
-    raise AuthenticationFailed, I18n.t('auth.saml.authentication_failed')
+    existing_user_for_account(user)
   end
 
   def existing_user_for_account(user)
     confirm_user_if_required(user)
     convert_existing_user_to_saml(user)
     user
-  end
-
-  def user_belongs_to_account?(user)
-    user.account_users.exists?(account_id: @account_id)
   end
 
   def confirm_user_if_required(user)
@@ -47,35 +44,16 @@ class SamlUserBuilder
     user.update!(provider: 'saml')
   end
 
-  def create_user
-    full_name = [auth_attribute('first_name'), auth_attribute('last_name')].compact.join(' ')
-    fallback_name = auth_attribute('name') || auth_attribute('email').split('@').first
-
-    User.create(
-      email: auth_attribute('email'),
-      name: (full_name.presence || fallback_name),
-      display_name: auth_attribute('first_name'),
-      provider: 'saml',
-      uid: uid,
-      password: SecureRandom.hex(32),
-      confirmed_at: Time.current
-    )
-  end
-
+  # The user is pre-provisioned, so we never create a membership here. The
+  # account used to bootstrap SSO is auto-detected and may not be one the user
+  # belongs to; we only sync role mappings when they are already a member.
   def add_user_to_account
     account = Account.find_by(id: @account_id)
     return unless account
 
-    # Create account_user if not exists
-    account_user = AccountUser.find_or_create_by(
-      user: @user,
-      account: account
-    )
+    account_user = @user.account_users.find_by(account_id: account.id)
+    return unless account_user
 
-    # Set default role as agent if not set
-    account_user.update(role: 'agent') if account_user.role.blank?
-
-    # Handle role mappings if configured
     apply_role_mappings(account_user, account)
   end
 
@@ -102,10 +80,6 @@ class SamlUserBuilder
 
   def auth_attribute(key, fallback = nil)
     @auth_hash.dig('info', key) || fallback
-  end
-
-  def uid
-    @auth_hash['uid']
   end
 
   def saml_groups
