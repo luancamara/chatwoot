@@ -125,7 +125,7 @@ class Whatsapp::TemplateProcessorService
         {
           type: 'button',
           sub_type: button['type'] || 'url',
-          index: index,
+          index: index.to_s,
           parameters: [parameter_builder.build_button_parameter(button)]
         }
       end

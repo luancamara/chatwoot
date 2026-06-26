@@ -227,7 +227,7 @@ describe Whatsapp::SendOnWhatsappService do
 
         components = [
           { type: 'body', parameters: [{ type: 'text', text: '3' }] },
-          { type: 'button', sub_type: 'url', index: 0, parameters: [{ type: 'text', text: 'https://track.example.com/123' }] }
+          { type: 'button', sub_type: 'url', index: '0', parameters: [{ type: 'text', text: 'https://track.example.com/123' }] }
         ]
         stub_sample_template_request(components)
 
