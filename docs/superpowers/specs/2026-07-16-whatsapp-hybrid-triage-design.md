@@ -167,7 +167,7 @@ A configuração associa IDs estáveis aos times:
 - Gestão de Reclamações;
 - Triagem Geral.
 
-Nenhum nome de pessoa ou ID de time fica fixo na lógica. A configuração também define a caixa habilitada, o responsável de contingência e os limiares.
+Nenhum nome de pessoa ou ID de time fica fixo na lógica. A configuração também define a caixa habilitada, um responsável de contingência para cada área e os limiares.
 
 ### Encaminhamento comum
 
@@ -179,7 +179,7 @@ Ao definir uma área, o roteador atualiza a conversa em uma operação consisten
 - atualiza os atributos da triagem;
 - permite que a autoatribuição do time escolha um membro disponível.
 
-Se nenhum membro estiver disponível, a conversa é atribuída ao responsável de contingência e uma notificação é enviada ao grupo. O fluxo não deixa uma reclamação sem uma pessoa nominalmente responsável.
+Se nenhum membro estiver disponível, a conversa é atribuída ao responsável de contingência da área e uma notificação é enviada ao grupo. O fluxo não deixa uma reclamação sem uma pessoa nominalmente responsável.
 
 ### Encaminhamento de reclamações
 
@@ -202,12 +202,11 @@ Os atributos de conversa visíveis à operação incluem:
 - `triage_area`;
 - `triage_source`;
 - `triage_confidence`;
-- `triage_started_at`;
-- `triage_routed_at`;
 - `complaint_severity`;
 - `complaint_reason`;
-- `complaint_previous_area`;
-- `complaint_acknowledged_at`.
+- `complaint_previous_area`.
+
+Datas de início, encaminhamento e confirmação, além das chaves de escalonamento, permanecem como estado interno para auditoria e idempotência sem poluir o painel do atendente.
 
 Os estados principais são `awaiting_classification`, `awaiting_selection`, `routed` e `complaint_owned`.
 

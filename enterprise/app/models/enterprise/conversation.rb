@@ -1,4 +1,8 @@
 module Enterprise::Conversation
+  def self.prepended(base)
+    base.include Whatsapp::Triage::ConversationGuard
+  end
+
   attr_accessor :captain_activity_reason, :captain_activity_reason_type
 
   def dispatch_captain_inference_resolved_event

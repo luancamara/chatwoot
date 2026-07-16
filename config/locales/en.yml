@@ -81,6 +81,9 @@ en:
       call_already_accepted: '%{agent_name} is already handling the call.'
     assignment_policy:
       not_found: Assignment policy not found
+    whatsapp_triage:
+      complaint_team_locked: must remain with the complaints team until the conversation is resolved
+      complaint_assignee_locked: must belong to the complaints team while the complaint is open
     attachments:
       invalid: Invalid attachment
     upload:

@@ -11,6 +11,8 @@ module Enterprise::SuperAdmin::AppConfigsController
       @allowed_configs = internal_config_options
     when 'captain'
       @allowed_configs = captain_config_options
+    when 'whatsapp_triage'
+      @allowed_configs = %w[WHATSAPP_TRIAGE_CONFIG]
     when 'saml'
       @allowed_configs = saml_config_options
     else

@@ -170,6 +170,46 @@
   locked: false
 # ------- End of WhatsApp Channel Related Config ------- #
 
+# ------- WhatsApp Triage Config ------- #
+- name: WHATSAPP_TRIAGE_CONFIG
+  display_title: 'WhatsApp Triage Configuration'
+  description: 'JSON configuration for hybrid WhatsApp triage. Keep enabled false until inbox and team IDs are validated.'
+  locked: false
+  type: code
+  value:
+    enabled: false
+    inbox_id:
+    team_ids:
+      sales:
+      finance:
+      after_sales:
+      complaints:
+      general:
+    fallback_user_ids:
+      sales:
+      finance:
+      after_sales:
+      complaints:
+      general:
+    sla_policy_id:
+    debounce_seconds: 4
+    reopen_window_hours: 24
+    complaint_threshold: 0.7
+    area_threshold: 0.85
+    first_response_minutes: 10
+    next_response_minutes: 30
+    resolution_minutes: 480
+    menu_message: 'Olá! Para encaminhar você diretamente à equipe mais adequada, escolha uma opção abaixo. Se preferir, pode escrever com suas próprias palavras.'
+    complaint_acknowledgement: 'Entendi que você precisa de uma atenção especial. Encaminhei sua conversa para nossa equipe responsável, que dará continuidade ao atendimento por aqui em breve.'
+    complaint_acknowledgement_out_of_office: 'Recebemos seu relato e o encaminhamos para nossa equipe responsável. O atendimento terá continuidade por aqui no próximo período de atendimento.'
+    out_of_office_message: 'Recebemos sua mensagem. Nossa triagem encaminhará o atendimento para a equipe responsável, que dará continuidade por aqui no próximo período de atendimento.'
+    routing_acknowledgements:
+      sales: 'Certo! Encaminhei sua conversa para nossa equipe de vendas.'
+      finance: 'Certo! Encaminhei sua conversa para nossa equipe financeira.'
+      after_sales: 'Certo! Encaminhei sua conversa para nossa equipe de pós-venda.'
+      general: 'Certo! Encaminhei sua conversa para nossa equipe de atendimento.'
+# ------- End of WhatsApp Triage Config ------- #
+
 # MARK: Microsoft Email Channel Config
 - name: AZURE_APP_ID
   display_title: 'Azure App ID'
