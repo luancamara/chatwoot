@@ -345,6 +345,7 @@
     "LABELS": "Labels",
     "CUSTOM_ATTRIBUTES": "Custom Attributes",
     "AUTOMATION": "Automation",
+    "CONVERSATION_RISK_MONITOR": "Conversation monitor",
     "MACROS": "Macros",
     "TEAMS": "Teams",
     "BILLING": "Billing",

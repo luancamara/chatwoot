@@ -47,7 +47,7 @@ Introduce an Enterprise configuration record with one row per monitored inbox. T
 
 The database enforces one record per inbox. Model validation enforces that the inbox, team, and labels belong to the same account and that the inbox is WhatsApp for the first release.
 
-A dedicated account feature flag controls access to the monitor settings page. It is enabled only for account 4 during production setup.
+A dedicated settings-backed account feature flag controls access to the monitor settings page. It is enabled only for account 4 during production setup. This avoids the exhausted 63-bit `feature_flags` column.
 
 ### Account settings page
 

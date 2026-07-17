@@ -43,7 +43,7 @@ const emit = defineEmits([
   'closeMobileSidebar',
 ]);
 
-const { accountScopedRoute, isOnChatwootCloud } = useAccount();
+const { accountScopedRoute, currentAccount, isOnChatwootCloud } = useAccount();
 const { isAdmin } = useAdmin();
 const store = useStore();
 const searchShortcut = useKbd([`$mod`, 'k']);
@@ -75,6 +75,10 @@ const hasConversationUnreadCounts = computed(() => {
     accountId.value,
     FEATURE_FLAGS.CONVERSATION_UNREAD_COUNTS
   );
+});
+
+const hasConversationRiskMonitor = computed(() => {
+  return !!currentAccount.value?.settings?.conversation_risk_monitor_enabled;
 });
 
 const fetchConversationUnreadCounts = ([currentAccountId, isEnabled]) => {
@@ -809,6 +813,16 @@ const menuItems = computed(() => {
           icon: 'i-lucide-repeat',
           to: accountScopedRoute('automation_list'),
         },
+        ...(isAdmin.value && hasConversationRiskMonitor.value
+          ? [
+              {
+                name: 'Settings Conversation Monitor',
+                label: t('SIDEBAR.CONVERSATION_RISK_MONITOR'),
+                icon: 'i-lucide-shield-alert',
+                to: accountScopedRoute('conversation_risk_monitor_settings'),
+              },
+            ]
+          : []),
         {
           name: 'Settings Agent Bots',
           label: t('SIDEBAR.AGENT_BOTS'),

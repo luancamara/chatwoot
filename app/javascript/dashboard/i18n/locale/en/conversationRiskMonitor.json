@@ -1,0 +1,32 @@
+{
+  "CONVERSATION_RISK_MONITOR": {
+    "TITLE": "Conversation monitor",
+    "DESCRIPTION": "Detect complaints and critical risks without interrupting the customer service flow.",
+    "LOADING": "Loading conversation monitor settings...",
+    "STATUS": {
+      "TITLE": "Silent monitoring",
+      "DESCRIPTION": "Monitor new customer messages in the selected WhatsApp inbox."
+    },
+    "ROUTING": {
+      "TITLE": "Internal alerts",
+      "DESCRIPTION": "Choose who should be mentioned and which labels identify complaints."
+    },
+    "FIELDS": {
+      "INBOX": "WhatsApp inbox",
+      "TEAM": "Management team",
+      "COMPLAINT_LABEL": "Complaint label",
+      "CRITICAL_LABEL": "Critical risk label",
+      "SELECT": "Select an option"
+    },
+    "SILENT": {
+      "TITLE": "The customer will not receive monitor messages",
+      "DESCRIPTION": "This monitor only applies labels and creates a private note. It never replies, changes priority, or reassigns the conversation."
+    },
+    "SAVE": "Save monitor",
+    "API": {
+      "SUCCESS": "Conversation monitor settings saved.",
+      "ERROR": "Could not save the conversation monitor settings.",
+      "LOAD_ERROR": "Could not load the conversation monitor settings."
+    }
+  }
+}

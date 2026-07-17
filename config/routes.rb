@@ -121,6 +121,7 @@ Rails.application.routes.draw do
             post :execute, on: :member
           end
           resources :sla_policies, only: [:index, :create, :show, :update, :destroy]
+          resources :conversation_risk_monitors, only: [:index, :update], param: :inbox_id
           resources :custom_roles, only: [:index, :create, :show, :update, :destroy]
           resources :agent_working_hours, only: [:index] do
             collection do

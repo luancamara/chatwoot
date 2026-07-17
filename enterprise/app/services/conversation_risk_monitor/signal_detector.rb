@@ -1,8 +1,8 @@
-class Whatsapp::Triage::SignalDetector
+class ConversationRiskMonitor::SignalDetector
   CRITICAL_SIGNALS = {
     'Risco jurídico ou órgão de defesa do consumidor' => [
       /\bprocon\b/,
-      /\b(?:meu|minha|um|uma)?\s*advogad[oa]\b/,
+      /\badvogad[oa]\b/,
       /\b(?:acao|processo) judicial\b/,
       /\b(?:vou|irei) processar\b/,
       /\bdenuncia(?:r)?\b/
@@ -22,9 +22,7 @@ class Whatsapp::Triage::SignalDetector
   }.freeze
 
   COMPLAINT_SIGNALS = {
-    'Cliente declarou uma reclamação' => [
-      /\b(?:reclamacao|reclamar|insatisfeit[oa])\b/
-    ],
+    'Cliente declarou uma reclamação' => [/\b(?:reclamacao|reclamar|insatisfeit[oa])\b/],
     'Produto com problema' => [
       /\b(?:produto|movel|pedido).*(?:quebrado|danificado|defeito|errado|avariado)\b/,
       /\b(?:quebrado|danificado|com defeito|nao funciona)\b/
@@ -40,38 +38,26 @@ class Whatsapp::Triage::SignalDetector
   }.freeze
 
   def initialize(content)
-    @content = normalize(content)
+    @content = I18n.transliterate(content.to_s).downcase.squish
   end
 
   def perform
-    match = find_match(CRITICAL_SIGNALS)
-    return classification('critical', match) if match
+    reason = match(CRITICAL_SIGNALS)
+    return classification('critical', reason) if reason
 
-    match = find_match(COMPLAINT_SIGNALS)
-    return classification('complaint', match) if match
-
-    nil
+    reason = match(COMPLAINT_SIGNALS)
+    classification('complaint', reason) if reason
   end
 
   private
 
   attr_reader :content
 
-  def find_match(signals)
+  def match(signals)
     signals.find { |_reason, patterns| patterns.any? { |pattern| content.match?(pattern) } }&.first
   end
 
   def classification(severity, reason)
-    {
-      'area' => 'complaints',
-      'severity' => severity,
-      'confidence' => 1.0,
-      'reason' => reason,
-      'source' => 'keyword'
-    }
-  end
-
-  def normalize(value)
-    I18n.transliterate(value.to_s).downcase.squish
+    { 'severity' => severity, 'confidence' => 1.0, 'reason' => reason, 'source' => 'keyword' }
   end
 end

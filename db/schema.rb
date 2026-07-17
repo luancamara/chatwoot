@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_06_11_184600) do
+ActiveRecord::Schema[7.1].define(version: 2026_07_17_000000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -683,6 +683,22 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_11_184600) do
     t.index ["user_id"], name: "index_conversation_participants_on_user_id"
   end
 
+  create_table "conversation_risk_monitor_configs", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "inbox_id", null: false
+    t.bigint "management_team_id"
+    t.bigint "complaint_label_id"
+    t.bigint "critical_label_id"
+    t.boolean "enabled", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_conversation_risk_monitor_configs_on_account_id"
+    t.index ["complaint_label_id"], name: "index_conversation_risk_monitor_configs_on_complaint_label_id"
+    t.index ["critical_label_id"], name: "index_conversation_risk_monitor_configs_on_critical_label_id"
+    t.index ["inbox_id"], name: "index_conversation_risk_monitor_configs_on_inbox_id", unique: true
+    t.index ["management_team_id"], name: "index_conversation_risk_monitor_configs_on_management_team_id"
+  end
+
   create_table "conversations", id: :serial, force: :cascade do |t|
     t.integer "account_id", null: false
     t.integer "inbox_id", null: false
@@ -1345,6 +1361,11 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_11_184600) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "conversation_risk_monitor_configs", "accounts"
+  add_foreign_key "conversation_risk_monitor_configs", "inboxes"
+  add_foreign_key "conversation_risk_monitor_configs", "labels", column: "complaint_label_id"
+  add_foreign_key "conversation_risk_monitor_configs", "labels", column: "critical_label_id"
+  add_foreign_key "conversation_risk_monitor_configs", "teams", column: "management_team_id"
   add_foreign_key "inboxes", "portals"
   add_foreign_key "user_sessions", "users"
   create_trigger("accounts_after_insert_row_tr", :generated => true, :compatibility => 1).

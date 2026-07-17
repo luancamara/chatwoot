@@ -3,7 +3,7 @@ module Enterprise::AsyncDispatcher
     super + [
       CaptainListener.instance,
       CrmEventListener.instance,
-      WhatsappTriageListener.instance
+      ConversationRiskMonitorListener.instance
     ]
   end
 end

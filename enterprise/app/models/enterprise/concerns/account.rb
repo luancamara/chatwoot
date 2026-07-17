@@ -5,11 +5,13 @@ module Enterprise::Concerns::Account
     store_accessor :settings, :conversation_required_attributes
     store_accessor :settings, :conversation_required_attribute_conditions
     store_accessor :settings, :crm_response_time_alert_minutes
+    store_accessor :settings, :conversation_risk_monitor_enabled
 
     has_many :sla_policies, dependent: :destroy_async
     has_many :applied_slas, dependent: :destroy_async
     has_many :custom_roles, dependent: :destroy_async
     has_many :agent_capacity_policies, dependent: :destroy_async
+    has_many :conversation_risk_monitor_configs, dependent: :destroy
 
     has_many :captain_assistants, dependent: :destroy_async, class_name: 'Captain::Assistant'
     has_many :captain_assistant_responses, dependent: :destroy_async, class_name: 'Captain::AssistantResponse'
