@@ -565,6 +565,12 @@ Rails.application.routes.draw do
                 get :management_evaluation
               end
             end
+
+            resources :ad_reports, only: [], controller: '/enterprise/api/v2/accounts/ad_reports' do
+              collection do
+                get :performance
+              end
+            end
           end
         end
       end

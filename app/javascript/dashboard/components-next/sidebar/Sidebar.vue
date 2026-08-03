@@ -694,6 +694,11 @@ const menuItems = computed(() => {
                 label: t('SIDEBAR.CRM_SALES_REPORTS'),
                 to: accountScopedRoute('crm_sales_reports'),
               },
+              {
+                name: 'Ad Reports',
+                label: t('SIDEBAR.CRM_AD_REPORTS'),
+                to: accountScopedRoute('crm_ad_reports'),
+              },
             ],
           },
         ]

@@ -1,5 +1,16 @@
 {
   "CRM": {
+    "AD_REPORTS": {
+      "TOTAL_LEADS": "Leads vindos de anúncios",
+      "BY_CAMPAIGN": "Leads por campanha",
+      "AD": "Anúncio",
+      "CAMPAIGN": "Campanha",
+      "ADSET": "Conjunto",
+      "LEADS": "Leads",
+      "RESOLVED": "Resolvidas",
+      "UNKNOWN_CAMPAIGN": "Campanha não identificada",
+      "EMPTY": "Nenhum lead de anúncio no período selecionado."
+    },
     "CONVERSATION_INSIGHT": {
       "TITLE": "Análise da Conversa",
       "SCORE": "Score de Qualidade",
