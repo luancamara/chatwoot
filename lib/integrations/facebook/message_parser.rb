@@ -22,6 +22,12 @@ class Integrations::Facebook::MessageParser
     @messaging.dig('message', 'text')
   end
 
+  # Ad attribution for click-to-Messenger ads. Meta nests it inside the message
+  # for a first contact and inside the postback when the thread is reopened.
+  def referral
+    @messaging.dig('message', 'referral') || @messaging.dig('postback', 'referral') || @messaging['referral']
+  end
+
   def sequence
     @messaging.dig('message', 'seq')
   end

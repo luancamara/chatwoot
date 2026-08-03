@@ -119,6 +119,7 @@ class Messages::Facebook::MessageBuilder < Messages::Messenger::MessageBuilder
       in_reply_to_external_id: response.in_reply_to_external_id
     }
     content_attributes[:external_echo] = true if @outgoing_echo
+    content_attributes[:referral] = response.referral if response.referral.present?
 
     {
       account_id: conversation.account_id,
