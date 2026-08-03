@@ -50,4 +50,31 @@ class ConversationAdReferral < ApplicationRecord
   def payload_thumbnail_url
     raw['thumbnail_url'].presence || raw['image_url'].presence
   end
+
+  def push_event_data
+    {
+      source_type: source_type,
+      ad_id: ad_id,
+      source_url: source_url,
+      headline: headline,
+      body: body,
+      ctwa_clid: ctwa_clid,
+      referred_at: referred_at.to_i,
+      thumbnail_url: meta_ad&.thumbnail_url.presence || payload_thumbnail_url
+    }.merge(meta_ad_event_data)
+  end
+
+  private
+
+  def meta_ad_event_data
+    return {} if meta_ad.blank?
+
+    {
+      ad_name: meta_ad.name,
+      adset_name: meta_ad.adset_name,
+      campaign_name: meta_ad.campaign_name,
+      effective_status: meta_ad.effective_status,
+      sync_error: meta_ad.sync_error
+    }
+  end
 end

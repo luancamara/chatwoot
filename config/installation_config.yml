@@ -168,6 +168,11 @@
   description: 'Configure this if you want to use a different WhatsApp API version. Make sure its prefixed with `v`'
   value: 'v22.0'
   locked: false
+- name: META_ADS_ACCESS_TOKEN
+  display_title: 'Meta Ads Access Token'
+  description: 'System User token with ads_read, used to resolve ad, ad set and campaign names for conversations that came from a Meta ad'
+  value: ''
+  locked: false
 # ------- End of WhatsApp Channel Related Config ------- #
 
 # MARK: Microsoft Email Channel Config

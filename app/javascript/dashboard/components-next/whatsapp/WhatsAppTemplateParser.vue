@@ -8,7 +8,7 @@
  * 4. Replaces placeholders with user-provided values.
  * 5. Emits events to send the processed message or reset the template.
  */
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { requiredIf } from '@vuelidate/validators';
 import { useI18n } from 'vue-i18n';
@@ -165,7 +165,9 @@ const goBack = () => {
   emit('back');
 };
 
-onMounted(initializeTemplateParameters);
+// Built eagerly rather than only in onMounted: the header variable inputs bind
+// straight into processedParams.header, which would be undefined on first render.
+initializeTemplateParameters();
 
 watch(
   () => props.template,

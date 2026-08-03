@@ -44,7 +44,8 @@ class V2::AdReports::PerformanceBuilder
   end
 
   def scope
-    relation = ConversationAdReferral.where(account_id: account.id)
+    relation = ConversationAdReferral.from_ads
+                                     .where(account_id: account.id)
                                      .joins(:conversation)
                                      .left_joins(:meta_ad)
                                      .where(referred_at: range)

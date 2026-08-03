@@ -43,7 +43,7 @@ const onFilterChange = async params => {
 
 <template>
   <div class="flex flex-col gap-4 p-4">
-    <CrmFilters @filter-change="onFilterChange" />
+    <CrmFilters :show-agent="false" :show-team="false" @filter-change="onFilterChange" />
 
     <div v-if="isLoading" class="flex justify-center py-10">
       <Spinner />

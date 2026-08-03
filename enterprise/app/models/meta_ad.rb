@@ -25,5 +25,5 @@ class MetaAd < ApplicationRecord
 
   validates :ad_id, presence: true, uniqueness: true
 
-  scope :stale, ->(before) { where(synced_at: ...before) }
+  scope :synced_ok, -> { where.not(synced_at: nil).where(sync_error: nil) }
 end

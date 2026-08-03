@@ -11,12 +11,19 @@ class AdAttribution::MetaAdSyncService
   pattr_initialize [:ad_id!]
 
   def perform
+    # Recorded rather than raised: without a row the job has nothing to back off
+    # on and would re-raise for every ad-attributed conversation forever. The
+    # message surfaces in the sidebar and report, which is the visible signal.
+    return record_error('META_ADS_ACCESS_TOKEN is not configured') if access_token.blank?
+
     response = HTTParty.get(
       "#{BASE_URI}/#{api_version}/#{ad_id}",
       query: { fields: FIELDS, access_token: access_token }
     )
 
-    response.success? ? store(response.parsed_response) : store_error(response)
+    return record_error(response.parsed_response.dig('error', 'message')) unless response.success?
+
+    store(response.parsed_response)
   end
 
   private
@@ -36,12 +43,9 @@ class AdAttribution::MetaAdSyncService
   end
 
   # Ads in ad accounts the token cannot reach are expected here. Record why so
-  # the dashboard can explain the missing name instead of retrying forever.
-  def store_error(response)
-    meta_ad.update!(
-      synced_at: Time.current,
-      sync_error: response.parsed_response.dig('error', 'message').to_s.truncate(255)
-    )
+  # the dashboard can explain the missing name.
+  def record_error(message)
+    meta_ad.update!(synced_at: Time.current, sync_error: message.to_s.truncate(255))
   end
 
   def meta_ad
@@ -49,8 +53,7 @@ class AdAttribution::MetaAdSyncService
   end
 
   def access_token
-    GlobalConfigService.load('META_ADS_ACCESS_TOKEN', '').presence ||
-      raise('META_ADS_ACCESS_TOKEN is not configured')
+    @access_token ||= GlobalConfigService.load('META_ADS_ACCESS_TOKEN', '')
   end
 
   def api_version
