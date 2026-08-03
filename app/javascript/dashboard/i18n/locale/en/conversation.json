@@ -442,7 +442,18 @@
       "SHOPIFY_ORDERS": "Shopify Orders",
       "CONVERSATION_INSIGHT": "Análise da Conversa",
       "FOLLOW_UP_REMINDERS": "Lembretes de Follow-up",
+      "AD_SOURCE": "Origem do Lead",
       "SHARED_FILES": "Attachments"
+    },
+    "AD_SOURCE": {
+      "AD": "Anúncio",
+      "POST": "Publicação",
+      "ADSET": "Conjunto",
+      "CAMPAIGN": "Campanha",
+      "HEADLINE": "Título do anúncio",
+      "REFERRED_AT": "Entrou em",
+      "VIEW_ON_META": "Ver no Gerenciador de Anúncios",
+      "SYNC_ERROR": "Não foi possível carregar os dados do anúncio na Meta. O anúncio pode estar em uma conta sem acesso."
     },
     "SHARED_FILES": {
       "EMPTY": "No attachments yet",
