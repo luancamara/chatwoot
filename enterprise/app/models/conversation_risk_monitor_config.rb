@@ -1,3 +1,33 @@
+# == Schema Information
+#
+# Table name: conversation_risk_monitor_configs
+#
+#  id                 :bigint           not null, primary key
+#  enabled            :boolean          default(FALSE), not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  account_id         :bigint           not null
+#  complaint_label_id :bigint
+#  critical_label_id  :bigint
+#  inbox_id           :bigint           not null
+#  management_team_id :bigint
+#
+# Indexes
+#
+#  index_conversation_risk_monitor_configs_on_account_id          (account_id)
+#  index_conversation_risk_monitor_configs_on_complaint_label_id  (complaint_label_id)
+#  index_conversation_risk_monitor_configs_on_critical_label_id   (critical_label_id)
+#  index_conversation_risk_monitor_configs_on_inbox_id            (inbox_id) UNIQUE
+#  index_conversation_risk_monitor_configs_on_management_team_id  (management_team_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (account_id => accounts.id)
+#  fk_rails_...  (complaint_label_id => labels.id)
+#  fk_rails_...  (critical_label_id => labels.id)
+#  fk_rails_...  (inbox_id => inboxes.id)
+#  fk_rails_...  (management_team_id => teams.id)
+#
 class ConversationRiskMonitorConfig < ApplicationRecord
   belongs_to :account
   belongs_to :inbox
