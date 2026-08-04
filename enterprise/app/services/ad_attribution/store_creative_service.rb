@@ -30,7 +30,7 @@ class AdAttribution::StoreCreativeService
   private
 
   def sources
-    [url, payload_image_url, meta_ad.thumbnail_url].map(&:presence).compact
+    [url, payload_image_url, meta_ad.thumbnail_url].filter_map(&:presence)
   end
 
   def download(source)
