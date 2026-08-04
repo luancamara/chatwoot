@@ -6,8 +6,10 @@
 # in closed or archived ad accounts still resolve.
 class AdAttribution::MetaAdSyncService
   BASE_URI = 'https://graph.facebook.com'.freeze
+  INSTAGRAM_URI = 'https://graph.instagram.com'.freeze
   FIELDS = 'name,effective_status,adset{id,name},campaign{id,name},' \
-           'creative{thumbnail_url,video_id,image_url,object_story_spec}'.freeze
+           'creative{thumbnail_url,video_id,image_url,object_story_spec,' \
+           'effective_instagram_media_id,instagram_user_id}'.freeze
 
   pattr_initialize [:ad_id!]
 
@@ -45,7 +47,24 @@ class AdAttribution::MetaAdSyncService
     story = creative['object_story_spec'] || {}
     media = story['video_data'] || story['link_data'] || {}
 
-    video_source_url(creative['video_id']) || media['image_url'].presence || creative['image_url'].presence
+    instagram_media_url(creative) || video_source_url(creative['video_id']) ||
+      media['image_url'].presence || creative['image_url'].presence
+  end
+
+  # The only route to the actual video file. Ad creatives are dark posts, so
+  # they never appear in the account's media listing, but the creative carries
+  # the Instagram media id and that id resolves to a direct media_url when asked
+  # with the token of the Instagram inbox that owns it.
+  def instagram_media_url(creative)
+    media_id = creative['effective_instagram_media_id']
+    channel = Channel::Instagram.find_by(instagram_id: creative['instagram_user_id']) if media_id.present?
+    return if channel.blank?
+
+    response = HTTParty.get(
+      "#{INSTAGRAM_URI}/#{api_version}/#{media_id}",
+      query: { fields: 'media_url', access_token: channel.access_token }
+    )
+    response.success? ? response.parsed_response['media_url'].presence : nil
   end
 
   # The actual video file, when the token is allowed to see it. Meta answers 200
