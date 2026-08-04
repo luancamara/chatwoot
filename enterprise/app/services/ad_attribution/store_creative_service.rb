@@ -10,9 +10,11 @@ class AdAttribution::StoreCreativeService
   def perform
     return if meta_ad.blank? || meta_ad.creative.attached?
 
-    source = url.presence || payload_image_url
+    source = url.presence || payload_image_url || meta_ad.thumbnail_url.presence
     return if source.blank?
 
+    # Meta expires CDN links on older ads, which is the whole reason creatives
+    # are copied locally; a gone creative must not fail the surrounding sync.
     file = Down.download(source, max_size: 100 * 1024 * 1024)
     # content_type has to be carried over or the browser will not play the video.
     meta_ad.creative.attach(

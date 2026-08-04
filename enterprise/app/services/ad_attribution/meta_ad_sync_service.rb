@@ -6,7 +6,8 @@
 # in closed or archived ad accounts still resolve.
 class AdAttribution::MetaAdSyncService
   BASE_URI = 'https://graph.facebook.com'.freeze
-  FIELDS = 'name,effective_status,adset{id,name},campaign{id,name},creative{thumbnail_url,video_id}'.freeze
+  FIELDS = 'name,effective_status,adset{id,name},campaign{id,name},' \
+           'creative{thumbnail_url,video_id,image_url,object_story_spec}'.freeze
 
   pattr_initialize [:ad_id!]
 
@@ -32,13 +33,23 @@ class AdAttribution::MetaAdSyncService
     end
 
     store(response.parsed_response)
-    video_source_url(response.parsed_response.dig('creative', 'video_id'))
+    creative_url(response.parsed_response['creative'] || {})
   end
 
   private
 
-  # The only way to reach the actual video file: the webhook's video_url is a
-  # reel page, and the creative only carries the video's id.
+  # Best downloadable asset for the ad, in descending quality. Video ads expose
+  # a full resolution poster frame under object_story_spec; `thumbnail_url` is a
+  # last resort because Meta serves it at thumbnail size.
+  def creative_url(creative)
+    story = creative['object_story_spec'] || {}
+    media = story['video_data'] || story['link_data'] || {}
+
+    video_source_url(creative['video_id']) || media['image_url'].presence || creative['image_url'].presence
+  end
+
+  # The actual video file, when the token is allowed to see it. Meta answers 200
+  # and simply omits `source` for ad videos an ads_read token cannot download.
   def video_source_url(video_id)
     return if video_id.blank?
 
@@ -46,7 +57,7 @@ class AdAttribution::MetaAdSyncService
       "#{BASE_URI}/#{api_version}/#{video_id}",
       query: { fields: 'source', access_token: access_token }
     )
-    response.success? ? response.parsed_response['source'] : nil
+    response.success? ? response.parsed_response['source'].presence : nil
   end
 
   def store(body)
