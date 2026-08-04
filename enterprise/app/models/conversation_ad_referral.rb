@@ -42,6 +42,7 @@ class ConversationAdReferral < ApplicationRecord
   belongs_to :meta_ad, primary_key: :ad_id, foreign_key: :ad_id, optional: true, inverse_of: :conversation_ad_referrals
 
   validates :conversation_id, uniqueness: true
+  validates :source_url, length: { maximum: Limits::URL_LENGTH_LIMIT }
 
   scope :from_ads, -> { where(source_type: 'ad') }
 

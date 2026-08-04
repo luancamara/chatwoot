@@ -25,6 +25,9 @@ class MetaAd < ApplicationRecord
   has_one_attached :creative
 
   validates :ad_id, presence: true, uniqueness: true
+  # Graph API creative thumbnails carry long signed query strings, past the 255
+  # ApplicationRecord applies to string columns without an explicit validator.
+  validates :thumbnail_url, length: { maximum: Limits::URL_LENGTH_LIMIT }
 
   scope :synced_ok, -> { where.not(synced_at: nil).where(sync_error: nil) }
 end
