@@ -37,7 +37,7 @@ class AdAttribution::RecordReferralService
   def post_note
     return unless note
 
-    conversation.messages.create!(
+    note_message = conversation.messages.create!(
       account_id: message.account_id,
       inbox_id: message.inbox_id,
       message_type: :outgoing,
@@ -45,6 +45,7 @@ class AdAttribution::RecordReferralService
       content: AdAttribution::ReferralNoteBuilder.new(payload: payload).content,
       created_at: message.created_at - 1.second
     )
+    AdAttribution::AttachCreativeService.new(message: note_message, ad_id: payload.ad_id).perform
   end
 
   def payload

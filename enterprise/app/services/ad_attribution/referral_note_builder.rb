@@ -5,13 +5,22 @@
 # it leads the note. Built from the payload rather than the stored referral so a
 # returning lead's note describes the ad they just clicked, not the first one.
 class AdAttribution::ReferralNoteBuilder
-  pattr_initialize [:payload!]
+  pattr_initialize [:payload!, { body_limit: nil }]
 
   def content
-    [heading, payload.body.presence, details].compact.join("\n\n")
+    [heading, ad_body, details].compact.join("\n\n")
   end
 
   private
+
+  # Backfilled notes are trimmed: replaying a full ad copy across thousands of
+  # closed conversations buries the history it is meant to explain.
+  def ad_body
+    text = payload.body.presence
+    return text if text.blank? || body_limit.blank?
+
+    text.truncate(body_limit, separator: ' ')
+  end
 
   # The webhook headline is the call-to-action Meta renders on the ad ("Converse
   # conosco"), identical across every ad, so it is not used as a title. Only a
