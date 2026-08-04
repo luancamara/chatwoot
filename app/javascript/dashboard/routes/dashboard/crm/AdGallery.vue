@@ -29,6 +29,22 @@ const formatDate = epoch =>
     year: 'numeric',
   });
 
+// An ads_read token cannot download the video file — Meta omits `source` — but
+// it does expose the reel through the public embed player, so the ad plays in
+// place instead of sending the agent off to Facebook.
+const playingAdId = ref(null);
+
+const embedUrl = ad =>
+  `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
+    ad.video_page_url
+  )}&show_text=false&autoplay=true`;
+
+// Loaded only on click: mounting fifty Facebook iframes up front would be slow
+// and would call out to Meta for every ad on screen.
+const play = adId => {
+  playingAdId.value = adId;
+};
+
 onMounted(async () => {
   try {
     const { data } = await AdReportsAPI.getGallery();
@@ -81,6 +97,37 @@ onMounted(async () => {
           preload="none"
           class="object-cover w-full aspect-[9/16] bg-n-alpha-2"
         />
+        <iframe
+          v-else-if="playingAdId === ad.ad_id"
+          :src="embedUrl(ad)"
+          :title="ad.ad_name || ad.headline"
+          class="w-full border-0 aspect-[9/16] bg-n-alpha-2"
+          allow="autoplay; encrypted-media; picture-in-picture; web-share"
+          allowfullscreen
+        />
+        <button
+          v-else-if="ad.video_page_url"
+          type="button"
+          class="relative w-full group aspect-[9/16] bg-n-alpha-2"
+          :aria-label="t('CRM.AD_GALLERY.WATCH_VIDEO')"
+          @click="play(ad.ad_id)"
+        >
+          <img
+            v-if="ad.creative_url || ad.thumbnail_url"
+            :src="ad.creative_url || ad.thumbnail_url"
+            :alt="ad.ad_name || ad.headline"
+            class="object-cover w-full h-full"
+          />
+          <span
+            class="absolute inset-0 flex items-center justify-center transition-colors bg-black/25 group-hover:bg-black/40"
+          >
+            <span
+              class="grid rounded-full size-14 place-items-center bg-white/90"
+            >
+              <span class="text-black size-7 i-lucide-play" />
+            </span>
+          </span>
+        </button>
         <img
           v-else-if="ad.creative_url || ad.thumbnail_url"
           :src="ad.creative_url || ad.thumbnail_url"
