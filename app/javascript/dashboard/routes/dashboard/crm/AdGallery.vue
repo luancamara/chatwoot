@@ -29,17 +29,20 @@ const formatDate = epoch =>
     year: 'numeric',
   });
 
-// An ads_read token cannot download the video file — Meta omits `source` — but
-// it does expose the reel through the public embed player, so the ad plays in
-// place instead of sending the agent off to Facebook.
+// An ads_read token cannot download the video file — Meta omits `source` — and
+// the Facebook reel player refuses these creatives because they are dark posts,
+// published only as ads. The Instagram permalink the webhook carries points at
+// the public post, which does embed, so that is what plays here.
 const playingAdId = ref(null);
 
-const embedUrl = ad =>
-  `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
-    ad.video_page_url
-  )}&show_text=false&autoplay=true`;
+const embedUrl = ad => {
+  const post = ad.source_url?.match(/instagram\.com\/(p|reel)\/([\w-]+)/);
+  return post ? `https://www.instagram.com/${post[1]}/${post[2]}/embed/` : null;
+};
 
-// Loaded only on click: mounting fifty Facebook iframes up front would be slow
+const isPlayable = ad => ad.media_type === 'video' && Boolean(embedUrl(ad));
+
+// Loaded only on click: mounting fifty Instagram iframes up front would be slow
 // and would call out to Meta for every ad on screen.
 const play = adId => {
   playingAdId.value = adId;
@@ -106,7 +109,7 @@ onMounted(async () => {
           allowfullscreen
         />
         <button
-          v-else-if="ad.video_page_url"
+          v-else-if="isPlayable(ad)"
           type="button"
           class="relative w-full group aspect-[9/16] bg-n-alpha-2"
           :aria-label="t('CRM.AD_GALLERY.WATCH_VIDEO')"
@@ -162,17 +165,6 @@ onMounted(async () => {
           </dl>
 
           <div class="flex gap-3 mt-1">
-            <a
-              v-if="
-                ad.video_page_url && !ad.creative_type?.startsWith('video/')
-              "
-              :href="ad.video_page_url"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-xs text-n-brand hover:underline"
-            >
-              {{ t('CRM.AD_GALLERY.WATCH_VIDEO') }}
-            </a>
             <a
               v-if="ad.source_url"
               :href="ad.source_url"
