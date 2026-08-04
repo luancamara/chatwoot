@@ -64,7 +64,10 @@ onMounted(async () => {
       {{ t('CRM.AD_GALLERY.EMPTY') }}
     </div>
 
-    <div v-else class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <div
+      v-else
+      class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
+    >
       <article
         v-for="ad in visibleAds"
         :key="ad.ad_id"
@@ -76,13 +79,13 @@ onMounted(async () => {
           :poster="ad.thumbnail_url"
           controls
           preload="none"
-          class="object-cover w-full aspect-video bg-n-alpha-2"
+          class="object-cover w-full aspect-[9/16] bg-n-alpha-2"
         />
         <img
           v-else-if="ad.creative_url || ad.thumbnail_url"
           :src="ad.creative_url || ad.thumbnail_url"
           :alt="ad.ad_name || ad.headline"
-          class="object-cover w-full aspect-video bg-n-alpha-2"
+          class="object-cover w-full aspect-[9/16] bg-n-alpha-2"
         />
 
         <div class="flex flex-col gap-2 p-4">
