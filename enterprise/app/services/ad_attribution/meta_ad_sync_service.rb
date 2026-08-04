@@ -51,20 +51,27 @@ class AdAttribution::MetaAdSyncService
       media['image_url'].presence || creative['image_url'].presence
   end
 
+  def instagram_media_url(creative)
+    instagram_media(creative)['media_url'].presence
+  end
+
   # The only route to the actual video file. Ad creatives are dark posts, so
   # they never appear in the account's media listing, but the creative carries
-  # the Instagram media id and that id resolves to a direct media_url when asked
-  # with the token of the Instagram inbox that owns it.
-  def instagram_media_url(creative)
+  # the Instagram media id and that id resolves when asked with the token of the
+  # Instagram inbox that owns it. Its thumbnail_url is the real cover of that
+  # video, unlike the creative thumbnail Meta returns.
+  def instagram_media(creative)
+    return @instagram_media if defined?(@instagram_media)
+
     media_id = creative['effective_instagram_media_id']
     channel = Channel::Instagram.find_by(instagram_id: creative['instagram_user_id']) if media_id.present?
-    return if channel.blank?
+    return @instagram_media = {} if channel.blank?
 
     response = HTTParty.get(
       "#{INSTAGRAM_URI}/#{api_version}/#{media_id}",
-      query: { fields: 'media_url', access_token: channel.access_token }
+      query: { fields: 'media_url,thumbnail_url', access_token: channel.access_token }
     )
-    response.success? ? response.parsed_response['media_url'].presence : nil
+    @instagram_media = response.success? ? response.parsed_response : {}
   end
 
   # The actual video file, when the token is allowed to see it. Meta answers 200
@@ -87,10 +94,16 @@ class AdAttribution::MetaAdSyncService
       adset_name: body.dig('adset', 'name'),
       campaign_id: body.dig('campaign', 'id'),
       campaign_name: body.dig('campaign', 'name'),
-      thumbnail_url: body.dig('creative', 'thumbnail_url'),
+      thumbnail_url: cover_url(body['creative'] || {}),
       synced_at: Time.current,
       sync_error: nil
     )
+  end
+
+  # Instagram's own cover for the media, falling back to the creative thumbnail
+  # Meta serves, which does not always match the video it is shown over.
+  def cover_url(creative)
+    instagram_media(creative)['thumbnail_url'].presence || creative['thumbnail_url']
   end
 
   # Ads in ad accounts the token cannot reach are expected here. Record why so

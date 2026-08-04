@@ -23,6 +23,7 @@
 class MetaAd < ApplicationRecord
   has_many :conversation_ad_referrals, primary_key: :ad_id, foreign_key: :ad_id, dependent: :nullify, inverse_of: :meta_ad
   has_one_attached :creative
+  has_one_attached :poster
 
   validates :ad_id, presence: true, uniqueness: true
   # Graph API creative thumbnails carry long signed query strings, past the 255

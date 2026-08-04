@@ -8,7 +8,16 @@ class AdAttribution::StoreCreativeService
   pattr_initialize [:ad_id!, { url: nil }]
 
   def perform
-    return if meta_ad.blank? || meta_ad.creative.attached?
+    return if meta_ad.blank?
+
+    store_creative
+    store_poster
+  end
+
+  private
+
+  def store_creative
+    return if meta_ad.creative.attached?
 
     # Tried in order rather than picking one: Meta expires CDN links on older
     # ads, so the best available source is often already gone and the next one
@@ -17,17 +26,29 @@ class AdAttribution::StoreCreativeService
       file = download(source)
       next if file.blank?
 
-      # content_type has to be carried over or the browser will not play a video.
-      meta_ad.creative.attach(
-        io: file,
-        filename: file.original_filename.presence || "ad_#{ad_id}",
-        content_type: file.content_type
-      )
+      attach(meta_ad.creative, file)
       break
     end
   end
 
-  private
+  # The video's cover, kept locally for the same reason as the video itself, and
+  # only for videos since an image creative is its own poster.
+  def store_poster
+    return if meta_ad.poster.attached? || meta_ad.thumbnail_url.blank?
+    return unless meta_ad.creative.attached? && meta_ad.creative.content_type.to_s.start_with?('video/')
+
+    file = download(meta_ad.thumbnail_url)
+    attach(meta_ad.poster, file) if file.present?
+  end
+
+  # content_type has to be carried over or the browser will not play a video.
+  def attach(attachment, file)
+    attachment.attach(
+      io: file,
+      filename: file.original_filename.presence || "ad_#{ad_id}",
+      content_type: file.content_type
+    )
+  end
 
   def sources
     [url, payload_image_url, meta_ad.thumbnail_url].filter_map(&:presence)

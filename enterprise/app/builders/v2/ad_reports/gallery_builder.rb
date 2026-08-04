@@ -26,7 +26,7 @@ class V2::AdReports::GalleryBuilder
       video_page_url: latest.raw['video_url'],
       creative_url: creative_url(meta_ad),
       creative_type: meta_ad&.creative&.attached? ? meta_ad.creative.content_type : nil,
-      thumbnail_url: meta_ad&.thumbnail_url.presence || latest.payload_thumbnail_url,
+      thumbnail_url: poster_url(meta_ad) || latest.payload_thumbnail_url,
       first_seen_at: referrals.min_by(&:referred_at).referred_at.to_i,
       last_seen_at: latest.referred_at.to_i
     )
@@ -49,12 +49,23 @@ class V2::AdReports::GalleryBuilder
   end
 
   def meta_ads
-    @meta_ads ||= MetaAd.where(ad_id: referrals_by_ad.keys).includes(creative_attachment: :blob).index_by(&:ad_id)
+    @meta_ads ||= MetaAd.where(ad_id: referrals_by_ad.keys)
+                        .includes(creative_attachment: :blob, poster_attachment: :blob)
+                        .index_by(&:ad_id)
   end
 
   def creative_url(meta_ad)
-    return if meta_ad.blank? || !meta_ad.creative.attached?
+    blob_path(meta_ad&.creative)
+  end
 
-    Rails.application.routes.url_helpers.rails_blob_url(meta_ad.creative, only_path: true)
+  # Served from local storage rather than Meta's CDN, which expires its links.
+  def poster_url(meta_ad)
+    blob_path(meta_ad&.poster) || meta_ad&.thumbnail_url.presence
+  end
+
+  def blob_path(attachment)
+    return if attachment.blank? || !attachment.attached?
+
+    Rails.application.routes.url_helpers.rails_blob_url(attachment, only_path: true)
   end
 end
