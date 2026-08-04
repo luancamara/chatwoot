@@ -569,6 +569,7 @@ Rails.application.routes.draw do
             resources :ad_reports, only: [], controller: '/enterprise/api/v2/accounts/ad_reports' do
               collection do
                 get :performance
+                get :gallery
               end
             end
           end

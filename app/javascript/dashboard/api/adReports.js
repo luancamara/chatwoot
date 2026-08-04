@@ -9,6 +9,10 @@ class AdReportsAPI extends ApiClient {
   getPerformance(params) {
     return axios.get(`${this.url}/performance`, { params });
   }
+
+  getGallery() {
+    return axios.get(`${this.url}/gallery`);
+  }
 }
 
 export default new AdReportsAPI();

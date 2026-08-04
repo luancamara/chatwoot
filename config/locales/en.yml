@@ -300,6 +300,11 @@ en:
     attachment: 'Attachment'
     no_content: 'No content'
   conversations:
+    ad_referral:
+      heading: 'Lead veio de anúncio'
+      campaign: 'Campanha'
+      adset: 'Conjunto'
+      view_ad: 'Ver anúncio'
     captain:
       handoff: 'Transferring to another agent for further assistance.'
     messages:

@@ -1,17 +1,20 @@
 # Promotes the raw referral Meta ships on an inbound message into a queryable
 # row on the conversation, so ad performance can be reported on.
 #
-# First touch wins: a later ad click into an already attributed conversation is
-# kept on the message but does not overwrite the conversation's origin.
+# Attribution is first touch: a later ad click into an already attributed
+# conversation does not overwrite the conversation's origin, so a lead is never
+# counted twice. The agent still sees every click, through the private note.
 class AdAttribution::RecordReferralService
-  pattr_initialize [:message!]
+  pattr_initialize [:message!, { note: true }]
 
   def perform
     return if payload.source_type.blank?
-    return if conversation.conversation_ad_referral.present?
 
-    referral = build_referral
-    AdAttribution::SyncMetaAdJob.perform_later(referral.ad_id) if referral.ad_id.present?
+    # Queried rather than read off the association, which the caller may already
+    # have loaded as nil before the first referral was written.
+    referral = ConversationAdReferral.find_by(conversation_id: conversation.id) || build_referral
+    AdAttribution::SyncMetaAdJob.perform_later(payload.ad_id) if payload.ad_id.present?
+    post_note
     referral
   end
 
@@ -26,6 +29,21 @@ class AdAttribution::RecordReferralService
         contact_id: conversation.contact_id,
         referred_at: message.created_at
       )
+    )
+  end
+
+  # Placed right before the message that carried the referral, so a returning
+  # lead's origin reads in timeline order rather than at the top of the thread.
+  def post_note
+    return unless note
+
+    conversation.messages.create!(
+      account_id: message.account_id,
+      inbox_id: message.inbox_id,
+      message_type: :outgoing,
+      private: true,
+      content: AdAttribution::ReferralNoteBuilder.new(payload: payload).content,
+      created_at: message.created_at - 1.second
     )
   end
 

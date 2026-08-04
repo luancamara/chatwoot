@@ -1,5 +1,14 @@
 {
   "CRM": {
+    "AD_GALLERY": {
+      "TITLE": "Galeria de Anúncios",
+      "SEARCH": "Buscar por título, texto ou campanha",
+      "CAMPAIGN": "Campanha",
+      "RUNNING_SINCE": "Primeiro lead",
+      "LAST_LEAD": "Último lead",
+      "VIEW_ON_META": "Abrir anúncio na Meta",
+      "EMPTY": "Nenhum anúncio registrado ainda."
+    },
     "AD_REPORTS": {
       "TOTAL_LEADS": "Leads vindos de anúncios",
       "BY_CAMPAIGN": "Leads por campanha",

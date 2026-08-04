@@ -672,6 +672,14 @@ const menuItems = computed(() => {
         },
       ],
     },
+    {
+      // Outside the admin block: the gallery is reference material agents need
+      // on the floor to answer what an ad promised.
+      name: 'Ad Gallery',
+      label: t('SIDEBAR.CRM_AD_GALLERY'),
+      icon: 'i-lucide-megaphone',
+      to: accountScopedRoute('crm_ad_gallery'),
+    },
     ...(isAdmin.value
       ? [
           {

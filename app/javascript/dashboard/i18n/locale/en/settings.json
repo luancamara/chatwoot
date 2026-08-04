@@ -419,6 +419,7 @@
     "CRM_FUNNEL": "Sales Funnel",
     "CRM_SALES_REPORTS": "Sales Reports",
     "CRM_AD_REPORTS": "Anúncios",
+    "CRM_AD_GALLERY": "Galeria de Anúncios",
     "CONVERSATION_WORKFLOW": "Conversation Workflow"
   },
   "DATA_IMPORTS": {

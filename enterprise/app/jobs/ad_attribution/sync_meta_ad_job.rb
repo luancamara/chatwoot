@@ -10,5 +10,8 @@ class AdAttribution::SyncMetaAdJob < ApplicationJob
     return if MetaAd.exists?(ad_id: ad_id, synced_at: RETRY_AFTER.ago..)
 
     AdAttribution::MetaAdSyncService.new(ad_id: ad_id).perform
+    # Runs after the sync so the MetaAd row it attaches to exists, including
+    # when the sync only recorded an error.
+    AdAttribution::StoreCreativeJob.perform_later(ad_id)
   end
 end
