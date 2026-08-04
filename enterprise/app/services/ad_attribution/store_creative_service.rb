@@ -10,21 +10,35 @@ class AdAttribution::StoreCreativeService
   def perform
     return if meta_ad.blank? || meta_ad.creative.attached?
 
-    source = url.presence || payload_image_url || meta_ad.thumbnail_url.presence
-    return if source.blank?
+    # Tried in order rather than picking one: Meta expires CDN links on older
+    # ads, so the best available source is often already gone and the next one
+    # still works. That expiry is the whole reason creatives are copied locally.
+    sources.each do |source|
+      file = download(source)
+      next if file.blank?
 
-    # Meta expires CDN links on older ads, which is the whole reason creatives
-    # are copied locally; a gone creative must not fail the surrounding sync.
-    file = Down.download(source, max_size: 100 * 1024 * 1024)
-    # content_type has to be carried over or the browser will not play the video.
-    meta_ad.creative.attach(
-      io: file,
-      filename: file.original_filename.presence || "ad_#{ad_id}",
-      content_type: file.content_type
-    )
+      # content_type has to be carried over or the browser will not play a video.
+      meta_ad.creative.attach(
+        io: file,
+        filename: file.original_filename.presence || "ad_#{ad_id}",
+        content_type: file.content_type
+      )
+      break
+    end
   end
 
   private
+
+  def sources
+    [url, payload_image_url, meta_ad.thumbnail_url].map(&:presence).compact
+  end
+
+  def download(source)
+    Down.download(source, max_size: 100 * 1024 * 1024)
+  rescue Down::Error => e
+    Rails.logger.warn "[ad_attribution] creative #{ad_id} from #{source[0, 60]}: #{e.message}"
+    nil
+  end
 
   def payload_image_url
     referral = ConversationAdReferral.where(ad_id: ad_id)
