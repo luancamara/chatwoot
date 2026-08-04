@@ -9,9 +9,10 @@ class AdAttribution::SyncMetaAdJob < ApplicationJob
     # transient, and skipping forever would leave the ad permanently unnamed.
     return if MetaAd.exists?(ad_id: ad_id, synced_at: RETRY_AFTER.ago..)
 
-    AdAttribution::MetaAdSyncService.new(ad_id: ad_id).perform
-    # Runs after the sync so the MetaAd row it attaches to exists, including
-    # when the sync only recorded an error.
-    AdAttribution::StoreCreativeJob.perform_later(ad_id)
+    # The sync returns the video source when the token could resolve one; the
+    # creative job falls back to the payload still otherwise. It runs after the
+    # sync so the MetaAd row exists, including when the sync only recorded an error.
+    video_url = AdAttribution::MetaAdSyncService.new(ad_id: ad_id).perform
+    AdAttribution::StoreCreativeJob.perform_later(ad_id, video_url)
   end
 end

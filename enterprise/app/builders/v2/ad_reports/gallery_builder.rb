@@ -23,7 +23,9 @@ class V2::AdReports::GalleryBuilder
       body: latest.body,
       source_url: latest.source_url,
       media_type: latest.raw['media_type'],
+      video_page_url: latest.raw['video_url'],
       creative_url: creative_url(meta_ad),
+      creative_type: meta_ad&.creative&.attached? ? meta_ad.creative.content_type : nil,
       thumbnail_url: meta_ad&.thumbnail_url.presence || latest.payload_thumbnail_url,
       first_seen_at: referrals.min_by(&:referred_at).referred_at.to_i,
       last_seen_at: latest.referred_at.to_i

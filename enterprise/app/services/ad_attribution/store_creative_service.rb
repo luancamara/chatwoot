@@ -1,19 +1,19 @@
-# Stores the ad creative locally, once per ad.
+# Stores the ad creative locally, once per ad, so the gallery keeps working
+# after Meta expires the CDN links or the ad is deleted.
 #
-# The video and image URLs come from the webhook payload rather than the Graph
-# API, so creatives are available without an ads token. They point at Meta's CDN
-# and are downloaded so the gallery keeps working after Meta expires them or the
-# ad is deleted.
+# Without an ads token only the still is available: the webhook's `video_url` is
+# a Facebook reel *page*, not a media file. The Graph API resolves the real
+# video source and passes it in through `url`.
 class AdAttribution::StoreCreativeService
-  pattr_initialize [:ad_id!]
+  pattr_initialize [:ad_id!, { url: nil }]
 
   def perform
     return if meta_ad.blank? || meta_ad.creative.attached?
 
-    url = source_url
-    return if url.blank?
+    source = url.presence || payload_image_url
+    return if source.blank?
 
-    file = Down.download(url, max_size: 100 * 1024 * 1024)
+    file = Down.download(source, max_size: 100 * 1024 * 1024)
     # content_type has to be carried over or the browser will not play the video.
     meta_ad.creative.attach(
       io: file,
@@ -24,12 +24,12 @@ class AdAttribution::StoreCreativeService
 
   private
 
-  def source_url
+  def payload_image_url
     referral = ConversationAdReferral.where(ad_id: ad_id)
-                                     .where("raw->>'video_url' IS NOT NULL OR raw->>'image_url' IS NOT NULL")
+                                     .where("raw->>'image_url' IS NOT NULL OR raw->>'thumbnail_url' IS NOT NULL")
                                      .order(referred_at: :desc)
                                      .first
-    referral&.raw&.values_at('video_url', 'image_url')&.compact&.first
+    referral&.raw&.values_at('image_url', 'thumbnail_url')&.compact&.first
   end
 
   def meta_ad

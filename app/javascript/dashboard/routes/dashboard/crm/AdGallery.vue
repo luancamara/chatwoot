@@ -71,7 +71,7 @@ onMounted(async () => {
         class="flex flex-col overflow-hidden rounded-lg bg-n-alpha-1"
       >
         <video
-          v-if="ad.creative_url && ad.media_type === 'video'"
+          v-if="ad.creative_type?.startsWith('video/')"
           :src="ad.creative_url"
           :poster="ad.thumbnail_url"
           controls
@@ -90,39 +90,49 @@ onMounted(async () => {
             {{ ad.ad_name || ad.headline || ad.ad_id }}
           </h2>
 
-          <p
-            v-if="ad.body"
-            class="text-sm whitespace-pre-line text-n-slate-11"
-          >
+          <p v-if="ad.body" class="text-sm whitespace-pre-line text-n-slate-11">
             {{ ad.body }}
           </p>
 
           <dl class="mt-1 text-xs text-n-slate-11">
             <div v-if="ad.campaign_name" class="flex gap-1">
-              <dt>{{ t('CRM.AD_GALLERY.CAMPAIGN') }}:</dt>
+              <dt>{{ t('CRM.AD_GALLERY.CAMPAIGN') }}</dt>
               <dd class="truncate text-n-slate-12">{{ ad.campaign_name }}</dd>
             </div>
             <div class="flex gap-1">
-              <dt>{{ t('CRM.AD_GALLERY.RUNNING_SINCE') }}:</dt>
+              <dt>{{ t('CRM.AD_GALLERY.RUNNING_SINCE') }}</dt>
               <dd class="text-n-slate-12">
                 {{ formatDate(ad.first_seen_at) }}
               </dd>
             </div>
             <div class="flex gap-1">
-              <dt>{{ t('CRM.AD_GALLERY.LAST_LEAD') }}:</dt>
+              <dt>{{ t('CRM.AD_GALLERY.LAST_LEAD') }}</dt>
               <dd class="text-n-slate-12">{{ formatDate(ad.last_seen_at) }}</dd>
             </div>
           </dl>
 
-          <a
-            v-if="ad.source_url"
-            :href="ad.source_url"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="mt-1 text-xs text-n-brand hover:underline"
-          >
-            {{ t('CRM.AD_GALLERY.VIEW_ON_META') }}
-          </a>
+          <div class="flex gap-3 mt-1">
+            <a
+              v-if="
+                ad.video_page_url && !ad.creative_type?.startsWith('video/')
+              "
+              :href="ad.video_page_url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-xs text-n-brand hover:underline"
+            >
+              {{ t('CRM.AD_GALLERY.WATCH_VIDEO') }}
+            </a>
+            <a
+              v-if="ad.source_url"
+              :href="ad.source_url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-xs text-n-brand hover:underline"
+            >
+              {{ t('CRM.AD_GALLERY.VIEW_ON_META') }}
+            </a>
+          </div>
         </div>
       </article>
     </div>
