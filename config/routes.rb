@@ -572,6 +572,10 @@ Rails.application.routes.draw do
                 get :gallery
               end
             end
+
+            resources :contacts, only: [] do
+              resource :erp_orders, only: [:show], controller: '/enterprise/api/v2/accounts/erp_orders'
+            end
           end
         end
       end

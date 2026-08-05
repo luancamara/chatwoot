@@ -27,6 +27,7 @@ import LinearSetupCTA from 'dashboard/components/widgets/conversation/linear/Lin
 import ConversationInsight from './ConversationInsight.vue';
 import FollowUpReminders from './FollowUpReminders.vue';
 import AdSourcePanel from './AdSourcePanel.vue';
+import ErpOrdersPanel from './ErpOrdersPanel.vue';
 import { useAdmin } from 'dashboard/composables/useAdmin';
 
 const props = defineProps({
@@ -217,6 +218,18 @@ onMounted(() => {
               "
             >
               <AdSourcePanel />
+            </AccordionItem>
+          </div>
+          <div v-else-if="element.name === 'erp_orders'">
+            <AccordionItem
+              :title="$t('CONVERSATION_SIDEBAR.ACCORDION.ERP_ORDERS')"
+              :is-open="isContactSidebarItemOpen('is_erp_orders_open')"
+              compact
+              @toggle="
+                value => toggleSidebarUIState('is_erp_orders_open', value)
+              "
+            >
+              <ErpOrdersPanel />
             </AccordionItem>
           </div>
           <div v-else-if="element.name === 'contact_attributes'">

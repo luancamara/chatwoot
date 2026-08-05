@@ -443,7 +443,13 @@
       "CONVERSATION_INSIGHT": "Análise da Conversa",
       "FOLLOW_UP_REMINDERS": "Lembretes de Follow-up",
       "AD_SOURCE": "Origem do Lead",
+      "ERP_ORDERS": "Compras do Cliente",
       "SHARED_FILES": "Attachments"
+    },
+    "ERP_ORDERS": {
+      "TOTAL": "Total comprado",
+      "CANCELLED": "cancelado",
+      "EMPTY": "Nenhuma compra registrada para este contato."
     },
     "AD_SOURCE": {
       "AD": "Anúncio",
