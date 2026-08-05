@@ -12,7 +12,7 @@ class AdAttribution::CapiEventService
   pattr_initialize [:conversion!]
 
   def perform
-    return if dataset_id.blank? || access_token.blank? || click_id.blank?
+    return if dataset_id.blank? || access_token.blank? || click_id.blank? || waba_id.blank?
 
     response = HTTParty.post(
       "#{BASE_URI}/#{api_version}/#{dataset_id}/events",
@@ -36,13 +36,23 @@ class AdAttribution::CapiEventService
       messaging_channel: 'whatsapp',
       # Deduplicação: reenviar o mesmo pedido não conta a venda duas vezes.
       event_id: "#{conversion.conversation_ad_referral_id}-#{conversion.erp_order_ref}",
-      user_data: { ctwa_clid: click_id },
+      # A conta do WhatsApp precisa ir dentro de user_data: no nível do evento a
+      # Meta responde "falta a identificação da conta do WhatsApp Business".
+      user_data: { ctwa_clid: click_id, whatsapp_business_account_id: waba_id },
       custom_data: { value: conversion.value.to_f, currency: 'BRL', order_id: conversion.erp_order_ref }
     }
   end
 
   def click_id
     @click_id ||= conversion.conversation_ad_referral.ctwa_clid
+  end
+
+  # Sai do próprio canal que recebeu o lead, para não depender de mais um config.
+  def waba_id
+    return @waba_id if defined?(@waba_id)
+
+    channel = conversion.conversation_ad_referral.inbox&.channel
+    @waba_id = channel.try(:provider_config)&.dig('business_account_id')
   end
 
   def dataset_id
