@@ -7,6 +7,7 @@
 #  ctwa_clid       :string
 #  headline        :string
 #  raw             :jsonb            not null
+#  reconciled_at   :datetime
 #  referred_at     :datetime         not null
 #  source_type     :string
 #  source_url      :string
@@ -40,6 +41,8 @@ class ConversationAdReferral < ApplicationRecord
   belongs_to :inbox
   belongs_to :contact, optional: true
   belongs_to :meta_ad, primary_key: :ad_id, foreign_key: :ad_id, optional: true, inverse_of: :conversation_ad_referrals
+
+  has_many :ad_conversions, dependent: :destroy
 
   validates :conversation_id, uniqueness: true
   validates :source_url, length: { maximum: Limits::URL_LENGTH_LIMIT }

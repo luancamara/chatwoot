@@ -81,3 +81,11 @@ generate_weekly_evaluation_reports_job:
   cron: '0 6 * * 1'
   class: 'Crm::WeeklyEvaluationReportJob'
   queue: scheduled_jobs
+
+# executed daily at 05:00 UTC (02:00 BRT), after the stores have closed and
+# the day's orders are settled in the ERP
+# reconciles ad leads against ERP orders so campaigns can be measured by revenue
+reconcile_ad_orders_job:
+  cron: '0 5 * * *'
+  class: 'AdAttribution::ReconcileOrdersSchedulerJob'
+  queue: scheduled_jobs

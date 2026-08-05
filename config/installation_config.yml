@@ -168,6 +168,16 @@
   description: 'Configure this if you want to use a different WhatsApp API version. Make sure its prefixed with `v`'
   value: 'v22.0'
   locked: false
+- name: ERP_BFF_URL
+  display_title: 'ERP BFF URL'
+  description: 'Base URL of the BFF that fronts the Firebird ERP, used to reconcile ad leads against orders. Prefer the internal Swarm address so the call never leaves the network'
+  value: ''
+  locked: false
+- name: ERP_BFF_TOKEN
+  display_title: 'ERP BFF Token'
+  description: 'Bearer token for the ERP BFF, if it requires one'
+  value: ''
+  locked: false
 - name: META_ADS_ACCESS_TOKEN
   display_title: 'Meta Ads Access Token'
   description: 'System User token with ads_read, used to resolve ad, ad set and campaign names for conversations that came from a Meta ad'

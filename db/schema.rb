@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_08_03_120001) do
+ActiveRecord::Schema[7.1].define(version: 2026_08_05_120000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -112,6 +112,23 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_03_120001) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "ad_conversions", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "conversation_ad_referral_id", null: false
+    t.integer "erp_client_id"
+    t.string "erp_order_ref", null: false
+    t.decimal "value", precision: 12, scale: 2, default: "0.0", null: false
+    t.datetime "ordered_at", null: false
+    t.string "status", null: false
+    t.integer "erp_midia"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "ordered_at"], name: "index_ad_conversions_on_account_id_and_ordered_at"
+    t.index ["account_id"], name: "index_ad_conversions_on_account_id"
+    t.index ["conversation_ad_referral_id", "erp_order_ref"], name: "index_ad_conversions_on_referral_and_order", unique: true
+    t.index ["conversation_ad_referral_id"], name: "index_ad_conversions_on_referral"
   end
 
   create_table "agent_bot_inboxes", force: :cascade do |t|
@@ -783,6 +800,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_03_120001) do
     t.datetime "referred_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "reconciled_at"
     t.index ["account_id", "ad_id", "referred_at"], name: "idx_on_account_id_ad_id_referred_at_3ea94c2fcc"
     t.index ["account_id"], name: "index_conversation_ad_referrals_on_account_id"
     t.index ["contact_id"], name: "index_conversation_ad_referrals_on_contact_id"
@@ -1642,6 +1660,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_03_120001) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "ad_conversions", "accounts"
+  add_foreign_key "ad_conversions", "conversation_ad_referrals"
   add_foreign_key "agent_working_hours", "accounts"
   add_foreign_key "agent_working_hours", "users"
   add_foreign_key "conversation_ad_referrals", "accounts"
