@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_08_05_120000) do
+ActiveRecord::Schema[7.1].define(version: 2026_08_05_120001) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1299,6 +1299,19 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_05_120000) do
     t.index ["sender_type", "sender_id", "created_at"], name: "index_messages_on_sender_and_created"
     t.index ["sender_type", "sender_id"], name: "index_messages_on_sender_type_and_sender_id"
     t.index ["source_id"], name: "index_messages_on_source_id"
+  end
+
+  create_table "meta_ad_insights", force: :cascade do |t|
+    t.string "ad_id", null: false
+    t.date "date", null: false
+    t.decimal "spend", precision: 12, scale: 2, default: "0.0", null: false
+    t.integer "impressions", default: 0, null: false
+    t.integer "clicks", default: 0, null: false
+    t.integer "reach", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ad_id", "date"], name: "index_meta_ad_insights_on_ad_id_and_date", unique: true
+    t.index ["date"], name: "index_meta_ad_insights_on_date"
   end
 
   create_table "meta_ads", force: :cascade do |t|

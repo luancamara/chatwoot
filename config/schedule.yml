@@ -89,3 +89,10 @@ reconcile_ad_orders_job:
   cron: '0 5 * * *'
   class: 'AdAttribution::ReconcileOrdersSchedulerJob'
   queue: scheduled_jobs
+
+# executed daily at 05:30 UTC, after the reconciliation
+# pulls the last 7 days of ad spend so cost per lead and ROAS stay current
+sync_ad_insights_job:
+  cron: '30 5 * * *'
+  class: 'AdAttribution::SyncInsightsJob'
+  queue: scheduled_jobs

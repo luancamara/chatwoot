@@ -22,6 +22,8 @@
 #
 class MetaAd < ApplicationRecord
   has_many :conversation_ad_referrals, primary_key: :ad_id, foreign_key: :ad_id, dependent: :nullify, inverse_of: :meta_ad
+  has_many :insights, class_name: 'MetaAdInsight', primary_key: :ad_id, foreign_key: :ad_id,
+                      dependent: :delete_all, inverse_of: :meta_ad
   has_one_attached :creative
   has_one_attached :poster
 
