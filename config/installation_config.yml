@@ -178,6 +178,16 @@
   description: 'Bearer token for the ERP BFF, if it requires one'
   value: ''
   locked: false
+- name: META_CAPI_DATASET_ID
+  display_title: 'Meta CAPI Dataset ID'
+  description: 'Dataset that receives click-to-WhatsApp purchase conversions, so Meta optimises for buyers instead of chatters. Create it in Events Manager for the WhatsApp Business Account'
+  value: ''
+  locked: false
+- name: META_CAPI_ACCESS_TOKEN
+  display_title: 'Meta CAPI Access Token'
+  description: 'Token allowed to write conversions (needs ads_management). Falls back to META_ADS_ACCESS_TOKEN, which usually only has ads_read and cannot write'
+  value: ''
+  locked: false
 - name: META_ADS_ACCESS_TOKEN
   display_title: 'Meta Ads Access Token'
   description: 'System User token with ads_read, used to resolve ad, ad set and campaign names for conversations that came from a Meta ad'

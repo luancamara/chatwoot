@@ -55,6 +55,8 @@ class AdAttribution::ReconcileOrdersService
     )
     was_new = conversion.new_record?
     conversion.save!
+    # Só venda volta para a Meta; cancelamento não é sinal de compra.
+    AdAttribution::SendCapiEventJob.perform_later(conversion) if was_new && conversion.sold?
     was_new
   end
 
