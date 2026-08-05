@@ -20,22 +20,74 @@ class V2::AdReports::PerformanceBuilder
   pattr_initialize [:account!, :params!]
 
   def build
-    rows.map do |row|
-      {
-        ad_id: row.ad_id,
-        source_type: row.source_type,
-        ad_name: row.ad_name || row.headline,
-        campaign_name: row.campaign_name,
-        adset_name: row.adset_name,
-        thumbnail_url: row.thumbnail_url,
-        leads: row.leads,
-        resolved: row.resolved,
-        contacts: row.contacts
-      }
-    end
+    rows.map { |row| present(row) }
   end
 
   private
+
+  def present(row)
+    {
+      ad_id: row.ad_id,
+      source_type: row.source_type,
+      ad_name: row.ad_name || row.headline,
+      campaign_name: row.campaign_name,
+      adset_name: row.adset_name,
+      thumbnail_url: row.thumbnail_url,
+      leads: row.leads,
+      resolved: row.resolved,
+      contacts: row.contacts,
+      quality_score: quality_by_ad.dig(row.ad_id, :quality),
+      first_response_seconds: quality_by_ad.dig(row.ad_id, :tpr)
+    }.merge(economics(row))
+  end
+
+  def economics(row)
+    orders, revenue = conversions_by_ad.fetch(row.ad_id, [0, 0])
+    spend = spend_by_ad[row.ad_id].to_f
+
+    {
+      orders: orders,
+      revenue: revenue.to_f,
+      spend: spend,
+      cost_per_lead: divide(spend, row.leads),
+      cost_per_order: divide(spend, orders),
+      roas: divide(revenue.to_f, spend)
+    }
+  end
+
+  def divide(numerator, denominator)
+    return if denominator.to_f.zero?
+
+    (numerator / denominator.to_f).round(2)
+  end
+
+  # Calculados em consultas separadas de propósito: pedidos e gasto são 1:N por
+  # anúncio, então juntá-los na agregação principal multiplicaria as linhas e
+  # inflaria a contagem de leads.
+  def conversions_by_ad
+    @conversions_by_ad ||= AdConversion.sold
+                                       .joins(:conversation_ad_referral)
+                                       .where(conversation_ad_referrals: { account_id: account.id, referred_at: range })
+                                       .group('conversation_ad_referrals.ad_id')
+                                       .pluck(Arel.sql('conversation_ad_referrals.ad_id, COUNT(*), COALESCE(SUM(ad_conversions.value), 0)'))
+                                       .to_h { |ad_id, count, sum| [ad_id, [count, sum]] }
+  end
+
+  def spend_by_ad
+    @spend_by_ad ||= MetaAdInsight.in_period(range.first.to_date..range.last.to_date)
+                                  .group(:ad_id)
+                                  .sum(:spend)
+  end
+
+  # Separa "anúncio ruim" de "anúncio entregando às 23h, quando ninguém atende".
+  def quality_by_ad
+    @quality_by_ad ||= ConversationInsight
+                       .joins(conversation: :conversation_ad_referral)
+                       .where(conversation_ad_referrals: { account_id: account.id, referred_at: range })
+                       .group('conversation_ad_referrals.ad_id')
+                       .pluck(Arel.sql("conversation_ad_referrals.ad_id, AVG(quality_score), AVG((automatic_metrics->>'tpr_seconds')::numeric)"))
+                       .to_h { |ad_id, quality, tpr| [ad_id, { quality: quality&.to_f&.round(2), tpr: tpr&.to_i }] }
+  end
 
   def rows
     scope.select(SELECT)

@@ -30,6 +30,15 @@ const maxCampaignLeads = computed(() =>
   Math.max(...campaigns.value.map(campaign => campaign.leads), 1)
 );
 
+const money = value =>
+  value == null
+    ? '—'
+    : Number(value).toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+        maximumFractionDigits: 0,
+      });
+
 const onFilterChange = async params => {
   isLoading.value = true;
   try {
@@ -43,7 +52,11 @@ const onFilterChange = async params => {
 
 <template>
   <div class="flex flex-col gap-4 p-4">
-    <CrmFilters :show-agent="false" :show-team="false" @filter-change="onFilterChange" />
+    <CrmFilters
+      :show-agent="false"
+      :show-team="false"
+      @filter-change="onFilterChange"
+    />
 
     <div v-if="isLoading" class="flex justify-center py-10">
       <Spinner />
@@ -102,9 +115,11 @@ const onFilterChange = async params => {
               </th>
               <th class="p-3 font-medium">{{ t('CRM.AD_REPORTS.ADSET') }}</th>
               <th class="p-3 font-medium">{{ t('CRM.AD_REPORTS.LEADS') }}</th>
-              <th class="p-3 font-medium">
-                {{ t('CRM.AD_REPORTS.RESOLVED') }}
-              </th>
+              <th class="p-3 font-medium">{{ t('CRM.AD_REPORTS.SPEND') }}</th>
+              <th class="p-3 font-medium">{{ t('CRM.AD_REPORTS.CPL') }}</th>
+              <th class="p-3 font-medium">{{ t('CRM.AD_REPORTS.ORDERS') }}</th>
+              <th class="p-3 font-medium">{{ t('CRM.AD_REPORTS.REVENUE') }}</th>
+              <th class="p-3 font-medium">{{ t('CRM.AD_REPORTS.ROAS') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -131,7 +146,18 @@ const onFilterChange = async params => {
               </td>
               <td class="p-3 text-n-slate-11">{{ row.adset_name || '—' }}</td>
               <td class="p-3 text-n-slate-12">{{ row.leads }}</td>
-              <td class="p-3 text-n-slate-11">{{ row.resolved }}</td>
+              <td class="p-3 text-n-slate-11">{{ money(row.spend) }}</td>
+              <td class="p-3 text-n-slate-11">
+                {{ money(row.cost_per_lead) }}
+              </td>
+              <td class="p-3 text-n-slate-12">{{ row.orders }}</td>
+              <td class="p-3 text-n-slate-12">{{ money(row.revenue) }}</td>
+              <td
+                class="p-3 font-medium"
+                :class="row.roas >= 1 ? 'text-n-teal-11' : 'text-n-slate-11'"
+              >
+                {{ row.roas ? `${row.roas.toFixed(1)}x` : '—' }}
+              </td>
             </tr>
           </tbody>
         </table>

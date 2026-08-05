@@ -18,6 +18,11 @@
       "ADSET": "Conjunto",
       "LEADS": "Leads",
       "RESOLVED": "Resolvidas",
+      "SPEND": "Investido",
+      "CPL": "Custo/lead",
+      "ORDERS": "Pedidos",
+      "REVENUE": "Receita",
+      "ROAS": "ROAS",
       "UNKNOWN_CAMPAIGN": "Campanha não identificada",
       "EMPTY": "Nenhum lead de anúncio no período selecionado."
     },
