@@ -58,7 +58,7 @@ export const routes = [
         path: 'ad-gallery',
         name: 'crm_ad_gallery',
         meta: {
-          permissions: ['administrator', 'agent'],
+          permissions: ['administrator', 'agent', 'custom_role'],
         },
         component: AdGallery,
       },
