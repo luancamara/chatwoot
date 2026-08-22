@@ -170,14 +170,38 @@
   locked: false
 - name: ERP_BFF_URL
   display_title: 'ERP BFF URL'
-  description: 'Base URL of the BFF that fronts the Firebird ERP, used to reconcile ad leads against orders. Prefer the internal Swarm address so the call never leaves the network'
+  description: 'Base URL of the BFF that exports canonical Firebird ERP sales. Prefer the internal Swarm address so the call never leaves the network'
   value: ''
   locked: false
 - name: ERP_BFF_TOKEN
   display_title: 'ERP BFF Token'
-  description: 'Bearer token for the ERP BFF, if it requires one'
+  description: 'Dedicated bearer token required by the ERP conversion export'
   value: ''
   locked: false
+  type: secret
+- name: AD_CONVERSION_SYNC_ENABLED
+  display_title: 'ERP Ad Conversion Synchronization'
+  description: 'Import canonical ERP sales into the conversion ledger without sending them to ad platforms'
+  value: false
+  locked: false
+  type: boolean
+- name: AD_CONVERSION_ACCOUNT_ID
+  display_title: 'ERP Ad Conversion Account'
+  description: 'Chatwoot account that owns the canonical ERP conversion ledger'
+  value: ''
+  locked: false
+- name: META_AD_CONVERSION_LIVE_ENABLED
+  display_title: 'Meta ERP Conversion Delivery'
+  description: 'Send eligible ERP purchases to Meta after the 48-hour confirmation delay'
+  value: false
+  locked: false
+  type: boolean
+- name: GOOGLE_AD_CONVERSION_LIVE_ENABLED
+  display_title: 'Google ERP Conversion Delivery'
+  description: 'Send ERP purchases to Google Data Manager and retract later cancellations'
+  value: false
+  locked: false
+  type: boolean
 - name: META_CAPI_DATASET_ID
   display_title: 'Meta CAPI Dataset ID'
   description: 'Dataset that receives click-to-WhatsApp purchase conversions, so Meta optimises for buyers instead of chatters. Create it in Events Manager for the WhatsApp Business Account'
@@ -188,11 +212,30 @@
   description: 'Token allowed to write conversions (needs ads_management). Falls back to META_ADS_ACCESS_TOKEN, which usually only has ads_read and cannot write'
   value: ''
   locked: false
+  type: secret
+- name: META_CAPI_TEST_EVENT_CODE
+  display_title: 'Meta CAPI Test Event Code'
+  description: 'Optional Events Manager code used only by the explicit test task'
+  value: ''
+  locked: false
 - name: META_ADS_ACCESS_TOKEN
   display_title: 'Meta Ads Access Token'
   description: 'System User token with ads_read, used to resolve ad, ad set and campaign names for conversations that came from a Meta ad'
   value: ''
   locked: false
+  type: secret
+- name: GOOGLE_AD_CONVERSION_CONFIG
+  display_title: 'Google Data Manager Conversion Config'
+  description: 'JSON with Google Ads customer, login customer, UPLOAD_CLICKS Venda ERP action and service account credentials'
+  value: ''
+  locked: false
+  type: secret
+- name: GOOGLE_AD_ADJUSTMENT_CONFIG
+  display_title: 'Google Ads Conversion Adjustment Config'
+  description: 'JSON with Google Ads OAuth, developer token and conversion action credentials used for retractions'
+  value: ''
+  locked: false
+  type: secret
 # ------- End of WhatsApp Channel Related Config ------- #
 
 # MARK: Microsoft Email Channel Config

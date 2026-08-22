@@ -1,66 +1,160 @@
-# Devolve a venda para a Meta, para ela otimizar por quem compra.
-#
-# É o único item da atribuição que muda a entrega dos anúncios, não só o
-# relatório: sem esse retorno a Meta só sabe que alguém puxou conversa, e
-# otimiza para conversa. Com ele, aprende quem fecha pedido.
-#
-# O `ctwa_clid` é o identificador do clique que a própria Meta mandou no
-# webhook, então não é preciso enviar telefone nem e-mail de ninguém.
 class AdAttribution::CapiEventService
   BASE_URI = 'https://graph.facebook.com'.freeze
 
-  pattr_initialize [:conversion!]
+  def initialize(delivery:, erp_client: AdAttribution::ErpClient.new)
+    @delivery = delivery
+    @conversion = delivery.ad_conversion
+    @erp_client = erp_client
+  end
 
-  def perform
-    return if dataset_id.blank? || access_token.blank? || click_id.blank? || waba_id.blank?
+  def perform(test_event_code: nil)
+    @test_only = test_event_code.present?
+    reason = ineligible_reason
+    return handle_ineligible(reason) if reason
 
-    response = HTTParty.post(
-      "#{BASE_URI}/#{api_version}/#{dataset_id}/events",
-      body: { data: [event], access_token: access_token }.to_json,
-      headers: { 'Content-Type' => 'application/json' }
-    )
+    validate_configuration!
+    delivery.record_attempt! unless test_only?
+    response = submit(test_event_code)
+    return fail_request!(response) unless response.success?
 
-    return response.parsed_response if response.success?
-
-    Rails.logger.error "[ad_attribution] CAPI #{conversion.erp_order_ref}: #{response.parsed_response.dig('error', 'message')}"
-    nil
+    handle_success(response.parsed_response)
+  rescue StandardError => e
+    record_exception(e)
+    raise
   end
 
   private
+
+  attr_reader :conversion, :delivery, :erp_client
+
+  def submit(test_event_code)
+    HTTParty.post(
+      "#{BASE_URI}/#{api_version}/#{dataset_id}/events",
+      body: request_body(test_event_code).to_json,
+      headers: { 'Content-Type' => 'application/json' },
+      timeout: 30
+    )
+  end
+
+  def handle_success(result)
+    return result if test_only?
+
+    delivery.update!(
+      status: :accepted,
+      external_event_id: conversion.erp_order_ref,
+      error_code: nil,
+      error_message: nil,
+      diagnostic_data: { 'events_received' => result['events_received'], 'messages' => Array(result['messages']) },
+      submitted_at: Time.current,
+      accepted_at: Time.current,
+      next_attempt_at: nil
+    )
+    result
+  end
+
+  def ineligible_reason
+    return 'conversion_not_sold' unless conversion.sold?
+    return 'conversion_not_ready' if conversion.ordered_at > 48.hours.ago
+    return 'native_ecommerce_purchase' if conversion.ecommerce?
+    return 'unknown_origin' if conversion.unknown?
+    return unless confirmed_erp_status != 4
+
+    confirmed_erp_status == 6 ? 'cancelled_before_submission' : 'erp_status_not_confirmed'
+  end
+
+  def handle_ineligible(reason)
+    return if test_only?
+    return retry_confirmation_later! if reason == 'erp_status_not_confirmed'
+
+    skip!(reason)
+  end
+
+  def record_exception(error)
+    delivery.mark_failed!(error.class.name, 'Meta CAPI request failed') unless test_only? || delivery.failed?
+  end
+
+  def request_body(test_event_code)
+    { data: [event], access_token: access_token }.tap do |payload|
+      payload[:test_event_code] = test_event_code if test_event_code.present?
+    end
+  end
 
   def event
     {
       event_name: 'Purchase',
       event_time: conversion.ordered_at.to_i,
-      action_source: 'business_messaging',
-      messaging_channel: 'whatsapp',
-      # Deduplicação: reenviar o mesmo pedido não conta a venda duas vezes.
-      event_id: "#{conversion.conversation_ad_referral_id}-#{conversion.erp_order_ref}",
-      # A conta do WhatsApp precisa ir dentro de user_data: no nível do evento a
-      # Meta responde "falta a identificação da conta do WhatsApp Business".
-      user_data: { ctwa_clid: click_id, whatsapp_business_account_id: waba_id },
+      event_id: conversion.erp_order_ref,
+      action_source: ctwa? ? 'business_messaging' : 'physical_store',
+      user_data: ctwa? ? ctwa_user_data : conversion.user_data.fetch('meta'),
       custom_data: { value: conversion.value.to_f, currency: 'BRL', order_id: conversion.erp_order_ref }
+    }.tap do |payload|
+      payload[:messaging_channel] = 'whatsapp' if ctwa?
+    end
+  end
+
+  def ctwa?
+    referral&.ctwa_clid.present?
+  end
+
+  def ctwa_user_data
+    {
+      ctwa_clid: referral.ctwa_clid,
+      whatsapp_business_account_id: waba_id
     }
   end
 
-  def click_id
-    @click_id ||= conversion.conversation_ad_referral.ctwa_clid
+  def referral
+    conversion.conversation_ad_referral
   end
 
-  # Sai do próprio canal que recebeu o lead, para não depender de mais um config.
   def waba_id
-    return @waba_id if defined?(@waba_id)
+    @waba_id ||= referral&.inbox&.channel.try(:provider_config)&.dig('business_account_id')
+  end
 
-    channel = conversion.conversation_ad_referral.inbox&.channel
-    @waba_id = channel.try(:provider_config)&.dig('business_account_id')
+  def validate_configuration!
+    raise 'META_CAPI_DATASET_ID is not configured' if dataset_id.blank?
+    raise 'META_CAPI_ACCESS_TOKEN is not configured' if access_token.blank?
+    raise 'WhatsApp Business Account ID is missing' if ctwa? && waba_id.blank?
+    raise 'Meta user identifiers are missing' if !ctwa? && conversion.user_data.fetch('meta', {}).blank?
+  end
+
+  def fail_request!(response)
+    return nil if test_only?
+
+    delivery.mark_failed!("http_#{response.code}", 'Meta CAPI request failed')
+    nil
+  end
+
+  def skip!(reason)
+    delivery.update!(status: :skipped, error_code: reason, next_attempt_at: nil)
+    nil
+  end
+
+  def retry_confirmation_later!
+    delivery.update!(status: :pending, error_code: 'erp_status_not_confirmed', next_attempt_at: 1.hour.from_now)
+    nil
+  end
+
+  def confirmed_erp_status
+    return 4 if test_only?
+    return @confirmed_erp_status if defined?(@confirmed_erp_status)
+
+    sale = erp_client.find_sale(order_ref: conversion.erp_order_ref, ordered_at: conversion.ordered_at)
+    @confirmed_erp_status = sale&.fetch('erp_status', nil)&.to_i
+    return @confirmed_erp_status unless @confirmed_erp_status == 6
+
+    conversion.update!(status: :cancelled, erp_status: 6, last_observed_at: Time.current)
+    @confirmed_erp_status
+  end
+
+  def test_only?
+    @test_only
   end
 
   def dataset_id
     @dataset_id ||= GlobalConfigService.load('META_CAPI_DATASET_ID', '')
   end
 
-  # Token próprio: enviar conversão exige ads_management, enquanto o token de
-  # leitura de anúncios só precisa de ads_read.
   def access_token
     @access_token ||= GlobalConfigService.load('META_CAPI_ACCESS_TOKEN', '').presence ||
                       GlobalConfigService.load('META_ADS_ACCESS_TOKEN', '')
