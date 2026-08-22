@@ -1,19 +1,22 @@
-// Constants
+import {
+  processVariable,
+  buildWhatsAppProcessedParams,
+  findComponentByType,
+  COMPONENT_TYPES,
+} from '@chatwoot/utils';
+
+// Constants and pure template helpers are shared with the mobile app via
+// @chatwoot/utils so the logic lives in one place.
+export {
+  MEDIA_FORMATS,
+  COMPONENT_TYPES,
+  findComponentByType,
+  processVariable,
+  renderTemplatePreview,
+} from '@chatwoot/utils';
+
 export const DEFAULT_LANGUAGE = 'en';
 export const DEFAULT_CATEGORY = 'UTILITY';
-export const COMPONENT_TYPES = {
-  HEADER: 'HEADER',
-  BODY: 'BODY',
-  BUTTONS: 'BUTTONS',
-};
-export const MEDIA_FORMATS = ['IMAGE', 'VIDEO', 'DOCUMENT'];
-
-export const findComponentByType = (template, type) =>
-  template.components?.find(component => component.type === type);
-
-export const processVariable = str => {
-  return str.replace(/{{|}}/g, '');
-};
 
 export const allKeysRequired = value => {
   const keys = Object.keys(value);
@@ -27,79 +30,27 @@ export const replaceTemplateVariables = (templateText, processedParams) => {
   });
 };
 
-export const buildTemplateParameters = (template, hasMediaHeaderValue) => {
-  const allVariables = {};
+// Text header variables (e.g. "Hello {{1}}") are not covered by the shared
+// helper, which only builds header params for media headers.
+export const buildTextHeaderParams = template => {
+  const header = findComponentByType(template, COMPONENT_TYPES.HEADER);
+  const matched = header?.text?.match(/{{([^}]+)}}/g);
+  if (!matched) return null;
 
-  const bodyComponent = findComponentByType(template, COMPONENT_TYPES.BODY);
-  const headerComponent = findComponentByType(template, COMPONENT_TYPES.HEADER);
+  return matched.reduce((params, variable) => {
+    params[processVariable(variable)] = '';
+    return params;
+  }, {});
+};
 
-  if (!bodyComponent) return allVariables;
+// The media-header flag is derived from the template inside the shared helper;
+// the second argument is kept for backwards-compatible call sites.
+export const buildTemplateParameters = template => {
+  const params = buildWhatsAppProcessedParams(template);
+  if (params.header) return params;
 
-  const templateString = bodyComponent.text;
+  const textHeaderParams = buildTextHeaderParams(template);
+  if (textHeaderParams) params.header = textHeaderParams;
 
-  // Process body variables
-  const matchedVariables = templateString.match(/{{([^}]+)}}/g);
-  if (matchedVariables) {
-    allVariables.body = {};
-    matchedVariables.forEach(variable => {
-      const key = processVariable(variable);
-      allVariables.body[key] = '';
-    });
-  }
-
-  if (hasMediaHeaderValue) {
-    if (!allVariables.header) allVariables.header = {};
-    allVariables.header.media_url = '';
-    allVariables.header.media_type = headerComponent.format.toLowerCase();
-
-    // For document templates, include media_name field for filename support
-    if (headerComponent.format.toLowerCase() === 'document') {
-      allVariables.header.media_name = '';
-    }
-  } else if (headerComponent?.text) {
-    // Process text header variables (e.g. "Hello {{1}}")
-    const matchedHeaderVariables = headerComponent.text.match(/{{([^}]+)}}/g);
-    if (matchedHeaderVariables) {
-      allVariables.header = {};
-      matchedHeaderVariables.forEach(variable => {
-        allVariables.header[processVariable(variable)] = '';
-      });
-    }
-  }
-
-  // Process button variables
-  const buttonComponents = template.components.filter(
-    component => component.type === COMPONENT_TYPES.BUTTONS
-  );
-
-  buttonComponents.forEach(buttonComponent => {
-    if (buttonComponent.buttons) {
-      buttonComponent.buttons.forEach((button, index) => {
-        // Handle URL buttons with variables
-        if (button.type === 'URL' && button.url && button.url.includes('{{')) {
-          const buttonVars = button.url.match(/{{([^}]+)}}/g) || [];
-          if (buttonVars.length > 0) {
-            if (!allVariables.buttons) allVariables.buttons = [];
-            allVariables.buttons[index] = {
-              type: 'url',
-              parameter: '',
-              url: button.url,
-              variables: buttonVars.map(v => processVariable(v)),
-            };
-          }
-        }
-
-        // Handle copy code buttons
-        if (button.type === 'COPY_CODE') {
-          if (!allVariables.buttons) allVariables.buttons = [];
-          allVariables.buttons[index] = {
-            type: 'copy_code',
-            parameter: '',
-          };
-        }
-      });
-    }
-  });
-
-  return allVariables;
+  return params;
 };

@@ -37,7 +37,7 @@ class V2::CrmReports::ManagementEvaluationReportBuilder
   end
 
   def build_ranking
-    agent_ids.filter_map do |uid|
+    ranking = agent_ids.filter_map do |uid|
       agent_insights = insights.by_agent(uid)
       scored = agent_insights.with_final_score
       next if scored.empty?
@@ -53,7 +53,8 @@ class V2::CrmReports::ManagementEvaluationReportBuilder
         no_response_count: agent_insights.no_response.count,
         abandonment_count: agent_insights.with_abandonment.count
       }
-    end.sort_by { |a| -(a[:avg_score] || 0) }
+    end
+    ranking.sort_by { |agent| -(agent[:avg_score] || 0) }
   end
 
   def build_aggregated_metrics
@@ -63,10 +64,18 @@ class V2::CrmReports::ManagementEvaluationReportBuilder
     {
       team_avg_score: scored.average(:final_score)&.round(2),
       total_evaluated: insights.count,
-      avg_tpr_seconds: tpr_values.any? ? (tpr_values.sum / tpr_values.size.to_f).round : nil,
-      abandonment_rate: insights.any? ? ((insights.with_abandonment.count.to_f / insights.count) * 100).round(1) : 0,
-      no_response_rate: insights.any? ? ((insights.no_response.count.to_f / insights.count) * 100).round(1) : 0
+      avg_tpr_seconds: average(tpr_values),
+      abandonment_rate: percentage(insights.with_abandonment.count, insights.count),
+      no_response_rate: percentage(insights.no_response.count, insights.count)
     }
+  end
+
+  def average(values)
+    (values.sum / values.size.to_f).round if values.any?
+  end
+
+  def percentage(count, total)
+    total.positive? ? ((count.to_f / total) * 100).round(1) : 0
   end
 
   def build_inbox_comparison
@@ -106,15 +115,21 @@ class V2::CrmReports::ManagementEvaluationReportBuilder
     return issues if breakdowns.empty?
 
     CRITERIA_KEYS.each do |key|
-      scores = breakdowns.filter_map { |b| b&.dig(key, 'score') }
-      next if scores.empty?
-
-      max = criterion_max(key)
-      avg_normalized = scores.sum.to_f / (scores.size * max)
-      issues << { criterion: key, avg_normalized: avg_normalized.round(3), agents_below_50pct: count_agents_below(key, 0.5) } if avg_normalized < 0.5
+      issue = systemic_issue(key, breakdowns)
+      issues << issue if issue
     end
 
     issues.sort_by { |i| i[:avg_normalized] }
+  end
+
+  def systemic_issue(key, breakdowns)
+    scores = breakdowns.filter_map { |breakdown| breakdown&.dig(key, 'score') }
+    return if scores.empty?
+
+    average_normalized = scores.sum.to_f / (scores.size * criterion_max(key))
+    return if average_normalized >= 0.5
+
+    { criterion: key, avg_normalized: average_normalized.round(3), agents_below_50pct: count_agents_below(key, 0.5) }
   end
 
   def build_weekly_evolution

@@ -3,7 +3,8 @@ module Enterprise::AsyncDispatcher
     super + [
       CaptainListener.instance,
       CrmEventListener.instance,
-      ConversationRiskMonitorListener.instance
+      ConversationRiskMonitorListener.instance,
+      Captain::ReportingEventListener.instance
     ]
   end
 end

@@ -169,7 +169,13 @@ class Messages::Instagram::BaseMessageBuilder < Messages::Messenger::MessageBuil
 
     params[:content_attributes][:external_echo] = true if @outgoing_echo
     params[:content_attributes][:is_unsupported] = true if message_is_unsupported?
+    params[:content_attributes][:referral] = ad_referral if ad_referral.present?
     params
+  end
+
+  # Ad attribution for ads that click through to Instagram Direct.
+  def ad_referral
+    @ad_referral ||= @messaging.dig(:message, :referral) || @messaging[:referral]
   end
 
   def message_already_exists?

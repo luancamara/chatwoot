@@ -1,7 +1,7 @@
 class Api::V1::Accounts::Conversations::ScheduledMessagesController < Api::V1::Accounts::Conversations::BaseController
   def index
     @scheduled_messages = @conversation.scheduled_messages.pending.order(scheduled_at: :asc)
-    render json: @scheduled_messages.map { |sm| scheduled_message_payload(sm) }
+    render json: @scheduled_messages.map { |scheduled_message| scheduled_message_payload(scheduled_message) }
   end
 
   def create
@@ -30,14 +30,14 @@ class Api::V1::Accounts::Conversations::ScheduledMessagesController < Api::V1::A
     params.permit(:content, :scheduled_at, content_attributes: {})
   end
 
-  def scheduled_message_payload(sm)
+  def scheduled_message_payload(scheduled_message)
     {
-      id: sm.id,
-      content: sm.content,
-      scheduled_at: sm.scheduled_at,
-      status: sm.status,
-      sender: { id: sm.sender_id, name: sm.sender.name },
-      created_at: sm.created_at
+      id: scheduled_message.id,
+      content: scheduled_message.content,
+      scheduled_at: scheduled_message.scheduled_at,
+      status: scheduled_message.status,
+      sender: { id: scheduled_message.sender_id, name: scheduled_message.sender.name },
+      created_at: scheduled_message.created_at
     }
   end
 end

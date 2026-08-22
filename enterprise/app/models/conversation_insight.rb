@@ -1,3 +1,41 @@
+# == Schema Information
+#
+# Table name: conversation_insights
+#
+#  id                          :bigint           not null, primary key
+#  abandonment_severity        :string
+#  automatic_metrics           :jsonb
+#  conversation_classification :string
+#  customer_sentiment          :string
+#  estimated_value             :decimal(10, 2)
+#  feedback_summary            :text
+#  final_score                 :decimal(4, 2)
+#  key_topics                  :jsonb
+#  media_sent                  :boolean          default(FALSE)
+#  no_response                 :boolean          default(FALSE)
+#  penalties                   :jsonb
+#  product_category            :string
+#  quality_breakdown           :jsonb
+#  quality_score               :decimal(4, 2)
+#  raw_llm_response            :jsonb
+#  created_at                  :datetime         not null
+#  updated_at                  :datetime         not null
+#  account_id                  :bigint           not null
+#  conversation_id             :bigint           not null
+#
+# Indexes
+#
+#  idx_conv_insights_classification                (conversation_classification)
+#  idx_conv_insights_final_score                   (final_score)
+#  idx_conv_insights_no_response                   (no_response)
+#  index_conversation_insights_on_account_id       (account_id)
+#  index_conversation_insights_on_conversation_id  (conversation_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (account_id => accounts.id)
+#  fk_rails_...  (conversation_id => conversations.id)
+#
 class ConversationInsight < ApplicationRecord
   VALID_SENTIMENTS = %w[positive neutral negative].freeze
   VALID_CLASSIFICATIONS = %w[complete_consultation quick_consultation return_client non_commercial].freeze

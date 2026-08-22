@@ -6,7 +6,14 @@ import Button from 'dashboard/components-next/button/Button.vue';
 import Input from 'dashboard/components-next/input/Input.vue';
 import ComboBox from 'dashboard/components-next/combobox/ComboBox.vue';
 
-const emit = defineEmits(['filter-change']);
+const props = defineProps({
+  // Reports that cannot honour a filter hide it rather than showing a control
+  // that silently does nothing.
+  showAgent: { type: Boolean, default: true },
+  showTeam: { type: Boolean, default: true },
+});
+
+const emit = defineEmits(['filterChange']);
 const { t } = useI18n();
 const store = useStore();
 
@@ -20,6 +27,30 @@ const selectedAgentId = ref('');
 const selectedTeamId = ref('');
 const selectedInboxId = ref('');
 
+const formatDate = date => {
+  return date.toISOString().split('T')[0];
+};
+
+const applyFilters = () => {
+  const params = {};
+  // A bare 'YYYY-MM-DD' parses as UTC midnight, which in BRT lands on the
+  // previous evening and drops the whole selected end day, today included.
+  if (sinceDate.value) {
+    params.since = Math.floor(
+      new Date(`${sinceDate.value}T00:00:00`).getTime() / 1000
+    );
+  }
+  if (untilDate.value) {
+    params.until = Math.floor(
+      new Date(`${untilDate.value}T23:59:59`).getTime() / 1000
+    );
+  }
+  if (selectedAgentId.value) params.agent_id = selectedAgentId.value;
+  if (selectedTeamId.value) params.team_id = selectedTeamId.value;
+  if (selectedInboxId.value) params.inbox_id = selectedInboxId.value;
+  emit('filterChange', params);
+};
+
 onMounted(() => {
   store.dispatch('agents/get');
   store.dispatch('teams/get');
@@ -31,24 +62,6 @@ onMounted(() => {
   untilDate.value = formatDate(now);
   applyFilters();
 });
-
-const formatDate = date => {
-  return date.toISOString().split('T')[0];
-};
-
-const applyFilters = () => {
-  const params = {};
-  if (sinceDate.value) {
-    params.since = Math.floor(new Date(sinceDate.value).getTime() / 1000);
-  }
-  if (untilDate.value) {
-    params.until = Math.floor(new Date(untilDate.value).getTime() / 1000);
-  }
-  if (selectedAgentId.value) params.agent_id = selectedAgentId.value;
-  if (selectedTeamId.value) params.team_id = selectedTeamId.value;
-  if (selectedInboxId.value) params.inbox_id = selectedInboxId.value;
-  emit('filter-change', params);
-};
 </script>
 
 <template>
@@ -58,20 +71,12 @@ const applyFilters = () => {
         {{ t('CRM.FILTERS.DATE_RANGE') }}
       </label>
       <div class="flex gap-2 items-center">
-        <Input
-          v-model="sinceDate"
-          type="date"
-          size="sm"
-        />
+        <Input v-model="sinceDate" type="date" size="sm" />
         <span class="text-n-slate-10">-</span>
-        <Input
-          v-model="untilDate"
-          type="date"
-          size="sm"
-        />
+        <Input v-model="untilDate" type="date" size="sm" />
       </div>
     </div>
-    <div class="flex flex-col gap-1 w-40">
+    <div v-if="props.showAgent" class="flex flex-col gap-1 w-40">
       <label class="text-xs font-medium text-n-slate-11">
         {{ t('CRM.FILTERS.AGENT') }}
       </label>
@@ -85,7 +90,7 @@ const applyFilters = () => {
         size="sm"
       />
     </div>
-    <div class="flex flex-col gap-1 w-40">
+    <div v-if="props.showTeam" class="flex flex-col gap-1 w-40">
       <label class="text-xs font-medium text-n-slate-11">
         {{ t('CRM.FILTERS.TEAM') }}
       </label>
@@ -113,10 +118,6 @@ const applyFilters = () => {
         size="sm"
       />
     </div>
-    <Button
-      :label="t('CRM.FILTERS.APPLY')"
-      size="sm"
-      @click="applyFilters"
-    />
+    <Button :label="t('CRM.FILTERS.APPLY')" size="sm" @click="applyFilters" />
   </div>
 </template>

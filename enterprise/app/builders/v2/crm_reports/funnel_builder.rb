@@ -69,7 +69,7 @@ class V2::CrmReports::FunnelBuilder
   end
 
   def conversion_rates
-    counts = stage_counts.map { |s| s[:count] }
+    counts = stage_counts.pluck(:count)
     STAGES.each_cons(2).with_index.map do |(from_stage, to_stage), i|
       {
         from: from_stage,

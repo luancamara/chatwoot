@@ -10,7 +10,9 @@ const { t } = useI18n();
 const store = useStore();
 
 const agentPerformance = useMapGetter('crm/reports/getAgentPerformance');
-const dispositionBreakdown = useMapGetter('crm/reports/getDispositionBreakdown');
+const dispositionBreakdown = useMapGetter(
+  'crm/reports/getDispositionBreakdown'
+);
 const uiFlags = useMapGetter('crm/reports/getUIFlags');
 const allAgents = useMapGetter('agents/getAgents');
 
@@ -79,7 +81,9 @@ const onFilterChange = params => {
       <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
         <SalesMetricCard
           :label="t('CRM.SALES_REPORTS.TOTAL_CONVERSATIONS')"
-          :value="agentPerformance.reduce((s, a) => s + a.totalConversations, 0)"
+          :value="
+            agentPerformance.reduce((s, a) => s + a.totalConversations, 0)
+          "
         />
         <SalesMetricCard
           :label="t('CRM.SALES_REPORTS.RESOLVED')"
@@ -87,13 +91,15 @@ const onFilterChange = params => {
         />
         <SalesMetricCard
           :label="t('CRM.SALES_REPORTS.VENDAS')"
-          :value="dispositionResults.find(d => d.result === 'Venda')?.count || 0"
+          :value="
+            dispositionResults.find(d => d.result === 'Venda')?.count || 0
+          "
         />
         <SalesMetricCard
           :label="t('CRM.SALES_REPORTS.CONVERSION_RATE')"
           :value="
             totalResolved > 0
-              ? `${((dispositionResults.find(d => d.result === 'Venda')?.count || 0) / totalResolved * 100).toFixed(1)}%`
+              ? `${(((dispositionResults.find(d => d.result === 'Venda')?.count || 0) / totalResolved) * 100).toFixed(1)}%`
               : '0%'
           "
         />
@@ -191,7 +197,9 @@ const onFilterChange = params => {
                   'bg-n-amber': item.result === 'Indecisao',
                   'bg-n-slate-8': item.result === 'Sem Resposta',
                 }"
-                :style="{ width: `${Math.max((item.count / maxDispositionCount) * 100, 2)}%` }"
+                :style="{
+                  width: `${Math.max((item.count / maxDispositionCount) * 100, 2)}%`,
+                }"
               >
                 <span class="text-xs font-medium text-white whitespace-nowrap">
                   {{ item.count }}
@@ -199,7 +207,11 @@ const onFilterChange = params => {
               </div>
             </div>
             <span class="text-xs text-n-slate-10 w-12 text-right">
-              {{ totalResolved > 0 ? `${((item.count / totalResolved) * 100).toFixed(0)}%` : '0%' }}
+              {{
+                totalResolved > 0
+                  ? `${((item.count / totalResolved) * 100).toFixed(0)}%`
+                  : '0%'
+              }}
             </span>
           </div>
         </div>
@@ -225,7 +237,9 @@ const onFilterChange = params => {
             <div class="flex-1 h-6 bg-n-alpha-1 rounded-md overflow-hidden">
               <div
                 class="h-full bg-n-ruby rounded-md flex items-center px-2 transition-all duration-300"
-                :style="{ width: `${Math.max((item.count / maxLossCount) * 100, 2)}%` }"
+                :style="{
+                  width: `${Math.max((item.count / maxLossCount) * 100, 2)}%`,
+                }"
               >
                 <span class="text-xs font-medium text-white whitespace-nowrap">
                   {{ item.count }}

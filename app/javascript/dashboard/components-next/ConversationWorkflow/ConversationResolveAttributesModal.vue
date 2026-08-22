@@ -12,7 +12,7 @@ import Input from 'dashboard/components-next/input/Input.vue';
 import ChoiceToggle from 'dashboard/components-next/input/ChoiceToggle.vue';
 import { ATTRIBUTE_TYPES } from './constants';
 
-const emit = defineEmits(['submit']);
+const emit = defineEmits(['submit', 'close']);
 
 const { t } = useI18n();
 const { getVisibleAttributes } = useConversationRequiredAttributes();
@@ -36,7 +36,9 @@ const getPlaceholder = type => placeholders.value[type] || '';
 
 const visibleGroups = computed(() => getVisibleAttributes(formValues));
 const unconditionalFields = computed(() => visibleGroups.value.unconditional);
-const visibleConditionalFields = computed(() => visibleGroups.value.conditional);
+const visibleConditionalFields = computed(
+  () => visibleGroups.value.conditional
+);
 const allVisibleFields = computed(() => [
   ...unconditionalFields.value,
   ...visibleConditionalFields.value,
@@ -124,8 +126,6 @@ const comboBoxOptions = computed(() => {
 
 const close = () => {
   dialogRef.value?.close();
-  conversationContext.value = null;
-  v$.value.$reset();
 };
 
 const open = (attributes = [], initialValues = {}, context = null) => {
@@ -150,6 +150,12 @@ const open = (attributes = [], initialValues = {}, context = null) => {
 
   v$.value.$reset();
   dialogRef.value?.open();
+};
+
+const handleClose = () => {
+  conversationContext.value = null;
+  v$.value.$reset();
+  emit('close');
 };
 
 const handleConfirm = async () => {
@@ -190,6 +196,7 @@ defineExpose({ open, close });
     "
     :disable-confirm-button="!isFormComplete"
     @confirm="handleConfirm"
+    @close="handleClose"
   >
     <div class="flex flex-col gap-4">
       <!-- Unconditional (always visible) attributes -->

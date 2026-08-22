@@ -1,13 +1,13 @@
 class ConversationInsight::ScoreCalculator
   CRITERIA_WEIGHTS = {
-    'needs_qualification'      => { max: 5, weight: 0.20 },
-    'closing_conduct'          => { max: 5, weight: 0.20 },
-    'media_usage'              => { max: 3, weight: 0.10 },
-    'personalization'          => { max: 3, weight: 0.10 },
-    'alternatives_offered'     => { max: 3, weight: 0.05 },
-    'tone_communication'       => { max: 3, weight: 0.10 },
+    'needs_qualification' => { max: 5, weight: 0.20 },
+    'closing_conduct' => { max: 5, weight: 0.20 },
+    'media_usage' => { max: 3, weight: 0.10 },
+    'personalization' => { max: 3, weight: 0.10 },
+    'alternatives_offered' => { max: 3, weight: 0.05 },
+    'tone_communication' => { max: 3, weight: 0.10 },
     'return_client_continuity' => { max: 3, weight: 0.05 },
-    'cross_sell'               => { max: 2, weight: 0.05 }
+    'cross_sell' => { max: 2, weight: 0.05 }
   }.freeze
 
   TPR_WEIGHT = 0.15
@@ -55,9 +55,7 @@ class ConversationInsight::ScoreCalculator
   def collect_penalties
     penalties = []
 
-    if @metrics[:no_response]
-      penalties << { type: 'no_response', value: 0, description: 'Conversa sem resposta humana - nota automatica 0' }
-    end
+    penalties << { type: 'no_response', value: 0, description: 'Conversa sem resposta humana - nota automatica 0' } if @metrics[:no_response]
 
     case @metrics[:abandonment_severity]
     when 'severe'

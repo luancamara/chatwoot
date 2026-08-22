@@ -81,3 +81,28 @@ generate_weekly_evaluation_reports_job:
   cron: '0 6 * * 1'
   class: 'Crm::WeeklyEvaluationReportJob'
   queue: scheduled_jobs
+
+# imports recent ERP sales every hour; the feature flag is off by default
+reconcile_ad_orders_job:
+  cron: '15 * * * *'
+  class: 'AdAttribution::ReconcileOrdersSchedulerJob'
+  queue: scheduled_jobs
+
+# reviews 90 days daily so cancellations are reflected in the ledger
+reconcile_ad_orders_daily_job:
+  cron: '0 5 * * *'
+  class: 'AdAttribution::ReconcileOrdersDailySchedulerJob'
+  queue: scheduled_jobs
+
+# dispatches only when each provider live flag has been explicitly enabled
+dispatch_ad_conversion_deliveries_job:
+  cron: '*/15 * * * *'
+  class: 'AdAttribution::DispatchDeliveriesJob'
+  queue: scheduled_jobs
+
+# executed daily at 05:30 UTC, after the reconciliation
+# pulls the last 7 days of ad spend so cost per lead and ROAS stay current
+sync_ad_insights_job:
+  cron: '30 5 * * *'
+  class: 'AdAttribution::SyncInsightsJob'
+  queue: scheduled_jobs

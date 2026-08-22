@@ -5,6 +5,8 @@ const PipelineView = () => import('./PipelineView.vue');
 const FunnelAnalytics = () => import('./FunnelAnalytics.vue');
 const SalesReports = () => import('./SalesReports.vue');
 const EvaluationReports = () => import('./EvaluationReports.vue');
+const AdReports = () => import('./AdReports.vue');
+const AdGallery = () => import('./AdGallery.vue');
 
 export const routes = [
   {
@@ -42,6 +44,23 @@ export const routes = [
           permissions: ['administrator'],
         },
         component: EvaluationReports,
+      },
+      {
+        path: 'ad-reports',
+        name: 'crm_ad_reports',
+        meta: {
+          permissions: ['administrator'],
+        },
+        component: AdReports,
+      },
+      {
+        // Reference material for the sales floor, so agents get in too.
+        path: 'ad-gallery',
+        name: 'crm_ad_gallery',
+        meta: {
+          permissions: ['administrator', 'agent', 'custom_role'],
+        },
+        component: AdGallery,
       },
     ],
   },

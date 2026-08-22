@@ -1,5 +1,31 @@
 {
   "CRM": {
+    "AD_GALLERY": {
+      "TITLE": "Galeria de Anúncios",
+      "SEARCH": "Buscar por título, texto ou campanha",
+      "CAMPAIGN": "Campanha:",
+      "RUNNING_SINCE": "Primeiro lead:",
+      "LAST_LEAD": "Último lead:",
+      "WATCH_VIDEO": "Assistir ao vídeo",
+      "VIEW_ON_META": "Ver publicação original",
+      "EMPTY": "Nenhum anúncio registrado ainda."
+    },
+    "AD_REPORTS": {
+      "TOTAL_LEADS": "Leads vindos de anúncios",
+      "BY_CAMPAIGN": "Leads por campanha",
+      "AD": "Anúncio",
+      "CAMPAIGN": "Campanha",
+      "ADSET": "Conjunto",
+      "LEADS": "Leads",
+      "RESOLVED": "Resolvidas",
+      "SPEND": "Investido",
+      "CPL": "Custo/lead",
+      "ORDERS": "Pedidos",
+      "REVENUE": "Receita",
+      "ROAS": "ROAS",
+      "UNKNOWN_CAMPAIGN": "Campanha não identificada",
+      "EMPTY": "Nenhum lead de anúncio no período selecionado."
+    },
     "CONVERSATION_INSIGHT": {
       "TITLE": "Análise da Conversa",
       "SCORE": "Score de Qualidade",

@@ -1,3 +1,26 @@
+# == Schema Information
+#
+# Table name: conversation_evaluation_reports
+#
+#  id           :bigint           not null, primary key
+#  data         :jsonb
+#  period_end   :date             not null
+#  period_start :date             not null
+#  report_type  :string           not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  account_id   :bigint           not null
+#  user_id      :bigint
+#
+# Indexes
+#
+#  idx_eval_reports_unique  (account_id,user_id,report_type,period_start) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (account_id => accounts.id)
+#  fk_rails_...  (user_id => users.id)
+#
 class ConversationEvaluationReport < ApplicationRecord
   VALID_REPORT_TYPES = %w[agent_weekly management_weekly management_monthly].freeze
 

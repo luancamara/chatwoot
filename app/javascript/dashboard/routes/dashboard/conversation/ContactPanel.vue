@@ -26,6 +26,8 @@ import LinearIssuesList from 'dashboard/components/widgets/conversation/linear/I
 import LinearSetupCTA from 'dashboard/components/widgets/conversation/linear/LinearSetupCTA.vue';
 import ConversationInsight from './ConversationInsight.vue';
 import FollowUpReminders from './FollowUpReminders.vue';
+import AdSourcePanel from './AdSourcePanel.vue';
+import ErpOrdersPanel from './ErpOrdersPanel.vue';
 import { useAdmin } from 'dashboard/composables/useAdmin';
 
 const props = defineProps({
@@ -90,6 +92,8 @@ const currentConversationMetaData = computed(() =>
 const conversationAdditionalAttributes = computed(
   () => currentConversationMetaData.value.additional_attributes || {}
 );
+
+const hasAdReferral = computed(() => Boolean(currentChat.value?.ad_referral));
 
 const channelType = computed(() => currentChat.value.meta?.channel);
 
@@ -202,6 +206,30 @@ onMounted(() => {
                 :conversation-attributes="conversationAdditionalAttributes"
                 :contact-attributes="contactAdditionalAttributes"
               />
+            </AccordionItem>
+          </div>
+          <div v-else-if="element.name === 'ad_source' && hasAdReferral">
+            <AccordionItem
+              :title="$t('CONVERSATION_SIDEBAR.ACCORDION.AD_SOURCE')"
+              :is-open="isContactSidebarItemOpen('is_ad_source_open')"
+              compact
+              @toggle="
+                value => toggleSidebarUIState('is_ad_source_open', value)
+              "
+            >
+              <AdSourcePanel />
+            </AccordionItem>
+          </div>
+          <div v-else-if="element.name === 'erp_orders'">
+            <AccordionItem
+              :title="$t('CONVERSATION_SIDEBAR.ACCORDION.ERP_ORDERS')"
+              :is-open="isContactSidebarItemOpen('is_erp_orders_open')"
+              compact
+              @toggle="
+                value => toggleSidebarUIState('is_erp_orders_open', value)
+              "
+            >
+              <ErpOrdersPanel />
             </AccordionItem>
           </div>
           <div v-else-if="element.name === 'contact_attributes'">

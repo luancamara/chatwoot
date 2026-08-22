@@ -4,7 +4,7 @@ class Api::V1::Accounts::AgentWorkingHoursController < Api::V1::Accounts::Enterp
 
   def index
     @working_hours = AgentWorkingHour.where(account_id: Current.account.id, user_id: @user.id).order(:day_of_week)
-    render json: @working_hours.map { |wh| working_hour_payload(wh) }
+    render json: @working_hours.map { |working_hour| working_hour_payload(working_hour) }
   end
 
   def update
@@ -18,7 +18,7 @@ class Api::V1::Accounts::AgentWorkingHoursController < Api::V1::Accounts::Enterp
     end
 
     @working_hours = AgentWorkingHour.where(account_id: Current.account.id, user_id: @user.id).order(:day_of_week)
-    render json: @working_hours.map { |wh| working_hour_payload(wh) }
+    render json: @working_hours.map { |working_hour| working_hour_payload(working_hour) }
   end
 
   private
@@ -31,15 +31,15 @@ class Api::V1::Accounts::AgentWorkingHoursController < Api::V1::Accounts::Enterp
     params.permit(working_hours: [:day_of_week, :open_hour, :open_minutes, :close_hour, :close_minutes, :closed_all_day])
   end
 
-  def working_hour_payload(wh)
+  def working_hour_payload(working_hour)
     {
-      id: wh.id,
-      day_of_week: wh.day_of_week,
-      open_hour: wh.open_hour,
-      open_minutes: wh.open_minutes,
-      close_hour: wh.close_hour,
-      close_minutes: wh.close_minutes,
-      closed_all_day: wh.closed_all_day
+      id: working_hour.id,
+      day_of_week: working_hour.day_of_week,
+      open_hour: working_hour.open_hour,
+      open_minutes: working_hour.open_minutes,
+      close_hour: working_hour.close_hour,
+      close_minutes: working_hour.close_minutes,
+      closed_all_day: working_hour.closed_all_day
     }
   end
 end

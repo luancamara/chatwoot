@@ -37,7 +37,7 @@ class ChatwootHub
   end
 
   def self.pricing_plan
-   'enterprise'
+    'enterprise'
   end
 
   def self.pricing_plan_quantity

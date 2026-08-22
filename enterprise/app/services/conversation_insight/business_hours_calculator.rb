@@ -16,7 +16,7 @@ class ConversationInsight::BusinessHoursCalculator
     while current < end_time
       day_wh = working_hours_for_day(current.wday)
 
-      if day_wh.nil? || day_wh[:closed]
+      if closed_day?(day_wh)
         current = next_day_start(current)
         next
       end
@@ -29,9 +29,7 @@ class ConversationInsight::BusinessHoursCalculator
       # If end_time is before close, use end_time
       effective_end = [end_time, day_close].min
 
-      if effective_start < effective_end
-        total_seconds += (effective_end - effective_start).to_i
-      end
+      total_seconds += (effective_end - effective_start).to_i if effective_start < effective_end
 
       current = next_day_start(current)
     end
@@ -40,6 +38,10 @@ class ConversationInsight::BusinessHoursCalculator
   end
 
   private
+
+  def closed_day?(working_hours)
+    working_hours.nil? || working_hours[:closed]
+  end
 
   def load_agent_hours
     hours = AgentWorkingHour.where(account_id: @account_id, user_id: @user_id).index_by(&:day_of_week)
@@ -55,19 +57,16 @@ class ConversationInsight::BusinessHoursCalculator
     wh = @agent_hours[wday]
     return nil unless wh
 
-    if wh.respond_to?(:closed_all_day?)
-      return { closed: true } if wh.closed_all_day?
+    return unless wh.respond_to?(:closed_all_day?)
+    return { closed: true } if wh.closed_all_day?
 
-      {
-        closed: false,
-        open_hour: wh.open_hour,
-        open_minutes: wh.open_minutes,
-        close_hour: wh.close_hour,
-        close_minutes: wh.close_minutes
-      }
-    else
-      nil
-    end
+    {
+      closed: false,
+      open_hour: wh.open_hour,
+      open_minutes: wh.open_minutes,
+      close_hour: wh.close_hour,
+      close_minutes: wh.close_minutes
+    }
   end
 
   def next_day_start(time)

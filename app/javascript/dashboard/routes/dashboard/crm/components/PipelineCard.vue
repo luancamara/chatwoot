@@ -18,8 +18,7 @@ const { t } = useI18n();
 
 const contactName = computed(
   () =>
-    props.conversation.meta?.sender?.name ||
-    t('CRM.PIPELINE.UNKNOWN_CONTACT')
+    props.conversation.meta?.sender?.name || t('CRM.PIPELINE.UNKNOWN_CONTACT')
 );
 
 const contactAvatar = computed(
@@ -106,10 +105,7 @@ const saveValue = () => {
       </div>
     </div>
 
-    <p
-      v-if="lastMessagePreview"
-      class="text-xs text-n-slate-11 line-clamp-2"
-    >
+    <p v-if="lastMessagePreview" class="text-xs text-n-slate-11 line-clamp-2">
       {{ lastMessagePreview }}
     </p>
 
@@ -121,7 +117,10 @@ const saveValue = () => {
           :src="assigneeAvatar"
           :size="18"
         />
-        <span v-if="assigneeName" class="text-xs text-n-slate-10 truncate max-w-[80px]">
+        <span
+          v-if="assigneeName"
+          class="text-xs text-n-slate-10 truncate max-w-[80px]"
+        >
           {{ assigneeName }}
         </span>
       </div>
