@@ -24,6 +24,9 @@ class TriggerScheduledItemsJob < ApplicationJob
     ScheduledMessage.ready_to_send.find_each(batch_size: 100) do |scheduled_message|
       ScheduledMessageSendJob.perform_later(scheduled_message)
     end
+
+    # Job to trigger pending executions
+    AutomationRules::TriggerPendingExecutionsJob.perform_later
   end
 end
 

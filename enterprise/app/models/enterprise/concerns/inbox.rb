@@ -9,6 +9,7 @@ module Enterprise::Concerns::Inbox
     has_many :inbox_capacity_limits, dependent: :destroy
     has_many :calls, dependent: :destroy_async
     has_one :conversation_risk_monitor_config, dependent: :destroy
+    has_many :conversation_outcomes, dependent: :destroy_async
 
     before_create :ensure_create_permitted
   end

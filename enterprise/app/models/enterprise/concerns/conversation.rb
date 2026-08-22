@@ -11,6 +11,7 @@ module Enterprise::Concerns::Conversation
     has_many :follow_up_reminders, dependent: :destroy
     has_many :captain_faq_observations, class_name: 'Captain::FaqObservation', dependent: :delete_all
     has_one :conversation_ad_referral, dependent: :destroy
+    has_many :conversation_outcomes, dependent: :destroy_async
     scope :with_sla_applicable_contact, -> { left_joins(:contact).where(contacts: { blocked: [false, nil] }) }
 
     before_validation :validate_sla_policy, if: -> { sla_policy_id_changed? }
