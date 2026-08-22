@@ -758,9 +758,7 @@ function handleResolveConversation(conversationId, status, snoozedUntil) {
   // Check for required attributes before resolving
   const conversation = getConversationById.value(conversationId);
   const currentCustomAttributes = conversation?.custom_attributes || {};
-  const { hasMissing, missing } = checkMissingAttributes(
-    currentCustomAttributes
-  );
+  const { hasMissing } = checkMissingAttributes(currentCustomAttributes);
 
   if (hasMissing) {
     // Pass conversation context through the modal's API

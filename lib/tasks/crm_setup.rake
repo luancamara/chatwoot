@@ -69,7 +69,7 @@ namespace :crm do
         attribute_key: 'crm_funnel_stage',
         attribute_display_type: :list,
         attribute_model: :conversation_attribute,
-        attribute_values: ['Lead', 'Qualificado', 'Orçamento', 'Negociação', 'Venda', 'Perda']
+        attribute_values: %w[Lead Qualificado Orçamento Negociação Venda Perda]
       }
     ]
 

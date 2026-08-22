@@ -41,7 +41,7 @@ const isConditionMet = (condition, formValues) => {
  * has a specific value.
  */
 export function useConversationRequiredAttributes() {
-  const { currentAccount, accountId } = useAccount();
+  const { currentAccount } = useAccount();
   const conversationAttributes = useMapGetter(
     'attributes/getConversationAttributes'
   );

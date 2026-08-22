@@ -63,7 +63,9 @@ watch(
       has-back-button
     />
     <div class="px-8 pb-6">
-      <div class="p-4 rounded-xl bg-n-solid-2 outline outline-1 outline-n-container">
+      <div
+        class="p-4 rounded-xl bg-n-solid-2 outline outline-1 outline-n-container"
+      >
         <h3 class="text-sm font-medium text-n-slate-11 mb-1">
           {{ t('CRM.SALES_REPORTS.AVG_QUALITY_SCORE') }}
         </h3>

@@ -52,8 +52,6 @@ const actions = {
     try {
       const { data } = await FollowUpReminderAPI.index(conversationId);
       commit('SET_REMINDERS', { conversationId, reminders: data });
-    } catch (error) {
-      throw error;
     } finally {
       commit('SET_UI_FLAG', { isFetching: false });
     }
@@ -61,38 +59,25 @@ const actions = {
   async create({ commit }, { conversationId, ...params }) {
     commit('SET_UI_FLAG', { isCreating: true });
     try {
-      const { data } = await FollowUpReminderAPI.create(
-        conversationId,
-        params
-      );
+      const { data } = await FollowUpReminderAPI.create(conversationId, params);
       commit('ADD_REMINDER', { conversationId, reminder: data });
       return data;
-    } catch (error) {
-      throw error;
     } finally {
       commit('SET_UI_FLAG', { isCreating: false });
     }
   },
   async update({ commit }, { conversationId, reminderId, ...params }) {
-    try {
-      const { data } = await FollowUpReminderAPI.update(
-        conversationId,
-        reminderId,
-        params
-      );
-      commit('UPDATE_REMINDER', { conversationId, reminder: data });
-      return data;
-    } catch (error) {
-      throw error;
-    }
+    const { data } = await FollowUpReminderAPI.update(
+      conversationId,
+      reminderId,
+      params
+    );
+    commit('UPDATE_REMINDER', { conversationId, reminder: data });
+    return data;
   },
   async delete({ commit }, { conversationId, reminderId }) {
-    try {
-      await FollowUpReminderAPI.destroy(conversationId, reminderId);
-      commit('REMOVE_REMINDER', { conversationId, reminderId });
-    } catch (error) {
-      throw error;
-    }
+    await FollowUpReminderAPI.destroy(conversationId, reminderId);
+    commit('REMOVE_REMINDER', { conversationId, reminderId });
   },
 };
 

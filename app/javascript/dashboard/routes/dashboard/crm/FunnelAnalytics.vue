@@ -15,7 +15,8 @@ const pipelineSummary = useMapGetter('crm/reports/getPipelineSummary');
 const uiFlags = useMapGetter('crm/reports/getUIFlags');
 
 const isLoading = computed(
-  () => uiFlags.value.isFetchingFunnel || uiFlags.value.isFetchingPipelineSummary
+  () =>
+    uiFlags.value.isFetchingFunnel || uiFlags.value.isFetchingPipelineSummary
 );
 
 const stages = computed(() => funnel.value?.stages || []);
@@ -68,14 +69,13 @@ const onFilterChange = params => {
         />
       </div>
 
-      <div class="p-6 rounded-xl bg-n-solid-2 outline outline-1 outline-n-container">
+      <div
+        class="p-6 rounded-xl bg-n-solid-2 outline outline-1 outline-n-container"
+      >
         <h2 class="mb-4 text-base font-semibold text-n-slate-12">
           {{ t('CRM.FUNNEL.TITLE') }}
         </h2>
-        <FunnelChart
-          :stages="stages"
-          :conversion-rates="conversionRates"
-        />
+        <FunnelChart :stages="stages" :conversion-rates="conversionRates" />
       </div>
 
       <div

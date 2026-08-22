@@ -13,7 +13,7 @@ const props = defineProps({
   showTeam: { type: Boolean, default: true },
 });
 
-const emit = defineEmits(['filter-change']);
+const emit = defineEmits(['filterChange']);
 const { t } = useI18n();
 const store = useStore();
 
@@ -26,18 +26,6 @@ const untilDate = ref('');
 const selectedAgentId = ref('');
 const selectedTeamId = ref('');
 const selectedInboxId = ref('');
-
-onMounted(() => {
-  store.dispatch('agents/get');
-  store.dispatch('teams/get');
-  store.dispatch('inboxes/get');
-
-  const now = new Date();
-  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-  sinceDate.value = formatDate(thirtyDaysAgo);
-  untilDate.value = formatDate(now);
-  applyFilters();
-});
 
 const formatDate = date => {
   return date.toISOString().split('T')[0];
@@ -60,8 +48,20 @@ const applyFilters = () => {
   if (selectedAgentId.value) params.agent_id = selectedAgentId.value;
   if (selectedTeamId.value) params.team_id = selectedTeamId.value;
   if (selectedInboxId.value) params.inbox_id = selectedInboxId.value;
-  emit('filter-change', params);
+  emit('filterChange', params);
 };
+
+onMounted(() => {
+  store.dispatch('agents/get');
+  store.dispatch('teams/get');
+  store.dispatch('inboxes/get');
+
+  const now = new Date();
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  sinceDate.value = formatDate(thirtyDaysAgo);
+  untilDate.value = formatDate(now);
+  applyFilters();
+});
 </script>
 
 <template>
@@ -71,17 +71,9 @@ const applyFilters = () => {
         {{ t('CRM.FILTERS.DATE_RANGE') }}
       </label>
       <div class="flex gap-2 items-center">
-        <Input
-          v-model="sinceDate"
-          type="date"
-          size="sm"
-        />
+        <Input v-model="sinceDate" type="date" size="sm" />
         <span class="text-n-slate-10">-</span>
-        <Input
-          v-model="untilDate"
-          type="date"
-          size="sm"
-        />
+        <Input v-model="untilDate" type="date" size="sm" />
       </div>
     </div>
     <div v-if="props.showAgent" class="flex flex-col gap-1 w-40">
@@ -126,10 +118,6 @@ const applyFilters = () => {
         size="sm"
       />
     </div>
-    <Button
-      :label="t('CRM.FILTERS.APPLY')"
-      size="sm"
-      @click="applyFilters"
-    />
+    <Button :label="t('CRM.FILTERS.APPLY')" size="sm" @click="applyFilters" />
   </div>
 </template>

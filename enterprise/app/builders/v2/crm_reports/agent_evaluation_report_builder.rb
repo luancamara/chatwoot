@@ -31,9 +31,9 @@ class V2::CrmReports::AgentEvaluationReportBuilder
 
   def insights
     @insights ||= ConversationInsight
-                    .by_agent(user_id)
-                    .by_account(account.id)
-                    .in_period(period_start, period_end)
+                  .by_agent(user_id)
+                  .by_account(account.id)
+                  .in_period(period_start, period_end)
   end
 
   def previous_insights
@@ -42,9 +42,9 @@ class V2::CrmReports::AgentEvaluationReportBuilder
     prev_end = period_start
 
     @previous_insights ||= ConversationInsight
-                             .by_agent(user_id)
-                             .by_account(account.id)
-                             .in_period(prev_start, prev_end)
+                           .by_agent(user_id)
+                           .by_account(account.id)
+                           .in_period(prev_start, prev_end)
   end
 
   def build_overview
@@ -93,13 +93,22 @@ class V2::CrmReports::AgentEvaluationReportBuilder
     scored = insights.with_final_score
     tpr_values = scored.pluck(:automatic_metrics).filter_map { |m| m&.dig('tpr_seconds') }
     tmer_values = scored.pluck(:automatic_metrics).filter_map { |m| m&.dig('tmer_seconds') }
-    fast_responses = tpr_values.count { |t| t <= 900 } # <15 min
 
     {
-      avg_tpr_seconds: tpr_values.any? ? (tpr_values.sum / tpr_values.size.to_f).round : nil,
-      avg_tmer_seconds: tmer_values.any? ? (tmer_values.sum / tmer_values.size.to_f).round : nil,
-      pct_responded_under_15min: tpr_values.any? ? ((fast_responses.to_f / tpr_values.size) * 100).round(1) : nil
+      avg_tpr_seconds: average_seconds(tpr_values),
+      avg_tmer_seconds: average_seconds(tmer_values),
+      pct_responded_under_15min: percentage_under_15_minutes(tpr_values)
     }
+  end
+
+  def average_seconds(values)
+    (values.sum / values.size.to_f).round if values.any?
+  end
+
+  def percentage_under_15_minutes(values)
+    return if values.empty?
+
+    ((values.count { |seconds| seconds <= 900 }.to_f / values.size) * 100).round(1)
   end
 
   def build_weekly_goal
@@ -110,17 +119,19 @@ class V2::CrmReports::AgentEvaluationReportBuilder
   end
 
   def criteria_averages
-    @criteria_averages ||= begin
-      avgs = {}
-      breakdowns = insights.with_final_score.pluck(:quality_breakdown)
-      return avgs if breakdowns.empty?
+    @criteria_averages ||= calculate_criteria_averages
+  end
 
-      CRITERIA_KEYS.each do |key|
-        scores = breakdowns.filter_map { |b| b&.dig(key, 'score') }
-        avgs[key] = scores.sum.to_f / scores.size if scores.any?
-      end
-      avgs
+  def calculate_criteria_averages
+    averages = {}
+    breakdowns = insights.with_final_score.pluck(:quality_breakdown)
+    return averages if breakdowns.empty?
+
+    CRITERIA_KEYS.each do |key|
+      scores = breakdowns.filter_map { |breakdown| breakdown&.dig(key, 'score') }
+      averages[key] = scores.sum.to_f / scores.size if scores.any?
     end
+    averages
   end
 
   def calculate_trend(current, previous)

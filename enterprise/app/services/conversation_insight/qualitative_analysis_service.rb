@@ -1,3 +1,5 @@
+# The detailed evaluation prompt intentionally lives with its parser contract.
+# rubocop:disable Metrics/ClassLength
 class ConversationInsight::QualitativeAnalysisService < Llm::BaseAiService
   include Integrations::LlmInstrumentation
 
@@ -113,13 +115,12 @@ class ConversationInsight::QualitativeAnalysisService < Llm::BaseAiService
     else
       score = criterion['score']
       {
-        'score' => score.nil? ? nil : score.to_i,
+        'score' => score&.to_i,
         'justification' => criterion['justification'].to_s.truncate(500)
       }
     end
   end
 
-  # rubocop:disable Metrics/MethodLength
   def system_prompt
     <<~SYSTEM_PROMPT
       Voce e um analista de vendas especializado em avaliar a qualidade do atendimento comercial via WhatsApp para uma loja de moveis.
@@ -227,5 +228,5 @@ class ConversationInsight::QualitativeAnalysisService < Llm::BaseAiService
       - suggested_funnel_stage opcoes EXATAS: Lead, Qualificado, Orcamento, Negociacao, Venda, Perda
     SYSTEM_PROMPT
   end
-  # rubocop:enable Metrics/MethodLength
 end
+# rubocop:enable Metrics/ClassLength

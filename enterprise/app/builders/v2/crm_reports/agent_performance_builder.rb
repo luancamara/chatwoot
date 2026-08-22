@@ -9,9 +9,10 @@ class V2::CrmReports::AgentPerformanceBuilder
   end
 
   def build
-    account.account_users.map do |account_user|
+    agent_stats = account.account_users.map do |account_user|
       build_agent_stats(account_user.user_id)
-    end.sort_by { |a| -(a[:avg_quality_score] || 0) }
+    end
+    agent_stats.sort_by { |stats| -(stats[:avg_quality_score] || 0) }
   end
 
   private

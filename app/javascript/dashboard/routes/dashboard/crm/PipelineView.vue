@@ -126,7 +126,10 @@ onMounted(() => {
       <Spinner />
     </div>
 
-    <div v-else-if="hasConversations()" class="flex gap-4 overflow-x-auto pb-4 flex-1">
+    <div
+      v-else-if="hasConversations()"
+      class="flex gap-4 overflow-x-auto pb-4 flex-1"
+    >
       <div
         v-for="stage in FUNNEL_STAGES"
         :key="stage"

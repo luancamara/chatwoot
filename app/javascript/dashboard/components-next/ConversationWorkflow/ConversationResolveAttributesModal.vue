@@ -36,7 +36,9 @@ const getPlaceholder = type => placeholders.value[type] || '';
 
 const visibleGroups = computed(() => getVisibleAttributes(formValues));
 const unconditionalFields = computed(() => visibleGroups.value.unconditional);
-const visibleConditionalFields = computed(() => visibleGroups.value.conditional);
+const visibleConditionalFields = computed(
+  () => visibleGroups.value.conditional
+);
 const allVisibleFields = computed(() => [
   ...unconditionalFields.value,
   ...visibleConditionalFields.value,

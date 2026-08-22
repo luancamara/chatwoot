@@ -1,4 +1,9 @@
 class Api::V1::Accounts::ConversationInsightsController < Api::V1::Accounts::EnterpriseAccountsController
+  INSIGHT_ATTRIBUTES = %w[
+    id conversation_id conversation_classification final_score estimated_value product_category customer_sentiment key_topics quality_score
+    quality_breakdown no_response abandonment_severity media_sent automatic_metrics penalties feedback_summary created_at updated_at
+  ].freeze
+
   before_action :check_admin_authorization?
   before_action :set_conversation
   before_action :set_insight, only: [:show]
@@ -25,25 +30,6 @@ class Api::V1::Accounts::ConversationInsightsController < Api::V1::Accounts::Ent
   def insight_payload
     return {} unless @insight
 
-    {
-      id: @insight.id,
-      conversation_id: @insight.conversation_id,
-      conversation_classification: @insight.conversation_classification,
-      final_score: @insight.final_score,
-      estimated_value: @insight.estimated_value,
-      product_category: @insight.product_category,
-      customer_sentiment: @insight.customer_sentiment,
-      key_topics: @insight.key_topics,
-      quality_score: @insight.quality_score,
-      quality_breakdown: @insight.quality_breakdown,
-      no_response: @insight.no_response,
-      abandonment_severity: @insight.abandonment_severity,
-      media_sent: @insight.media_sent,
-      automatic_metrics: @insight.automatic_metrics,
-      penalties: @insight.penalties,
-      feedback_summary: @insight.feedback_summary,
-      created_at: @insight.created_at,
-      updated_at: @insight.updated_at
-    }
+    @insight.attributes.slice(*INSIGHT_ATTRIBUTES)
   end
 end

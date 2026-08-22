@@ -8,7 +8,7 @@ class CreateAgentWorkingHours < ActiveRecord::Migration[7.1]
       t.integer :open_minutes
       t.integer :close_hour
       t.integer :close_minutes
-      t.boolean :closed_all_day, default: false
+      t.boolean :closed_all_day, default: false # rubocop:disable Rails/ThreeStateBooleanColumn
       t.timestamps
     end
 

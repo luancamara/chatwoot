@@ -28,7 +28,7 @@ class ConversationInsight::AutomaticMetricsCalculator
       tmer_seconds: calculate_tmer(incoming, human_outgoing),
       no_response: human_outgoing.empty? && incoming.any?,
       abandonment_severity: calculate_abandonment(incoming, human_outgoing),
-      media_sent: has_media_sent?(human_outgoing),
+      media_sent: media_sent?(human_outgoing),
       message_count: @messages.size,
       human_response_count: human_outgoing.size,
       incoming_count: incoming.size
@@ -84,29 +84,27 @@ class ConversationInsight::AutomaticMetricsCalculator
   def calculate_tmer(incoming, human_outgoing)
     return nil if incoming.empty? || human_outgoing.empty?
 
-    intervals = []
-    incoming.each do |msg_in|
-      # Find the next human outgoing after this incoming
-      next_response = human_outgoing.find { |m| m.created_at > msg_in.created_at }
-      next unless next_response
-
-      # Skip if client took >1h to respond (the interval before this incoming)
-      prev_outgoing = human_outgoing.select { |m| m.created_at < msg_in.created_at }.last
-      if prev_outgoing
-        client_gap = (msg_in.created_at - prev_outgoing.created_at).to_i
-        next if client_gap > CLIENT_GAP_THRESHOLD
-      end
-
-      seconds = business_seconds(msg_in.created_at, next_response.created_at)
-      intervals << seconds if seconds
-    end
+    intervals = incoming.filter_map { |message| response_interval(message, human_outgoing) }
 
     return nil if intervals.empty?
 
     (intervals.sum.to_f / intervals.size).round
   end
 
-  def calculate_abandonment(incoming, human_outgoing)
+  def response_interval(incoming_message, human_outgoing)
+    next_response = human_outgoing.find { |message| message.created_at > incoming_message.created_at }
+    return unless next_response
+    return if client_gap_exceeded?(incoming_message, human_outgoing)
+
+    business_seconds(incoming_message.created_at, next_response.created_at)
+  end
+
+  def client_gap_exceeded?(incoming_message, human_outgoing)
+    previous_outgoing = human_outgoing.reverse.find { |message| message.created_at < incoming_message.created_at }
+    previous_outgoing && (incoming_message.created_at - previous_outgoing.created_at).to_i > CLIENT_GAP_THRESHOLD
+  end
+
+  def calculate_abandonment(_incoming, _human_outgoing)
     last_message = @messages.last
     return nil if last_message.nil?
     return nil unless last_message.message_type == 'incoming'
@@ -118,7 +116,7 @@ class ConversationInsight::AutomaticMetricsCalculator
     elapsed >= ABANDONMENT_SEVERE_THRESHOLD ? 'severe' : 'light'
   end
 
-  def has_media_sent?(human_outgoing)
+  def media_sent?(human_outgoing)
     human_outgoing.any? { |m| m.attachments.any? }
   end
 

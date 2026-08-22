@@ -142,11 +142,13 @@ Rails.application.routes.draw do
           resources :sla_policies, only: [:index, :create, :show, :update, :destroy]
           resources :conversation_risk_monitors, only: [:index, :update], param: :inbox_id
           resources :custom_roles, only: [:index, :create, :show, :update, :destroy]
-          resources :agent_working_hours, only: [:index] do
-            collection do
-              patch :update, action: :update
+          if ChatwootApp.enterprise?
+            resources :agent_working_hours, only: [:index] do
+              collection do
+                patch :update, action: :update
+              end
             end
-          end if ChatwootApp.enterprise?
+          end
           resources :agent_capacity_policies, only: [:index, :create, :show, :update, :destroy] do
             scope module: :agent_capacity_policies do
               resources :users, only: [:index, :create, :destroy]
