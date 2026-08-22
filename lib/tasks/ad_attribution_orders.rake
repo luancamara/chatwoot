@@ -1,23 +1,47 @@
+# rubocop:disable Metrics/BlockLength
 namespace :ad_attribution do
-  desc 'Reconcile every ad-attributed conversation against ERP orders'
-  task reconcile_orders: :environment do
-    since = ENV['SINCE'].presence && Time.zone.parse(ENV.fetch('SINCE'))
-    window = (ENV['WINDOW_DAYS'] || AdAttribution::ReconcileOrdersService::DEFAULT_WINDOW_DAYS).to_i
-    total = 0
-
-    Account.where(id: ConversationAdReferral.select(:account_id).distinct).find_each do |account|
-      created = AdAttribution::ReconcileOrdersService.new(
-        account: account, since: since, window_days: window
-      ).perform
-      total += created
-      puts "conta #{account.id}: #{created} conversões"
-    rescue StandardError => e
-      Rails.logger.error "[ad_attribution] conta #{account.id}: #{e.message}"
-      puts "conta #{account.id}: erro — #{e.message}"
+  desc 'Dry-run ERP sales against the canonical ledger without writing to the database'
+  task dry_run: :environment do
+    each_conversion_account do |account|
+      stats = sync_service(account, dry_run: true).perform
+      puts "account=#{account.id} #{format_stats(stats)}"
     end
+  end
 
-    sold = AdConversion.sold
-    puts "\nTotal: #{total} conversões novas."
-    puts "Base: #{AdConversion.count} pedidos casados, #{sold.count} vendidos, R$ #{sold.sum(:value).round(2)} de receita."
+  desc 'Synchronize ERP sales into the canonical ledger without delivering them'
+  task sync_sales: :environment do
+    each_conversion_account do |account|
+      stats = sync_service(account, dry_run: false).perform
+      puts "account=#{account.id} #{format_stats(stats)}"
+    end
+  end
+
+  desc 'Show canonical ledger and provider delivery counts'
+  task status: :environment do
+    puts "conversions=#{AdConversion.count} sold=#{AdConversion.sold.count} cancelled=#{AdConversion.cancelled.count}"
+    puts "value_brl=#{AdConversion.sold.sum(:value).round(2)} attributed=#{AdConversion.where.not(conversation_ad_referral_id: nil).count}"
+    AdConversionDelivery.group(:provider, :status).count.sort.each do |(provider, status), count|
+      puts "provider=#{provider} status=#{status} count=#{count}"
+    end
+  end
+
+  def each_conversion_account(&)
+    account_id = ENV['ACCOUNT_ID'].presence || AdAttribution::Config.account_id
+    raise 'ACCOUNT_ID or AD_CONVERSION_ACCOUNT_ID is required' if account_id.blank?
+
+    Account.where(id: account_id).find_each(&)
+  end
+
+  def sync_service(account, dry_run:)
+    since = Time.zone.parse(ENV.fetch('SINCE', 90.days.ago.iso8601))
+    until_time = Time.zone.parse(ENV.fetch('UNTIL', Time.current.iso8601))
+    AdAttribution::SyncSalesService.new(account: account, since: since, until_time: until_time, dry_run: dry_run)
+  end
+
+  def format_stats(stats)
+    %i[fetched created observed changed sold cancelled duplicates missing_identifiers unknown_origins attributed value].map do |key|
+      "#{key}=#{stats[key]}"
+    end.join(' ')
   end
 end
+# rubocop:enable Metrics/BlockLength

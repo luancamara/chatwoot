@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_08_14_000000) do
+ActiveRecord::Schema[7.2].define(version: 2026_08_22_120000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -114,6 +114,47 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_14_000000) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "ad_conversion_deliveries", force: :cascade do |t|
+    t.bigint "ad_conversion_id", null: false
+    t.string "provider", null: false
+    t.string "status", default: "pending", null: false
+    t.integer "attempts", default: 0, null: false
+    t.string "external_event_id"
+    t.string "external_request_id"
+    t.string "error_code"
+    t.text "error_message"
+    t.jsonb "diagnostic_data", default: {}, null: false
+    t.datetime "last_attempted_at"
+    t.datetime "next_attempt_at"
+    t.datetime "submitted_at"
+    t.datetime "accepted_at"
+    t.datetime "retracted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ad_conversion_id", "provider"], name: "index_ad_conversion_deliveries_on_conversion_provider", unique: true
+    t.index ["provider", "status", "next_attempt_at"], name: "index_ad_conversion_deliveries_for_dispatch"
+  end
+
+  create_table "ad_conversions", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "conversation_ad_referral_id"
+    t.string "erp_order_ref", null: false
+    t.decimal "value", precision: 12, scale: 2, default: "0.0", null: false
+    t.datetime "ordered_at", null: false
+    t.string "status", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "erp_status"
+    t.string "origin_classification", default: "unknown", null: false
+    t.jsonb "origin_data", default: {}, null: false
+    t.jsonb "user_data", default: {}, null: false
+    t.datetime "last_observed_at", null: false
+    t.index ["account_id", "erp_order_ref"], name: "index_ad_conversions_on_account_and_order", unique: true
+    t.index ["account_id", "ordered_at"], name: "index_ad_conversions_on_account_id_and_ordered_at"
+    t.index ["account_id"], name: "index_ad_conversions_on_account_id"
+    t.index ["conversation_ad_referral_id"], name: "index_ad_conversions_on_referral"
+  end
+
   create_table "agent_bot_inboxes", force: :cascade do |t|
     t.integer "inbox_id"
     t.integer "agent_bot_id"
@@ -174,6 +215,20 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_14_000000) do
     t.index ["document_ids"], name: "index_agent_sessions_on_document_ids", using: :gin
     t.index ["used_faq_ids"], name: "index_agent_sessions_on_used_faq_ids", using: :gin
     t.index ["user_id"], name: "index_agent_sessions_on_user_id"
+  end
+
+  create_table "agent_working_hours", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "user_id", null: false
+    t.integer "day_of_week", null: false
+    t.integer "open_hour"
+    t.integer "open_minutes"
+    t.integer "close_hour"
+    t.integer "close_minutes"
+    t.boolean "closed_all_day", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "user_id", "day_of_week"], name: "idx_agent_wh_account_user_day", unique: true
   end
 
   create_table "applied_slas", force: :cascade do |t|
@@ -502,8 +557,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_14_000000) do
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["account_id"], name: "index_captain_faq_suggestions_on_account_id"
     t.index ["account_id", "assistant_id", "status", "language"], name: "idx_cap_faq_suggestions_on_account_assistant_status_language"
+    t.index ["account_id"], name: "index_captain_faq_suggestions_on_account_id"
     t.index ["assistant_id"], name: "index_captain_faq_suggestions_on_assistant_id"
     t.index ["embedding"], name: "vector_idx_captain_faq_suggestions_embedding", opclass: :vector_cosine_ops, using: :ivfflat
   end
@@ -743,8 +798,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_14_000000) do
     t.jsonb "phone_number_health", default: {}, null: false
     t.datetime "phone_number_health_checked_at"
     t.string "phone_number_health_error", limit: 500
-    t.index ["phone_number_health_checked_at"], name: "index_channel_whatsapp_on_phone_number_health_checked_at"
     t.index ["phone_number"], name: "index_channel_whatsapp_on_phone_number", unique: true
+    t.index ["phone_number_health_checked_at"], name: "index_channel_whatsapp_on_phone_number_health_checked_at"
   end
 
   create_table "companies", force: :cascade do |t|
@@ -810,6 +865,69 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_14_000000) do
     t.index ["phone_number", "account_id"], name: "index_contacts_on_phone_number_and_account_id"
   end
 
+  create_table "conversation_ad_referrals", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "conversation_id", null: false
+    t.bigint "inbox_id", null: false
+    t.bigint "contact_id"
+    t.string "source_type"
+    t.string "source_id"
+    t.string "ad_id"
+    t.string "ctwa_clid"
+    t.string "source_url"
+    t.string "headline"
+    t.text "body"
+    t.jsonb "raw", default: {}, null: false
+    t.datetime "referred_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "reconciled_at"
+    t.index ["account_id", "ad_id", "referred_at"], name: "idx_on_account_id_ad_id_referred_at_3ea94c2fcc"
+    t.index ["account_id"], name: "index_conversation_ad_referrals_on_account_id"
+    t.index ["contact_id"], name: "index_conversation_ad_referrals_on_contact_id"
+    t.index ["conversation_id"], name: "index_conversation_ad_referrals_on_conversation_id", unique: true
+    t.index ["inbox_id"], name: "index_conversation_ad_referrals_on_inbox_id"
+  end
+
+  create_table "conversation_evaluation_reports", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "user_id"
+    t.string "report_type", null: false
+    t.date "period_start", null: false
+    t.date "period_end", null: false
+    t.jsonb "data", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "user_id", "report_type", "period_start"], name: "idx_eval_reports_unique", unique: true
+  end
+
+  create_table "conversation_insights", force: :cascade do |t|
+    t.bigint "conversation_id", null: false
+    t.bigint "account_id", null: false
+    t.decimal "estimated_value", precision: 10, scale: 2
+    t.string "product_category"
+    t.string "customer_sentiment"
+    t.jsonb "key_topics", default: []
+    t.decimal "quality_score", precision: 4, scale: 2
+    t.jsonb "quality_breakdown", default: {}
+    t.jsonb "raw_llm_response", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "conversation_classification"
+    t.decimal "final_score", precision: 4, scale: 2
+    t.boolean "no_response", default: false
+    t.string "abandonment_severity"
+    t.boolean "media_sent", default: false
+    t.jsonb "automatic_metrics", default: {}
+    t.jsonb "penalties", default: []
+    t.text "feedback_summary"
+    t.index ["account_id"], name: "index_conversation_insights_on_account_id"
+    t.index ["conversation_classification"], name: "idx_conv_insights_classification"
+    t.index ["conversation_id"], name: "index_conversation_insights_on_conversation_id", unique: true
+    t.index ["final_score"], name: "idx_conv_insights_final_score"
+    t.index ["no_response"], name: "idx_conv_insights_no_response"
+  end
+
   create_table "conversation_outcomes", force: :cascade do |t|
     t.bigint "account_id", null: false
     t.bigint "assistant_id", null: false
@@ -851,6 +969,22 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_14_000000) do
     t.index ["conversation_id"], name: "index_conversation_participants_on_conversation_id"
     t.index ["user_id", "conversation_id"], name: "index_conversation_participants_on_user_id_and_conversation_id", unique: true
     t.index ["user_id"], name: "index_conversation_participants_on_user_id"
+  end
+
+  create_table "conversation_risk_monitor_configs", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "inbox_id", null: false
+    t.bigint "management_team_id"
+    t.bigint "complaint_label_id"
+    t.bigint "critical_label_id"
+    t.boolean "enabled", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_conversation_risk_monitor_configs_on_account_id"
+    t.index ["complaint_label_id"], name: "index_conversation_risk_monitor_configs_on_complaint_label_id"
+    t.index ["critical_label_id"], name: "index_conversation_risk_monitor_configs_on_critical_label_id"
+    t.index ["inbox_id"], name: "index_conversation_risk_monitor_configs_on_inbox_id", unique: true
+    t.index ["management_team_id"], name: "index_conversation_risk_monitor_configs_on_management_team_id"
   end
 
   create_table "conversations", id: :serial, force: :cascade do |t|
@@ -1084,10 +1218,10 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_14_000000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "inbox_id"
-    t.index ["account_id", "name", "template_type", "locale"], name: "index_email_templates_on_account_scope", unique: true, where: "(account_id IS NOT NULL) AND (inbox_id IS NULL)"
+    t.index ["account_id", "name", "template_type", "locale"], name: "index_email_templates_on_account_scope", unique: true, where: "((account_id IS NOT NULL) AND (inbox_id IS NULL))"
     t.index ["inbox_id", "name", "template_type", "locale"], name: "index_email_templates_on_inbox_scope", unique: true, where: "(inbox_id IS NOT NULL)"
     t.index ["inbox_id"], name: "index_email_templates_on_inbox_id"
-    t.index ["name", "template_type", "locale"], name: "index_email_templates_on_installation_scope", unique: true, where: "(account_id IS NULL) AND (inbox_id IS NULL)"
+    t.index ["name", "template_type", "locale"], name: "index_email_templates_on_installation_scope", unique: true, where: "((account_id IS NULL) AND (inbox_id IS NULL))"
   end
 
   create_table "folders", force: :cascade do |t|
@@ -1096,6 +1230,22 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_14_000000) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "follow_up_reminders", force: :cascade do |t|
+    t.bigint "conversation_id", null: false
+    t.bigint "account_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "remind_at", null: false
+    t.integer "reminder_type", default: 0, null: false
+    t.integer "status", default: 0, null: false
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_follow_up_reminders_on_account_id"
+    t.index ["conversation_id"], name: "index_follow_up_reminders_on_conversation_id"
+    t.index ["remind_at", "status"], name: "index_follow_up_reminders_on_remind_at_and_status"
+    t.index ["user_id"], name: "index_follow_up_reminders_on_user_id"
   end
 
   create_table "inbox_assignment_policies", force: :cascade do |t|
@@ -1267,6 +1417,35 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_14_000000) do
     t.index ["source_id"], name: "index_messages_on_source_id"
   end
 
+  create_table "meta_ad_insights", force: :cascade do |t|
+    t.string "ad_id", null: false
+    t.date "date", null: false
+    t.decimal "spend", precision: 12, scale: 2, default: "0.0", null: false
+    t.integer "impressions", default: 0, null: false
+    t.integer "clicks", default: 0, null: false
+    t.integer "reach", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ad_id", "date"], name: "index_meta_ad_insights_on_ad_id_and_date", unique: true
+    t.index ["date"], name: "index_meta_ad_insights_on_date"
+  end
+
+  create_table "meta_ads", force: :cascade do |t|
+    t.string "ad_id", null: false
+    t.string "name"
+    t.string "adset_id"
+    t.string "adset_name"
+    t.string "campaign_id"
+    t.string "campaign_name"
+    t.string "thumbnail_url"
+    t.string "effective_status"
+    t.datetime "synced_at"
+    t.string "sync_error"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ad_id"], name: "index_meta_ads_on_ad_id", unique: true
+  end
+
   create_table "notes", force: :cascade do |t|
     t.text "content", null: false
     t.bigint "account_id", null: false
@@ -1420,6 +1599,24 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_14_000000) do
     t.index ["account_id", "date", "dimension_type", "dimension_id", "metric"], name: "index_rollup_unique_key", unique: true
     t.index ["account_id", "dimension_type", "date"], name: "index_rollup_summary"
     t.index ["account_id", "metric", "date"], name: "index_rollup_timeseries"
+  end
+
+  create_table "scheduled_messages", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "conversation_id", null: false
+    t.bigint "inbox_id", null: false
+    t.bigint "sender_id", null: false
+    t.text "content", null: false
+    t.datetime "scheduled_at", null: false
+    t.integer "status", default: 0, null: false
+    t.jsonb "content_attributes", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_scheduled_messages_on_account_id"
+    t.index ["conversation_id", "status"], name: "index_scheduled_messages_on_conversation_id_and_status"
+    t.index ["conversation_id"], name: "index_scheduled_messages_on_conversation_id"
+    t.index ["inbox_id"], name: "index_scheduled_messages_on_inbox_id"
+    t.index ["scheduled_at", "status"], name: "index_scheduled_messages_on_scheduled_at_and_status"
   end
 
   create_table "sla_events", force: :cascade do |t|
@@ -1592,11 +1789,36 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_14_000000) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "ad_conversion_deliveries", "ad_conversions"
+  add_foreign_key "ad_conversions", "accounts"
+  add_foreign_key "ad_conversions", "conversation_ad_referrals"
+  add_foreign_key "agent_working_hours", "accounts"
+  add_foreign_key "agent_working_hours", "users"
   add_foreign_key "campaign_recipients", "accounts", on_delete: :cascade
   add_foreign_key "campaign_recipients", "campaigns", on_delete: :cascade
   add_foreign_key "campaign_recipients", "contacts", on_delete: :cascade
   add_foreign_key "campaign_recipients", "inboxes", on_delete: :cascade
+  add_foreign_key "conversation_ad_referrals", "accounts"
+  add_foreign_key "conversation_ad_referrals", "contacts"
+  add_foreign_key "conversation_ad_referrals", "conversations"
+  add_foreign_key "conversation_ad_referrals", "inboxes"
+  add_foreign_key "conversation_evaluation_reports", "accounts"
+  add_foreign_key "conversation_evaluation_reports", "users"
+  add_foreign_key "conversation_insights", "accounts"
+  add_foreign_key "conversation_insights", "conversations"
+  add_foreign_key "conversation_risk_monitor_configs", "accounts"
+  add_foreign_key "conversation_risk_monitor_configs", "inboxes"
+  add_foreign_key "conversation_risk_monitor_configs", "labels", column: "complaint_label_id"
+  add_foreign_key "conversation_risk_monitor_configs", "labels", column: "critical_label_id"
+  add_foreign_key "conversation_risk_monitor_configs", "teams", column: "management_team_id"
+  add_foreign_key "follow_up_reminders", "accounts"
+  add_foreign_key "follow_up_reminders", "conversations"
+  add_foreign_key "follow_up_reminders", "users"
   add_foreign_key "inboxes", "portals"
+  add_foreign_key "scheduled_messages", "accounts"
+  add_foreign_key "scheduled_messages", "conversations"
+  add_foreign_key "scheduled_messages", "inboxes"
+  add_foreign_key "scheduled_messages", "users", column: "sender_id"
   add_foreign_key "user_sessions", "users"
   create_trigger("accounts_after_insert_row_tr", :generated => true, :compatibility => 1).
       on("accounts").

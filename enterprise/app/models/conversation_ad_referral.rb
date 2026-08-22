@@ -42,7 +42,7 @@ class ConversationAdReferral < ApplicationRecord
   belongs_to :contact, optional: true
   belongs_to :meta_ad, primary_key: :ad_id, foreign_key: :ad_id, optional: true, inverse_of: :conversation_ad_referrals
 
-  has_many :ad_conversions, dependent: :destroy
+  has_many :ad_conversions, dependent: :nullify
 
   validates :conversation_id, uniqueness: true
   validates :source_url, length: { maximum: Limits::URL_LENGTH_LIMIT }
