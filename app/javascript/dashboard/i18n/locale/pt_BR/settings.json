@@ -570,6 +570,17 @@
         "DESCRIPTION": "Sugere automaticamente rótulos e etiquetas relevantes para as conversas, com base na análise de conteúdo e no contexto.",
         "MODEL_TITLE": "Modelo de Sugestão de Etiquetas",
         "MODEL_DESCRIPTION": "Selecione o modelo de IA a ser utilizado para analisar as conversas e sugerir etiquetas apropriadas"
+      },
+      "AUTO_REPLY_SUGGESTIONS": {
+        "TITLE": "Sugestões automáticas de resposta",
+        "DESCRIPTION": "Prepara uma resposta contextual no campo de mensagem quando uma conversa ativa aguarda o atendimento. As sugestões nunca são enviadas automaticamente.",
+        "MODEL_TITLE": "Modelo para sugestão de resposta",
+        "MODEL_DESCRIPTION": "Escolha o modelo usado nas sugestões automáticas e manuais de resposta.",
+        "PROMPT_TITLE": "Instruções personalizadas",
+        "PROMPT_DESCRIPTION": "Adicione orientações de tom, abordagem comercial ou restrições. Elas complementam as regras de segurança e contexto do Captain e valem para sugestões automáticas e manuais.",
+        "PROMPT_PLACEHOLDER": "Exemplo: Seja objetivo e prestativo, conduzindo o cliente ao próximo passo sem inventar detalhes dos produtos.",
+        "CHARACTER_COUNT": "{count} / {limit}",
+        "SAVE_PROMPT": "Salvar instruções"
       }
     },
     "API": {

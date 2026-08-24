@@ -163,7 +163,7 @@ onMounted(() => {
           with-border
         >
           <div class="grid gap-4">
-            <AutoReplySuggestions />
+            <AutoReplySuggestions @model-change="handleModelChange" />
             <FeatureToggle
               v-for="feature in featureToggles"
               v-show="shouldShowFeature(feature)"

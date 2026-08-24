@@ -13,6 +13,7 @@ module AccountSettingsSchema
         'auto_resolve_ignore_waiting': { 'type': %w[boolean null] },
         'audio_transcriptions': { 'type': %w[boolean null] },
         'auto_reply_suggestions': { 'type': %w[boolean null] },
+        'reply_suggestion_prompt': { 'type': %w[string null], 'maxLength': 4000 },
         'auto_resolve_label': { 'type': %w[string null] },
         'keep_pending_on_bot_failure': { 'type': %w[boolean null] },
         'captain_auto_resolve_mode': { 'type': %w[string null], 'enum': ['evaluated', 'legacy', 'disabled', nil] },
