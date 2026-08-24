@@ -13,6 +13,7 @@ import BaseSettingsHeader from '../components/BaseSettingsHeader.vue';
 import SectionLayout from '../account/components/SectionLayout.vue';
 import ModelSelector from './components/ModelSelector.vue';
 import FeatureToggle from './components/FeatureToggle.vue';
+import AutoReplySuggestions from './components/AutoReplySuggestions.vue';
 import CaptainPaywall from 'next/captain/pageComponents/Paywall.vue';
 
 const { t } = useI18n();
@@ -162,6 +163,7 @@ onMounted(() => {
           with-border
         >
           <div class="grid gap-4">
+            <AutoReplySuggestions />
             <FeatureToggle
               v-for="feature in featureToggles"
               v-show="shouldShowFeature(feature)"

@@ -12,6 +12,7 @@ import ReplyTopPanel from 'dashboard/components/widgets/WootWriter/ReplyTopPanel
 import ReplyEmailHead from './ReplyEmailHead.vue';
 import ReplyBottomPanel from 'dashboard/components/widgets/WootWriter/ReplyBottomPanel.vue';
 import CopilotReplyBottomPanel from 'dashboard/components/widgets/WootWriter/CopilotReplyBottomPanel.vue';
+import AutoReplySuggestion from './AutoReplySuggestion.vue';
 import ArticleSearchPopover from 'dashboard/routes/dashboard/helpcenter/components/ArticleSearch/SearchPopover.vue';
 import CopilotEditorSection from './CopilotEditorSection.vue';
 import MessageSignatureMissingAlert from './MessageSignatureMissingAlert.vue';
@@ -20,7 +21,11 @@ import QuotedEmailPreview from './QuotedEmailPreview.vue';
 import { REPLY_EDITOR_MODES } from 'dashboard/components/widgets/WootWriter/constants';
 import WootMessageEditor from 'dashboard/components/widgets/WootWriter/Editor.vue';
 import AudioRecorder from 'dashboard/components/widgets/WootWriter/AudioRecorder.vue';
-import { AUDIO_FORMATS } from 'shared/constants/messages';
+import {
+  AUDIO_FORMATS,
+  CONVERSATION_STATUS,
+  MESSAGE_TYPE,
+} from 'shared/constants/messages';
 import { BUS_EVENTS } from 'shared/constants/busEvents';
 import { CMD_AI_ASSIST } from 'dashboard/helper/commandbar/events';
 import {
@@ -53,6 +58,7 @@ import {
   getContactVariables,
 } from 'dashboard/helper/editorHelper';
 import { useCopilotReply } from 'dashboard/composables/useCopilotReply';
+import { useAutoReplySuggestion } from 'dashboard/composables/useAutoReplySuggestion';
 import { useMacroExecution } from 'dashboard/composables/useMacroExecution';
 import ConversationResolveAttributesModal from 'dashboard/components-next/ConversationWorkflow/ConversationResolveAttributesModal.vue';
 import { useKbd } from 'dashboard/composables/utils/useKbd';
@@ -73,6 +79,7 @@ export default {
     ArticleSearchPopover,
     AttachmentPreview,
     AudioRecorder,
+    AutoReplySuggestion,
     ReplyBoxBanner,
     EmojiIconPicker,
     MessageSignatureMissingAlert,
@@ -103,6 +110,7 @@ export default {
     const replyEditor = useTemplateRef('replyEditor');
     const messageEditor = useTemplateRef('messageEditor');
     const copilot = useCopilotReply();
+    const autoReplySuggestion = useAutoReplySuggestion();
     const macroExecution = useMacroExecution();
     const shortcutKey = useKbd(['$mod', '+', 'enter']);
 
@@ -115,6 +123,7 @@ export default {
       replyEditor,
       messageEditor,
       copilot,
+      autoReplySuggestion,
       shortcutKey,
       macroExecution,
     };
@@ -151,6 +160,7 @@ export default {
       copilotAcceptedMessages: {},
       isFixingGrammar: false,
       showScheduleModal: false,
+      autoReplyAcceptedMetadata: {},
     };
   },
   computed: {
@@ -169,6 +179,12 @@ export default {
         this.accountId
       );
       return !!account?.settings?.auto_fix_grammar;
+    },
+    autoReplySuggestionsEnabled() {
+      const account = this.$store.getters['accounts/getAccount'](
+        this.accountId
+      );
+      return !!account?.settings?.auto_reply_suggestions;
     },
     isMacrosEnabled() {
       return this.isFeatureEnabledonAccount(
@@ -498,6 +514,87 @@ export default {
     isDefaultEditorMode() {
       return !this.showAudioRecorderEditor && !this.copilot.isActive.value;
     },
+    latestPublicMessage() {
+      const messages = [...(this.currentChat?.messages || [])];
+      const apiMessage = this.currentChat?.last_non_activity_message;
+      if (apiMessage) messages.push(apiMessage);
+
+      return messages
+        .filter(message => {
+          return (
+            !message.private &&
+            [MESSAGE_TYPE.INCOMING, MESSAGE_TYPE.OUTGOING].includes(
+              message.message_type
+            )
+          );
+        })
+        .reduce((latest, message) => {
+          if (!latest) return message;
+
+          const latestTimestamp =
+            Number(latest.created_at) || Date.parse(latest.created_at) || 0;
+          const messageTimestamp =
+            Number(message.created_at) || Date.parse(message.created_at) || 0;
+
+          if (messageTimestamp !== latestTimestamp) {
+            return messageTimestamp > latestTimestamp ? message : latest;
+          }
+
+          const latestId = Number(latest.id);
+          const messageId = Number(message.id);
+          if (Number.isFinite(latestId) && Number.isFinite(messageId)) {
+            return messageId > latestId ? message : latest;
+          }
+
+          return message;
+        }, null);
+    },
+    automaticSuggestionContent() {
+      const message = this.latestPublicMessage;
+      const textContent = message?.content?.trim();
+      if (textContent) return textContent;
+
+      return (message?.attachments || [])
+        .filter(attachment => attachment.file_type === 'audio')
+        .map(attachment => attachment.transcribed_text?.trim())
+        .filter(Boolean)
+        .join(' ');
+    },
+    automaticSuggestionContext() {
+      const isActiveConversation = [
+        CONVERSATION_STATUS.OPEN,
+        CONVERSATION_STATUS.PENDING,
+      ].includes(this.currentChat?.status);
+      const targetMessage = this.latestPublicMessage;
+
+      if (
+        !this.autoReplySuggestionsEnabled ||
+        !this.autoReplySuggestion.captainTasksEnabled.value ||
+        !isActiveConversation ||
+        this.isAnEmailChannel ||
+        this.isOnPrivateNote ||
+        !this.canSendPublicReply ||
+        this.isEditorDisabled ||
+        this.hasMeaningfulEditorContent ||
+        this.hasAttachments ||
+        this.isRecordingAudio ||
+        this.copilot.isActive.value ||
+        targetMessage?.message_type !== MESSAGE_TYPE.INCOMING ||
+        !this.automaticSuggestionContent
+      ) {
+        return null;
+      }
+
+      return {
+        conversationId: this.conversationId,
+        targetMessageId: targetMessage.id,
+        contextKey: JSON.stringify([
+          this.conversationId,
+          targetMessage.id,
+          this.automaticSuggestionContent,
+        ]),
+      };
+    },
     isEditorDisabled() {
       return (
         (this.isAWhatsAppChannel || this.isAPIInbox) &&
@@ -515,6 +612,7 @@ export default {
         this.setCCAndToEmailsFromLastChat();
         // Reset Copilot editor state (includes cancelling ongoing generation)
         this.copilot.reset();
+        this.autoReplySuggestion.clear();
       }
 
       if (this.isInstagramReplyRestricted) {
@@ -553,6 +651,31 @@ export default {
     message() {
       // Autosave the current message draft.
       this.doAutoSaveDraft();
+      if (this.hasMeaningfulEditorContent) {
+        this.autoReplySuggestion.dismiss();
+      }
+    },
+    hasAttachments(hasAttachments) {
+      if (hasAttachments) this.autoReplySuggestion.dismiss();
+    },
+    isRecordingAudio(isRecording) {
+      if (isRecording) this.autoReplySuggestion.dismiss();
+    },
+    automaticSuggestionContext: {
+      handler(context) {
+        if (context) {
+          this.autoReplySuggestion.schedule(context);
+        } else if (
+          this.hasMeaningfulEditorContent ||
+          this.hasAttachments ||
+          this.isRecordingAudio
+        ) {
+          this.autoReplySuggestion.dismiss();
+        } else {
+          this.autoReplySuggestion.clear();
+        }
+      },
+      immediate: true,
     },
     showWhatsappTemplates(isAvailable) {
       if (!isAvailable) this.hideWhatsappTemplatesModal();
@@ -616,6 +739,7 @@ export default {
       this.onNewConversationModalActive
     );
     emitter.off(CMD_AI_ASSIST, this.executeCopilotAction);
+    this.autoReplySuggestion.clear();
   },
   methods: {
     getDraftKey(
@@ -638,6 +762,15 @@ export default {
     clearCopilotAcceptedMessage(replyType = this.effectiveReplyMode) {
       const key = this.getDraftKey(this.conversationIdByRoute, replyType);
       delete this.copilotAcceptedMessages[key];
+      delete this.autoReplyAcceptedMetadata[key];
+    },
+    getAutoReplyAcceptedMetadata(replyType = this.effectiveReplyMode) {
+      const key = this.getDraftKey(this.conversationIdByRoute, replyType);
+      return this.autoReplyAcceptedMetadata[key] || null;
+    },
+    setAutoReplyAcceptedMetadata(metadata) {
+      const key = this.getDraftKey();
+      this.autoReplyAcceptedMetadata[key] = metadata;
     },
     handleInsert(article) {
       const { url, title } = article;
@@ -760,8 +893,28 @@ export default {
     getKeyboardEvents() {
       return {
         Escape: {
-          action: () => {
+          action: event => {
+            if (
+              this.autoReplySuggestion.isActive.value &&
+              this.replyEditor?.contains(event.target)
+            ) {
+              event.preventDefault();
+              this.autoReplySuggestion.dismiss();
+              return;
+            }
             this.hideEmojiPicker();
+          },
+          allowOnFocusedInput: true,
+        },
+        Tab: {
+          action: event => {
+            if (
+              this.autoReplySuggestion.isVisible.value &&
+              this.replyEditor?.contains(event.target)
+            ) {
+              event.preventDefault();
+              this.onAcceptAutoReplySuggestion();
+            }
           },
           allowOnFocusedInput: true,
         },
@@ -914,6 +1067,7 @@ export default {
         }
 
         const copilotAcceptedMessage = this.getCopilotAcceptedMessage();
+        const autoReplyMetadata = this.getAutoReplyAcceptedMetadata();
         const isOnWhatsApp =
           this.isATwilioWhatsAppChannel ||
           this.isAWhatsAppCloudChannel ||
@@ -927,14 +1081,16 @@ export default {
         if ((isOnWhatsApp || isOnInstagram || isOnTiktok) && !this.isPrivate) {
           this.sendMessageAsMultipleMessages(
             messageToSend,
-            copilotAcceptedMessage
+            copilotAcceptedMessage,
+            autoReplyMetadata
           );
         } else {
           const messagePayload = this.getMessagePayload(messageToSend);
           this.sendMessage(
             messagePayload,
             messageToSend,
-            copilotAcceptedMessage
+            copilotAcceptedMessage,
+            autoReplyMetadata
           );
         }
 
@@ -946,19 +1102,28 @@ export default {
         this.hideEmojiPicker();
       }
     },
-    sendMessageAsMultipleMessages(message, copilotAcceptedMessage = '') {
+    sendMessageAsMultipleMessages(
+      message,
+      copilotAcceptedMessage = '',
+      autoReplyMetadata = null
+    ) {
       const messages = this.getMultipleMessagesPayload(message);
       messages.forEach(messagePayload => {
         this.sendMessage(
           messagePayload,
           messagePayload.message || '',
-          copilotAcceptedMessage
+          copilotAcceptedMessage,
+          autoReplyMetadata
         );
       });
     },
     sendMessageAnalyticsData(
       isPrivate,
-      { editorMessage = '', copilotAcceptedMessage = '' } = {}
+      {
+        editorMessage = '',
+        copilotAcceptedMessage = '',
+        autoReplyMetadata = null,
+      } = {}
     ) {
       const normalizeForComparison = message => {
         let normalizedMessage = message || '';
@@ -990,6 +1155,10 @@ export default {
           editedBeforeSend:
             normalizedAcceptedMessage !== normalizedEditorMessage,
           isPrivate,
+          ...(autoReplyMetadata && {
+            entryPoint: 'automatic',
+            targetMessageId: autoReplyMetadata.targetMessageId,
+          }),
         });
       }
 
@@ -1029,7 +1198,8 @@ export default {
     async sendMessage(
       messagePayload,
       editorMessage = '',
-      copilotAcceptedMessage = ''
+      copilotAcceptedMessage = '',
+      autoReplyMetadata = null
     ) {
       try {
         await this.$store.dispatch(
@@ -1042,6 +1212,7 @@ export default {
         this.sendMessageAnalyticsData(messagePayload.private, {
           editorMessage,
           copilotAcceptedMessage,
+          autoReplyMetadata,
         });
       } catch (error) {
         const errorMessage =
@@ -1082,6 +1253,7 @@ export default {
       this.onFocus();
     },
     executeCopilotAction(action, data) {
+      this.autoReplySuggestion.dismiss();
       this.copilot.execute(action, data);
     },
     clearMessage() {
@@ -1375,8 +1547,20 @@ export default {
     },
     onSubmitCopilotReply() {
       const acceptedMessage = this.copilot.accept();
+      delete this.autoReplyAcceptedMetadata[this.getDraftKey()];
       this.message = acceptedMessage;
       this.setCopilotAcceptedMessage(acceptedMessage);
+    },
+    onAcceptAutoReplySuggestion() {
+      const acceptedSuggestion = this.autoReplySuggestion.accept();
+      if (!acceptedSuggestion) return;
+
+      this.message = acceptedSuggestion.message;
+      this.setCopilotAcceptedMessage(acceptedSuggestion.message);
+      this.setAutoReplyAcceptedMetadata({
+        targetMessageId: acceptedSuggestion.targetMessageId,
+      });
+      this.$nextTick(() => this.messageEditor?.focusEditorInputField('end'));
     },
   },
 };
@@ -1493,6 +1677,14 @@ export default {
           @execute-macro="onExecuteMacro"
           @clear-selection="clearEditorSelection"
           @execute-copilot-action="executeCopilotAction"
+        />
+
+        <AutoReplySuggestion
+          v-if="isDefaultEditorMode && autoReplySuggestion.isActive.value"
+          :is-generating="autoReplySuggestion.isGenerating.value"
+          :suggestion="autoReplySuggestion.suggestion.value"
+          @accept="onAcceptAutoReplySuggestion"
+          @dismiss="autoReplySuggestion.dismiss"
         />
 
         <QuotedEmailPreview

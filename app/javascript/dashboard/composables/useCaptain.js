@@ -69,13 +69,15 @@ export function useCaptain() {
    * Silently returns for aborted requests.
    * @param {Error} error - The error object from the API call.
    */
-  const handleAPIError = error => {
+  const handleAPIError = (error, { silent = false } = {}) => {
     if (
       error.name === CAPTAIN_ERROR_TYPES.ABORT_ERROR ||
       error.name === CAPTAIN_ERROR_TYPES.CANCELED_ERROR
     ) {
       return;
     }
+    if (silent) return;
+
     const errorMessage =
       error.response?.data?.error ||
       t('INTEGRATION_SETTINGS.OPEN_AI.GENERATE_ERROR');
@@ -155,20 +157,22 @@ export function useCaptain() {
    * Gets a reply suggestion for the current conversation.
    * @param {Object} [options={}] - Additional options.
    * @param {AbortSignal} [options.signal] - AbortSignal to cancel the request.
+   * @param {boolean} [options.silent=false] - Suppress alerts for background requests.
    * @returns {Promise<{message: string, followUpContext?: Object}>} The reply suggestion and optional follow-up context.
    */
   const getReplySuggestion = async (options = {}) => {
+    const { signal, silent = false } = options;
     try {
       const result = await TasksAPI.replySuggestion(
         conversationId.value,
-        options.signal
+        signal
       );
       const {
         data: { message: generatedMessage, follow_up_context: followUpContext },
       } = result;
       return { message: generatedMessage, followUpContext };
     } catch (error) {
-      handleAPIError(error);
+      handleAPIError(error, { silent });
       return { message: '', errorType: getErrorType(error) };
     }
   };
