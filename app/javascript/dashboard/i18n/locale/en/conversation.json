@@ -296,6 +296,13 @@
       "START_AUDIO_RECORDING": "Start audio recording",
       "STOP_AUDIO_RECORDING": "Stop audio recording",
       "COPILOT_THINKING": "Copilot está pensando",
+      "AUTO_REPLY_SUGGESTION": {
+        "TITLE": "Suggested reply from Captain",
+        "LOADING": "Captain is drafting a reply...",
+        "USE_HINT": "Click to use this suggestion or press",
+        "SHORTCUT": "Tab",
+        "DISMISS": "Dismiss suggested reply"
+      },
       "EMAIL_HEAD": {
         "TO": "TO",
         "ADD_BCC": "Add bcc",

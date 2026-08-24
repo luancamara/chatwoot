@@ -577,6 +577,10 @@
         "DESCRIPTION": "Automatically suggest relevant labels and tags for conversations based on content analysis and context.",
         "MODEL_TITLE": "Label Suggestion Model",
         "MODEL_DESCRIPTION": "Select the AI model to use for analyzing conversations and suggesting appropriate labels"
+      },
+      "AUTO_REPLY_SUGGESTIONS": {
+        "TITLE": "Automatic Reply Suggestions",
+        "DESCRIPTION": "Draft a contextual reply inside the composer when an active real-time conversation is waiting for an agent response. Suggestions are never sent automatically."
       }
     },
     "API": {
