@@ -580,7 +580,14 @@
       },
       "AUTO_REPLY_SUGGESTIONS": {
         "TITLE": "Automatic Reply Suggestions",
-        "DESCRIPTION": "Draft a contextual reply inside the composer when an active real-time conversation is waiting for an agent response. Suggestions are never sent automatically."
+        "DESCRIPTION": "Draft a contextual reply inside the composer when an active real-time conversation is waiting for an agent response. Suggestions are never sent automatically.",
+        "MODEL_TITLE": "Reply Suggestion Model",
+        "MODEL_DESCRIPTION": "Choose the model used by automatic and manual reply suggestions.",
+        "PROMPT_TITLE": "Custom Instructions",
+        "PROMPT_DESCRIPTION": "Add guidance about tone, sales approach, or constraints. These instructions supplement Captain's safety and context rules and apply to automatic and manual suggestions.",
+        "PROMPT_PLACEHOLDER": "For example: Be concise, helpful, and guide the customer toward the next step without inventing product details.",
+        "CHARACTER_COUNT": "{count} / {limit}",
+        "SAVE_PROMPT": "Save instructions"
       }
     },
     "API": {

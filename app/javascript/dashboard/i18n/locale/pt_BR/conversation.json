@@ -257,6 +257,13 @@
       "START_AUDIO_RECORDING": "Iniciar gravação de áudio",
       "STOP_AUDIO_RECORDING": "Parar gravação de áudio",
       "COPILOT_THINKING": "O Copiloto está pensando",
+      "AUTO_REPLY_SUGGESTION": {
+        "TITLE": "Resposta sugerida pelo Captain",
+        "LOADING": "O Captain está preparando uma resposta...",
+        "USE_HINT": "Clique para usar esta sugestão ou pressione",
+        "SHORTCUT": "Tab",
+        "DISMISS": "Descartar sugestão de resposta"
+      },
       "EMAIL_HEAD": {
         "TO": "Para",
         "ADD_BCC": "Adicionar cco",

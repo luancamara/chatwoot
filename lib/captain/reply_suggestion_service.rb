@@ -3,7 +3,7 @@ class Captain::ReplySuggestionService < Captain::BaseTaskService
 
   def perform
     make_api_call(
-      feature: 'editor',
+      feature: 'reply_suggestion',
       messages: [
         { role: 'system', content: system_prompt },
         { role: 'user', content: formatted_conversation }
@@ -15,7 +15,10 @@ class Captain::ReplySuggestionService < Captain::BaseTaskService
 
   def system_prompt
     template = prompt_from_file('reply')
-    render_liquid_template(template, prompt_variables)
+    prompt = render_liquid_template(template, prompt_variables)
+    return prompt if account.reply_suggestion_prompt.blank?
+
+    "#{prompt}\n\nAccount-specific reply instructions:\n#{account.reply_suggestion_prompt.strip}"
   end
 
   def prompt_variables
