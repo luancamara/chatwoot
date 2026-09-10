@@ -2,7 +2,7 @@ class Captain::RewriteService < Captain::BaseTaskService
   pattr_initialize [:account!, :content!, :operation!, { conversation_display_id: nil }]
 
   TONE_OPERATIONS = %i[casual professional friendly confident straightforward].freeze
-  ALLOWED_OPERATIONS = (%i[fix_spelling_grammar improve] + TONE_OPERATIONS).freeze
+  ALLOWED_OPERATIONS = (%i[fix_spelling_grammar auto_fix_grammar improve] + TONE_OPERATIONS).freeze
 
   def perform
     operation_sym = operation.to_sym
@@ -18,6 +18,25 @@ class Captain::RewriteService < Captain::BaseTaskService
   end
 
   private
+
+  def auto_fix_grammar
+    guard = Captain::GrammarLanguageGuard.new(content)
+    return { message: content } unless guard.revisable?
+
+    result = call_llm_with_prompt(prompt_from_file('auto_fix_grammar'))
+    reason = result[:error] ? 'llm_error' : guard.rejection_reason(result[:message])
+    return { message: result[:message] } unless reason
+
+    original_grammar_message(reason)
+  rescue StandardError
+    original_grammar_message('revision_error')
+  end
+
+  def original_grammar_message(reason)
+    Rails.logger.info({ event: 'auto_fix_grammar_rejected', account_id: account.id,
+                        conversation_display_id: conversation_display_id, reason: reason }.to_json)
+    { message: content }
+  end
 
   def fix_spelling_grammar
     call_llm_with_prompt(prompt_from_file('fix_spelling_grammar'))

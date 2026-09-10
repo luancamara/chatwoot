@@ -56,10 +56,10 @@ RSpec.describe Llm::Models do
     it 'returns model metadata for a feature' do
       config = described_class.feature_config('editor')
 
-      expect(config[:default]).to eq('gpt-4.1-mini')
+      expect(config[:default]).to eq('gpt-5.6-luna')
       expect(config[:models].first).to include(
-        id: 'gpt-4.1-mini',
-        display_name: 'GPT-4.1 Mini',
+        id: 'gpt-5.6-luna',
+        display_name: 'GPT-5.6 Luna',
         provider: 'openai',
         credit_multiplier: 1
       )

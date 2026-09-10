@@ -7,6 +7,10 @@ providers:
     display_name: 'Gemini'
 
 models:
+  gpt-5.6-luna:
+    provider: openai
+    display_name: 'GPT-5.6 Luna'
+    credit_multiplier: 1
   gpt-4.1:
     provider: openai
     display_name: 'GPT-4.1'
@@ -83,6 +87,7 @@ features:
   editor:
     models:
       [
+        gpt-5.6-luna,
         gpt-4.1-mini,
         gpt-4.1-nano,
         gpt-5-mini,
@@ -93,7 +98,7 @@ features:
         gemini-3-flash,
         gemini-3-pro,
       ]
-    default: gpt-4.1-mini
+    default: gpt-5.6-luna
   reply_suggestion:
     models:
       [
