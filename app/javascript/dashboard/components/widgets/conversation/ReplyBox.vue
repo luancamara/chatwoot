@@ -1053,7 +1053,7 @@ export default {
             this.isFixingGrammar = true;
             const { data } = await TasksAPI.rewrite({
               content: messageToSend,
-              operation: 'fix_spelling_grammar',
+              operation: 'auto_fix_grammar',
               conversationId: this.currentChat?.id,
             });
             if (data?.message) {

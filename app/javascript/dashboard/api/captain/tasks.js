@@ -17,7 +17,7 @@ class TasksAPI extends ApiClient {
    * Rewrites content with a specific operation.
    * @param {Object} options - The rewrite options.
    * @param {string} options.content - The content to rewrite.
-   * @param {string} options.operation - The rewrite operation (fix_spelling_grammar, casual, professional, etc).
+   * @param {string} options.operation - The rewrite operation (auto_fix_grammar, fix_spelling_grammar, casual, etc).
    * @param {string} [options.conversationId] - The conversation ID for context (required for 'improve').
    * @param {AbortSignal} [signal] - AbortSignal to cancel the request.
    * @returns {Promise} A promise that resolves with the rewritten content.
