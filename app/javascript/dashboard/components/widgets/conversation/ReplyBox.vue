@@ -1042,6 +1042,7 @@ export default {
       }
       if (!this.showMentions) {
         let messageToSend = this.message;
+        let grammarRevisionId;
 
         // Auto-fix grammar if enabled and not a private note
         if (
@@ -1059,6 +1060,7 @@ export default {
             if (data?.message) {
               messageToSend = data.message;
             }
+            grammarRevisionId = data?.revision_id;
           } catch {
             // If grammar fix fails, send original message
           } finally {
@@ -1082,10 +1084,17 @@ export default {
           this.sendMessageAsMultipleMessages(
             messageToSend,
             copilotAcceptedMessage,
-            autoReplyMetadata
+            autoReplyMetadata,
+            grammarRevisionId
           );
         } else {
           const messagePayload = this.getMessagePayload(messageToSend);
+          if (grammarRevisionId) {
+            messagePayload.contentAttributes = {
+              ...messagePayload.contentAttributes,
+              grammar_revision_id: grammarRevisionId,
+            };
+          }
           this.sendMessage(
             messagePayload,
             messageToSend,
@@ -1105,10 +1114,17 @@ export default {
     sendMessageAsMultipleMessages(
       message,
       copilotAcceptedMessage = '',
-      autoReplyMetadata = null
+      autoReplyMetadata = null,
+      grammarRevisionId = null
     ) {
       const messages = this.getMultipleMessagesPayload(message);
       messages.forEach(messagePayload => {
+        if (grammarRevisionId) {
+          messagePayload.contentAttributes = {
+            ...messagePayload.contentAttributes,
+            grammar_revision_id: grammarRevisionId,
+          };
+        }
         this.sendMessage(
           messagePayload,
           messagePayload.message || '',

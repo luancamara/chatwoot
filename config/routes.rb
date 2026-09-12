@@ -104,6 +104,7 @@ Rails.application.routes.draw do
               get :drilldown, on: :member
             end
             resource :tasks, only: [], controller: 'tasks' do
+              get :revisions
               post :rewrite
               post :summarize
               post :reply_suggestion

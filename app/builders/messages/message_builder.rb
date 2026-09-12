@@ -22,7 +22,7 @@ class Messages::MessageBuilder
   end
 
   def perform
-    @message = @conversation.messages.build(message_params)
+    @message = @conversation.messages.build(message_params).tap { |message| Captain::MessageRevision.validate_message!(message, @user) }
     process_attachments
     process_emails
     # When the message has no quoted content, it will just be rendered as a regular message

@@ -1,4 +1,8 @@
 class Captain::TasksPolicy < ApplicationPolicy
+  def revisions?
+    account_user.administrator?
+  end
+
   def rewrite?
     true
   end

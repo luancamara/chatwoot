@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_08_22_120000) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_12_210000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -586,6 +586,30 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_22_120000) do
     t.index ["conversation_id"], name: "index_captain_message_reports_on_conversation_id"
     t.index ["message_id"], name: "index_captain_message_reports_on_message_id"
     t.index ["user_id"], name: "index_captain_message_reports_on_user_id"
+  end
+
+  create_table "captain_message_revisions", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "conversation_id", null: false
+    t.bigint "user_id"
+    t.string "request_id", null: false
+    t.text "original_content", null: false
+    t.text "revised_content"
+    t.text "selected_content"
+    t.string "outcome", default: "pending", null: false
+    t.string "reason"
+    t.string "error_class"
+    t.string "model"
+    t.string "prompt_digest"
+    t.jsonb "usage", default: {}, null: false
+    t.integer "duration_ms"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "conversation_id", "id"], name: "index_captain_revisions_on_conversation"
+    t.index ["account_id"], name: "index_captain_message_revisions_on_account_id"
+    t.index ["conversation_id"], name: "index_captain_message_revisions_on_conversation_id"
+    t.index ["created_at"], name: "index_captain_message_revisions_on_created_at"
+    t.index ["user_id"], name: "index_captain_message_revisions_on_user_id"
   end
 
   create_table "captain_scenarios", force: :cascade do |t|
@@ -1798,6 +1822,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_22_120000) do
   add_foreign_key "campaign_recipients", "campaigns", on_delete: :cascade
   add_foreign_key "campaign_recipients", "contacts", on_delete: :cascade
   add_foreign_key "campaign_recipients", "inboxes", on_delete: :cascade
+  add_foreign_key "captain_message_revisions", "accounts", on_delete: :cascade
+  add_foreign_key "captain_message_revisions", "conversations", on_delete: :cascade
+  add_foreign_key "captain_message_revisions", "users", on_delete: :nullify
   add_foreign_key "conversation_ad_referrals", "accounts"
   add_foreign_key "conversation_ad_referrals", "contacts"
   add_foreign_key "conversation_ad_referrals", "conversations"
