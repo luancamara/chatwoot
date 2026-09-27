@@ -70,17 +70,15 @@ class AdAttribution::GoogleRetractionService
   end
 
   def access_token
-    credentials = Google::Auth::UserRefreshCredentials.new(
-      client_id: config['client_id'],
-      client_secret: config['client_secret'],
-      refresh_token: config['refresh_token'],
+    credentials = Google::Auth::ServiceAccountCredentials.make_creds(
+      json_key_io: StringIO.new(config.fetch('service_account_credentials').to_json),
       scope: ADS_SCOPE
     )
     credentials.fetch_access_token!['access_token']
   end
 
   def validate_configuration!
-    required = %w[customer_id login_customer_id conversion_action_id developer_token client_id client_secret refresh_token]
+    required = %w[customer_id login_customer_id conversion_action_id developer_token service_account_credentials]
     missing = required.select { |key| config[key].blank? }
     raise "Google Ads adjustment configuration is incomplete: #{missing.join(', ')}" if missing.any?
   end
@@ -99,6 +97,6 @@ class AdAttribution::GoogleRetractionService
   end
 
   def config
-    @config ||= AdAttribution::Config.json('GOOGLE_AD_ADJUSTMENT_CONFIG')
+    @config ||= AdAttribution::Config.json('GOOGLE_AD_CONVERSION_CONFIG')
   end
 end
