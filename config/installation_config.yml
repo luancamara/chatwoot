@@ -226,13 +226,7 @@
   type: secret
 - name: GOOGLE_AD_CONVERSION_CONFIG
   display_title: 'Google Data Manager Conversion Config'
-  description: 'JSON with Google Ads customer, login customer, UPLOAD_CLICKS Venda ERP action and service account credentials'
-  value: ''
-  locked: false
-  type: secret
-- name: GOOGLE_AD_ADJUSTMENT_CONFIG
-  display_title: 'Google Ads Conversion Adjustment Config'
-  description: 'JSON with Google Ads OAuth, developer token and conversion action credentials used for retractions'
+  description: 'JSON with Google Ads customer, login customer, UPLOAD_CLICKS Venda ERP action, developer token and service account credentials'
   value: ''
   locked: false
   type: secret

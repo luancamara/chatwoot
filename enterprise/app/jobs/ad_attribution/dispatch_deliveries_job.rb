@@ -17,7 +17,8 @@ class AdAttribution::DispatchDeliveriesJob < ApplicationJob
   end
 
   def dispatch_google
-    deliveries(:google, :pending).where(ad_conversions: { status: 'sold' }).find_each do |delivery|
+    # 48 h deixa o reconcile horário marcar cancelamentos antes do envio; o Google recusa conversões só com userData após 63 dias
+    deliveries(:google, :pending).where(ad_conversions: { status: 'sold', ordered_at: 60.days.ago..48.hours.ago }).find_each do |delivery|
       deliver(delivery) { AdAttribution::GoogleDataManagerService.new(delivery: delivery).perform }
     end
 
