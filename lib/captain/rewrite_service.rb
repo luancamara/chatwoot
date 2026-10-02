@@ -1,6 +1,8 @@
 class Captain::RewriteService < Captain::BaseTaskService
   pattr_initialize [:account!, :content!, :operation!, { conversation_display_id: nil }]
 
+  attr_reader :grammar_revision_details
+
   TONE_OPERATIONS = %i[casual professional friendly confident straightforward].freeze
   ALLOWED_OPERATIONS = (%i[fix_spelling_grammar auto_fix_grammar improve] + TONE_OPERATIONS).freeze
 
@@ -20,16 +22,32 @@ class Captain::RewriteService < Captain::BaseTaskService
   private
 
   def auto_fix_grammar
+    @grammar_revision_details = { outcome: 'skipped', reason: 'no_revisable_text' }
     guard = Captain::GrammarLanguageGuard.new(content)
     return { message: content } unless guard.revisable?
 
-    result = call_llm_with_prompt(prompt_from_file('auto_fix_grammar'))
-    reason = result[:error] ? 'llm_error' : guard.rejection_reason(result[:message])
+    prompt = prompt_from_file('auto_fix_grammar')
+    @grammar_revision_details = { model: resolved_model(model: nil, feature: 'editor'), prompt_digest: Digest::SHA256.hexdigest(prompt) }
+    result = call_llm_with_prompt(prompt)
+    reason = record_grammar_revision_result(result, guard)
     return { message: result[:message] } unless reason
 
     original_grammar_message(reason)
-  rescue StandardError
+  rescue StandardError => e
+    @grammar_revision_details.merge!(outcome: 'error', reason: 'revision_error', error_class: e.class.name)
     original_grammar_message('revision_error')
+  end
+
+  def record_grammar_revision_result(result, guard)
+    @grammar_revision_details[:revised_content] = result[:message]
+    @grammar_revision_details[:usage] = result[:usage] || {}
+    reason = result[:error] ? 'llm_error' : guard.rejection_reason(result[:message])
+    outcome = result[:message] == content ? 'unchanged' : 'accepted'
+    outcome = 'rejected' if reason
+    outcome = 'error' if result[:error]
+    @grammar_revision_details[:reason] = reason
+    @grammar_revision_details[:outcome] = outcome
+    reason
   end
 
   def original_grammar_message(reason)

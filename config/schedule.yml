@@ -2,6 +2,12 @@
 # use https://crontab.guru/ to validate
 # validations for this file exist in /spec/configs/schedule_spec.rb
 
+# Remove automatic revision content after retention expires.
+remove_expired_message_revisions_job:
+  cron: '15 3 * * *'
+  class: 'Internal::RemoveExpiredMessageRevisionsJob'
+  queue: scheduled_jobs
+
 # executed daily at 0000 UTC
 # schedules daily deferred jobs at stable times for each installation
 internal_check_new_versions_job:
