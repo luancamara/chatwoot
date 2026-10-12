@@ -84,6 +84,8 @@ en:
       cannot_revoke_current: You cannot revoke the current session.
 
   errors:
+    store_routing:
+      exclusive_team: Remove the seller from their current store team before adding them to another store.
     account:
       not_authorized: You are not authorized to access this account
       email_limit_exceeded: The daily email limit for this account has been reached

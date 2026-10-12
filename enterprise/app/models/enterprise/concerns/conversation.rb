@@ -1,6 +1,8 @@
 module Enterprise::Concerns::Conversation
   extend ActiveSupport::Concern
   include ConversationMonitors::ConversationTracking
+  include SalesRouting::AssignmentTracking
+  include SalesRouting::ConversationRouting
 
   included do
     belongs_to :sla_policy, optional: true
