@@ -37,6 +37,7 @@ database transaction. This includes automatic and manual assignments for the
 configured ledger inboxes. Events distinguish `initial` from `reassignment` and
 include agent/name, store/origin/campaign/rule, first incoming timestamp, assignment
 timestamp and the conversation's internal and display IDs.
+The event snapshot survives conversation deletion so a pending delivery is not lost.
 
 The low-priority sync job inserts into the existing Hermes `distribution_logs`.
 A unique `event_key` makes retries safe, including a crash after the remote INSERT

@@ -30,4 +30,15 @@ RSpec.describe SalesRouting::SyncAssignmentsJob do
     end
     expect(event.reload.synced_at).to be_nil
   end
+
+  it 'retains and delivers the snapshot if the conversation is deleted before synchronization' do
+    event
+    conversation.destroy!
+    allow(PG).to receive(:connect).and_yield(connection)
+    with_modified_env HERMES_DISTRIBUTION_DATABASE_URL: 'postgresql://test.invalid/hermes' do
+      described_class.perform_now
+    end
+    expect(event.reload.synced_at).to be_present
+    expect(event.conversation_id).to eq(conversation.id)
+  end
 end

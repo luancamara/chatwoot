@@ -2,7 +2,8 @@ module SalesRouting::AssignmentTracking
   extend ActiveSupport::Concern
 
   included do
-    has_many :conversation_assignment_events, dependent: :delete_all
+    # The reporting ledger must survive conversation deletion, including events awaiting delivery.
+    has_many :conversation_assignment_events, dependent: nil
     after_save :record_assignment_event, if: :assignment_ledger_enabled?
   end
 
