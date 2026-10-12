@@ -31,7 +31,6 @@ describe('ResponseReassignmentSettings', () => {
           response_reassignment_notify_user_id: 2,
         },
       },
-      global: { stubs: { Button: true } },
     });
     const selects = wrapper.findAllComponents(Select);
     expect(selects[0].props('modelValue')).toBe('first_response');
@@ -52,13 +51,12 @@ describe('ResponseReassignmentSettings', () => {
   it('requires a manager when enabling the rule and allows disabling without one', async () => {
     const wrapper = mount(ResponseReassignmentSettings, {
       props: { inbox: { id: 20, response_reassignment_mode: 'disabled' } },
-      global: { stubs: { Button: true } },
     });
-    expect(wrapper.findComponent(Button).props('disabled')).toBe(false);
+    expect(wrapper.get('button').element.disabled).toBe(false);
     wrapper
       .findComponent(Select)
       .vm.$emit('update:modelValue', 'first_response');
     await nextTick();
-    expect(wrapper.findComponent(Button).props('disabled')).toBe(true);
+    expect(wrapper.get('button').element.disabled).toBe(true);
   });
 });

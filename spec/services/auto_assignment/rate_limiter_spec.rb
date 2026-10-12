@@ -70,7 +70,9 @@ RSpec.describe AutoAssignment::RateLimiter do
         freeze_time do
           rate_limiter.track_assignment(conversation)
 
-          expect(Redis::Alfred.zrange(assignment_key, 0, -1).first).to start_with("#{conversation.id}:")
+          entry = Redis::Alfred.zrangebyscore(assignment_key, '-inf', '+inf', with_scores: true).first
+          expect(entry.first).to start_with("#{conversation.id}:")
+          expect(entry.last).to eq(Time.now.to_i)
           expect(Redis::Alfred.ttl(assignment_key)).to eq(3600)
         end
       end
