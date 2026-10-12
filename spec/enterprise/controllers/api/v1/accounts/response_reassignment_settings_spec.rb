@@ -21,8 +21,11 @@ RSpec.describe 'Response reassignment settings', type: :request do
   end
 
   it 'rejects malformed modes before the enum setter raises' do
-    patch url, params: { response_reassignment_mode: 1 }, headers: admin.create_new_auth_token, as: :json
-    expect(response).to have_http_status(:unprocessable_entity)
+    [1, 'unknown', false].each do |mode|
+      patch url, params: { response_reassignment_mode: mode, response_reassignment_notify_user_id: admin.id },
+                 headers: admin.create_new_auth_token, as: :json
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
     expect(inbox.reload).to be_response_reassignment_disabled
   end
 

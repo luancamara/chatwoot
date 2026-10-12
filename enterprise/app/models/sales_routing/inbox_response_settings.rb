@@ -2,7 +2,7 @@ module SalesRouting::InboxResponseSettings
   extend ActiveSupport::Concern
 
   included do
-    enum :response_reassignment_mode, { disabled: 0, first_response: 1, all_responses: 2 }, prefix: true
+    enum :response_reassignment_mode, { disabled: 0, first_response: 1, all_responses: 2 }, prefix: :response_reassignment
     belongs_to :response_reassignment_notify_user, class_name: 'User', optional: true
     has_many :conversation_response_timers, dependent: :delete_all
     validate :validate_response_reassignment_settings
