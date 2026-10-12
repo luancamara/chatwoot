@@ -19,20 +19,25 @@ class AutoAssignment::AssignmentService
   private
 
   def perform_for_conversation(conversation)
-    return false unless assignable?(conversation)
-
     Current.executed_by = inbox.assignment_policy || inbox
     # Serialize selection and accounting across overlapping workers for this inbox.
     inbox.with_lock do
-      next false unless assignment_window_open?
+      conversation.with_lock do
+        next false unless assignable?(conversation) && prepare_assignment(conversation)
+        next false unless assignment_window_open?
 
-      agent = find_available_agent(conversation)
-      next false unless agent
+        agent = find_available_agent(conversation)
+        next false unless agent
 
-      assign_conversation(conversation, agent)
+        assign_conversation(conversation, agent)
+      end
     end
   ensure
     Current.executed_by = nil
+  end
+
+  def prepare_assignment(_conversation)
+    true
   end
 
   def assignment_window_open?

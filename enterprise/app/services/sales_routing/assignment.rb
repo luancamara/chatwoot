@@ -5,17 +5,10 @@ module SalesRouting::Assignment
     @store_routing ||= SalesRouting::Configuration.new(inbox: inbox)
   end
 
-  def perform_for_conversation(conversation)
+  def prepare_assignment(conversation)
     return super unless store_routing.enabled?
 
-    inbox.with_lock do
-      conversation.with_lock do
-        next false unless assignable?(conversation)
-        next false unless SalesRouting::Classifier.new(conversation: conversation).perform
-
-        super
-      end
-    end
+    SalesRouting::Classifier.new(conversation: conversation).perform
   end
 
   def assignment_attributes(conversation, agent)

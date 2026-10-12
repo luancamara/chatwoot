@@ -89,6 +89,7 @@ RSpec.describe SalesRouting::Assignment do
   end
 
   it 'uses the same store and eligible seller for a returning phone within sixty days' do
+    conversation.contact.update!(phone_number: '+5511999990000')
     previous = create(:conversation, account: account, inbox: inbox, contact: conversation.contact, team: lap, assignee: other_seller,
                                      status: :resolved, last_activity_at: 30.days.ago)
     create(:message, account: account, conversation: conversation, content: 'Voltei', created_at: 10.seconds.ago)
