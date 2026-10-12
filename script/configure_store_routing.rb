@@ -28,7 +28,12 @@ end
 puts({ account_id: account.id, routing_inboxes: inboxes.map(&:id), teams: preview, apply: ENV['APPLY'] == 'true' }.to_json)
 exit unless ENV['APPLY'] == 'true'
 
+PG.connect(ENV.fetch('HERMES_DISTRIBUTION_DATABASE_URL'), connect_timeout: 5) do |connection|
+  connection.exec('SELECT event_key, routing, first_customer_message_at FROM distribution_logs LIMIT 0')
+end
+
 Account.transaction do
+  inboxes.sort_by(&:id).each(&:lock!)
   account.lock!
   stores = input.fetch('stores').transform_values do |store|
     team = account.teams.find_or_initialize_by(name: store.fetch('team_name').downcase)
