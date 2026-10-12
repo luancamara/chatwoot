@@ -8,7 +8,7 @@ class AutoAssignment::RateLimiter
   def track_assignment(conversation)
     Redis::Alfred.pipelined do |pipeline|
       pipeline.zremrangebyscore(assignment_key, '-inf', window_start)
-      pipeline.zadd(assignment_key, Time.now.to_i, conversation.id)
+      pipeline.zadd(assignment_key, Time.now.to_i, "#{conversation.id}:#{SecureRandom.uuid}")
       pipeline.expire(assignment_key, window)
     end
   end

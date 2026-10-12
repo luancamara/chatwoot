@@ -1634,6 +1634,20 @@
       "INSTAGRAM": "Instagram",
       "TIKTOK": "TikTok",
       "VOICE": "Voice"
+    },
+    "RESPONSE_REASSIGNMENT": {
+      "TITLE": "Reassign unanswered conversations",
+      "DESCRIPTION": "Allow five business minutes for a human reply before offering the conversation to another online seller in the same store team.",
+      "MODE": "Apply to",
+      "MODES": {
+        "DISABLED": "Disabled",
+        "FIRST_RESPONSE": "First response only",
+        "ALL_RESPONSES": "First response and subsequent replies"
+      },
+      "MANAGER": "Notify administrator",
+      "SELECT_MANAGER": "Select an administrator",
+      "SAVE": "Save response settings",
+      "HELP": "The first deadline starts when a seller receives the conversation. Later deadlines start with the next customer message. Replies stop the timer; extra customer messages do not restart it. Manual transfers cancel the current window. Capacity and hourly limits still apply. With no eligible replacement, keep the current seller and notify the administrator."
     }
   }
 }

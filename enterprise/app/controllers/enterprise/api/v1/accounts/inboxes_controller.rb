@@ -1,5 +1,6 @@
 module Enterprise::Api::V1::Accounts::InboxesController
   extend ActiveSupport::Concern
+  include SalesRouting::ResponseReassignmentParams
 
   def inbox_attributes
     super + ee_inbox_attributes
@@ -58,7 +59,7 @@ module Enterprise::Api::V1::Accounts::InboxesController
   end
 
   def ee_inbox_attributes
-    [auto_assignment_config: [:max_assignment_limit]]
+    [:response_reassignment_mode, :response_reassignment_notify_user_id, { auto_assignment_config: [:max_assignment_limit] }]
   end
 
   private

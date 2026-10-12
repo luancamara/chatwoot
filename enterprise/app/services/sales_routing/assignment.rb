@@ -32,8 +32,7 @@ module SalesRouting::Assignment
 
     selector = SalesRouting::AgentSelector.new(conversation: conversation, configuration: store_routing, round: (@store_round ||= []))
     agents = selector.candidates(filter_agents_by_role(inbox.available_agents))
-    agents = filter_agents_by_rate_limit(agents)
-    agents = filter_agents_by_capacity(agents) if capacity_filtering_enabled?
+    agents = policy_eligible_agents(agents)
     selector.select(agents)
   end
 end

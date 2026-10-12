@@ -15,6 +15,7 @@ import DropdownMenu from 'dashboard/components-next/dropdown-menu/DropdownMenu.v
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 import TagInput from 'dashboard/components-next/taginput/TagInput.vue';
 import assignmentPoliciesAPI from 'dashboard/api/assignmentPolicies';
+import ResponseReassignmentSettings from './ResponseReassignmentSettings.vue';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps({
@@ -465,6 +466,10 @@ onMounted(() => {
 
                   <div class="w-full h-px my-4 bg-n-weak" />
 
+                  <ResponseReassignmentSettings
+                    v-if="inbox.response_reassignment_available"
+                    :inbox="inbox"
+                  />
                   <NextButton
                     :label="$t('INBOX_MGMT.ASSIGNMENT.CUSTOMIZE_POLICY')"
                     icon="i-lucide-arrow-right"

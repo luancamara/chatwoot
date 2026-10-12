@@ -1,5 +1,6 @@
 module Enterprise::Concerns::Inbox
   extend ActiveSupport::Concern
+  include SalesRouting::InboxResponseSettings
 
   included do
     has_one :captain_inbox, dependent: :destroy, class_name: 'CaptainInbox'

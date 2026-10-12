@@ -23,8 +23,8 @@ account configuration; no public endpoint or second distributor is introduced.
   takes precedence over this round, as specified by the customer-return rule.
 - Overnight leads precede daytime leads, oldest first. Daytime leads retain their
   assignment policy's priority. Existing business hours and seven-day exclusions apply.
-- Manual assignment remains available to managers. The five-minute reassignment
-  timer is intentionally outside this release.
+- Manual assignment remains available to managers. Optional response reassignment
+  is configured per inbox as described below.
 
 For a store transfer, update the team in Chatwoot; its store label follows. Remove
 a seller from their old store team before adding them to another. Duplicate store
@@ -49,6 +49,38 @@ new columns allow distinguishing transfers from unique leads in future reports.
 
 No historical assignments are reconstructed from current owners or backfilled by
 activation. Recovery of the n8n-to-native gap is a separate evidence-based operation.
+
+## Response reassignment
+
+Settings → Inboxes → Collaborators exposes Disabled, First response only, and
+First response and subsequent replies, plus an administrator to notify. Defaults
+are disabled; the Armazém rollout enables first-response-only on inbox 20 and
+notifies Luan. Other inboxes retain their existing behavior.
+
+Allow five **business minutes** after the seller receives the first waiting
+message. If it was already waiting in the queue, the assignment starts the clock.
+In all-responses mode, the next customer message after a human reply starts a new
+window. Further messages in that window do not reset the clock. Public human
+replies stop it; views, private notes, bots, automation rules and campaigns do not.
+The existing SLA business-hours calculator handles weekends and overnight pauses.
+
+On expiry, retain the current owner if no other eligible seller in the same team
+is online and below the native capacity/hourly limits. Notify the selected
+administrator through the existing SLA notifications, respecting their delivery
+preferences. Recheck waiting deadlines each minute as well as scheduling the
+deadline itself. Each expired owner generates at most one alert per window.
+
+Do not return the same waiting window to an already attempted seller. A human
+reply closes the cycle; a later customer interaction may start a fresh one in
+all-responses mode. Manual transfers cancel the current window, as do resolution
+and snoozing. Changing the mode clears existing windows and applies to new
+customer messages/assignments; activation does not redistribute the old backlog.
+
+Message creation and reassignment share the conversation lock. Reassignment uses
+the inbox lock for capacity/rate accounting and rereads the active window before
+writing. Transfers go to the existing Hermes ledger with `response-timeout` as
+the assignment rule. Redis rate-limit members identify assignment events, so a
+later return of the same conversation to a seller still consumes a new slot.
 
 ## Deployment
 
