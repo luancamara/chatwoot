@@ -33,6 +33,15 @@ class SalesRouting::Configuration
     inbox.account.account_users.where(custom_role_id: inbox.assignment_policy.eligible_custom_role_id).pluck(:user_id)
   end
 
+  def response_owner?(conversation)
+    return false unless conversation.open? && conversation.assignee_id && conversation.assignee_agent_bot_id.nil?
+    return false unless store_for_team(conversation.team_id)
+
+    team = teams.fetch(conversation.team_id)
+    eligible_ids = team.members.map(&:id) & seller_ids
+    team.allow_auto_assign? && eligible_ids.include?(conversation.assignee_id)
+  end
+
   private
 
   def settings

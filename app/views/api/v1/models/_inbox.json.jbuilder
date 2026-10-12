@@ -10,6 +10,11 @@ json.enable_email_collect resource.enable_email_collect
 json.csat_survey_enabled resource.csat_survey_enabled
 json.csat_config resource.csat_config
 json.enable_auto_assignment resource.enable_auto_assignment
+if ChatwootApp.enterprise?
+  json.response_reassignment_available resource.response_reassignment_available?
+  json.response_reassignment_mode resource.response_reassignment_mode
+  json.response_reassignment_notify_user_id resource.response_reassignment_notify_user_id
+end
 json.auto_assignment_config resource.auto_assignment_config
 json.out_of_office_message resource.out_of_office_message
 json.working_hours resource.weekly_schedule

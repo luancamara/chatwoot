@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_12_195502) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_12_212747) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1132,6 +1132,23 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_12_195502) do
     t.index ["user_id", "conversation_id"], name: "index_conversation_read_states_on_user_id_and_conversation_id", unique: true
   end
 
+  create_table "conversation_response_timers", force: :cascade do |t|
+    t.bigint "conversation_id", null: false
+    t.bigint "inbox_id", null: false
+    t.datetime "waiting_since", null: false
+    t.bigint "customer_message_id", null: false
+    t.string "response_kind", null: false
+    t.bigint "assignee_id"
+    t.datetime "due_at"
+    t.bigint "attempted_agent_ids", default: [], null: false, array: true
+    t.bigint "notified_assignee_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["conversation_id"], name: "index_conversation_response_timers_on_conversation_id", unique: true
+    t.index ["due_at"], name: "response_timers_due", where: "(due_at IS NOT NULL)"
+    t.index ["inbox_id"], name: "index_conversation_response_timers_on_inbox_id"
+  end
+
   create_table "conversation_risk_monitor_configs", force: :cascade do |t|
     t.bigint "account_id", null: false
     t.bigint "inbox_id", null: false
@@ -1462,6 +1479,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_12_195502) do
     t.integer "sender_name_type", default: 0, null: false
     t.string "business_name"
     t.jsonb "csat_config", default: {}, null: false
+    t.integer "response_reassignment_mode", default: 0, null: false
+    t.bigint "response_reassignment_notify_user_id"
     t.index ["account_id"], name: "index_inboxes_on_account_id"
     t.index ["channel_id", "channel_type"], name: "index_inboxes_on_channel_id_and_channel_type"
     t.index ["portal_id"], name: "index_inboxes_on_portal_id"

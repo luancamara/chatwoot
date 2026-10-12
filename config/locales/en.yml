@@ -84,6 +84,8 @@ en:
       cannot_revoke_current: You cannot revoke the current session.
 
   errors:
+    response_reassignment:
+      invalid_settings: Invalid response reassignment settings
     store_routing:
       exclusive_team: Remove the seller from their current store team before adding them to another store.
     account:

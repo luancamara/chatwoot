@@ -1,5 +1,6 @@
 module Enterprise::Concerns::Message
   extend ActiveSupport::Concern
+  include SalesRouting::ResponseMessageTracking
 
   included do
     include ConversationMonitors::MessageTracking
