@@ -22,15 +22,14 @@ class AutoAssignment::AssignmentService
     Current.executed_by = inbox.assignment_policy || inbox
     # Serialize selection and accounting across overlapping workers for this inbox.
     inbox.with_lock do
-      conversation.with_lock do
-        next false unless assignable?(conversation) && prepare_assignment(conversation)
-        next false unless assignment_window_open?
+      conversation = inbox.conversations.unassigned.open.where(id: conversation.id).lock('FOR UPDATE SKIP LOCKED').first
+      next false unless conversation && prepare_assignment(conversation)
+      next false unless assignment_window_open?
 
-        agent = find_available_agent(conversation)
-        next false unless agent
+      agent = find_available_agent(conversation)
+      next false unless agent
 
-        assign_conversation(conversation, agent)
-      end
+      assign_conversation(conversation, agent)
     end
   ensure
     Current.executed_by = nil
@@ -44,11 +43,6 @@ class AutoAssignment::AssignmentService
     return true unless inbox.assignment_policy&.business_hours_only?
 
     inbox.working_hours_enabled? && inbox.working_now?
-  end
-
-  def assignable?(conversation)
-    conversation.status == 'open' &&
-      conversation.assignee_id.nil?
   end
 
   def unassigned_conversations(limit)
