@@ -135,6 +135,9 @@ RSpec.describe SalesRouting::Assignment do
     service.perform_bulk_assignment
     conversation.reload.update!(team: lap, assignee: other_seller)
     expect(conversation.conversation_assignment_events.order(:id).pluck(:event_kind)).to eq(%w[initial reassignment])
+    expect(conversation.reload.label_list).to include('loja-lap')
+    expect(conversation.label_list).not_to include('loja-psd')
+    expect(conversation.additional_attributes.dig('store_routing', 'store')).to eq('lap')
   end
 
   it 'uses structured campaign metadata when the customer removed the code' do
@@ -158,7 +161,7 @@ RSpec.describe SalesRouting::Assignment do
   end
 
   it 'leaves other inboxes on their native assignment policy' do
-    other_inbox = create(:inbox, account: account, enable_auto_assignment: true)
+    other_inbox = create(:inbox, account: account, enable_auto_assignment: true, working_hours_enabled: true)
     create(:inbox_assignment_policy, inbox: other_inbox, assignment_policy: policy)
     create(:inbox_member, inbox: other_inbox, user: seller)
     other = create(:conversation, account: account, inbox: other_inbox, assignee: nil)

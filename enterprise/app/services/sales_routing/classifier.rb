@@ -76,7 +76,7 @@ class SalesRouting::Classifier
   end
 
   def origin
-    return 'google' if text.match?(/vim do google/i)
+    return 'google' if text.match?(/vim do google/i) || campaign.to_s.match?(/\bgoogle\b/i)
     return 'meta' if referral.present? || first_message.content_attributes['referral'].present?
     return 'site' if campaign.present? || text.match?(/tenho interesse neste produto/i)
 

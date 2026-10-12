@@ -26,7 +26,7 @@ account configuration; no public endpoint or second distributor is introduced.
 - Manual assignment remains available to managers. The five-minute reassignment
   timer is intentionally outside this release.
 
-For a store transfer, update the team and store label together in Chatwoot. Remove
+For a store transfer, update the team in Chatwoot; its store label follows. Remove
 a seller from their old store team before adding them to another. Duplicate store
 memberships are treated as misconfiguration, not resolved by picking an arbitrary team.
 

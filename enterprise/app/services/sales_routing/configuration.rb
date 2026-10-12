@@ -23,9 +23,14 @@ class SalesRouting::Configuration
 
   def member_ids
     memberships = stores.keys.flat_map { |store| team_for(store).members.map(&:id) }
-    raise 'A seller belongs to more than one store team' if memberships.uniq != memberships
+    duplicates = memberships.tally.select { |_id, count| count > 1 }.keys
+    raise 'A seller belongs to more than one store team' if duplicates.intersect?(seller_ids)
 
-    memberships
+    memberships.uniq
+  end
+
+  def seller_ids
+    inbox.account.account_users.where(custom_role_id: inbox.assignment_policy.eligible_custom_role_id).pluck(:user_id)
   end
 
   private
