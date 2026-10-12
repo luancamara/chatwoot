@@ -2,7 +2,7 @@ module SalesRouting::ConversationRouting
   extend ActiveSupport::Concern
 
   included do
-    before_save :sync_store_from_team_change, if: -> { team_id_changed? && !Current.executed_by.is_a?(AssignmentPolicy) }
+    before_validation :sync_store_from_team_change, if: -> { team_id_changed? && !Current.executed_by.is_a?(AssignmentPolicy) }
   end
 
   private
