@@ -59,7 +59,7 @@ class SalesRouting::ResponseReassignmentService < AutoAssignment::AssignmentServ
 
     type = watch.response_kind == 'first_response' ? 'sla_missed_first_response' : 'sla_missed_next_response'
     NotificationBuilder.new(notification_type: type, user: inbox.response_reassignment_notify_user,
-                            account: inbox.account, primary_actor: conversation, secondary_actor: conversation.assignee).perform
+                            account: inbox.account, primary_actor: conversation, secondary_actor: inbox.assignment_policy).perform
     watch.update!(notified_assignee_id: conversation.assignee_id)
   end
 end

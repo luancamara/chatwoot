@@ -65,6 +65,17 @@ RSpec.describe SalesRouting::ResponseReassignmentService do
     expect(watch.reload.due_at).to eq(5.minutes.from_now)
   end
 
+  it 'supplies the policy context expected by notification payloads and email templates' do
+    message
+    travel 5.minutes
+    SalesRouting::ReassignResponseJob.perform_now(watch.id)
+    notification = Notification.find_by!(user: manager, notification_type: :sla_missed_first_response)
+    expect(notification.secondary_actor).to eq(policy)
+    expect(notification.push_event_data[:secondary_actor]).to include(name: policy.name)
+    template = Liquid::Template.parse('{{ sla_policy.name }}')
+    expect(template.render('sla_policy' => notification.secondary_actor.to_drop)).to eq(policy.name)
+  end
+
   it 'ignores views, private notes and automated replies, without restarting for additional customer messages' do
     message
     original_due = watch.due_at

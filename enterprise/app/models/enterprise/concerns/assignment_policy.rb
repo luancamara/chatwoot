@@ -7,6 +7,14 @@ module Enterprise::Concerns::AssignmentPolicy
     validate :eligible_role_belongs_to_account
   end
 
+  def push_event_data
+    { id: id, name: name }
+  end
+
+  def to_drop
+    BaseDrop.new(self)
+  end
+
   private
 
   def eligible_role_belongs_to_account
