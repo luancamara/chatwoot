@@ -52,7 +52,7 @@ class SalesRouting::ResponseTracker
   end
 
   def first_response_watch
-    return unless conversation.first_reply_created_at.nil?
+    return unless response_kind == 'first_response'
     return unless Current.executed_by.is_a?(AssignmentPolicy)
 
     first_message = conversation.messages.incoming.where(private: false).order(:created_at, :id).first

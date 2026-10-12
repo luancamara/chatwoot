@@ -91,6 +91,9 @@ RSpec.describe SalesRouting::ResponseReassignmentService do
     SalesRouting::ReassignResponseJob.perform_now(timer_id)
     expect(conversation.reload.assignee).to eq(seller)
     expect(ConversationResponseTimer.where(conversation: conversation)).to be_empty
+    conversation.update!(assignee: nil)
+    AutoAssignment::AssignmentService.new(inbox: inbox).perform_bulk_assignment
+    expect(ConversationResponseTimer.where(conversation: conversation)).to be_empty
   end
 
   it 'starts and closes a new cycle for later interactions when all responses are enabled' do
