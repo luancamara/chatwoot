@@ -52,6 +52,10 @@
       "RESEND": "Reenviar e-mail de verificação",
       "RESEND_SUCCESS": "E-mail de verificação enviado. Por favor, verifique sua caixa de entrada.",
       "RESEND_ERROR": "Não foi possível enviar o e-mail de verificação. Por favor, tente novamente."
+    },
+    "SHOPIFY": {
+      "TITLE": "Configure o Chatwoot para sua loja Shopify",
+      "DESCRIPTION": "Crie sua conta para continuar para o Shopify App Pricing e escolher um plano."
     }
   }
 }

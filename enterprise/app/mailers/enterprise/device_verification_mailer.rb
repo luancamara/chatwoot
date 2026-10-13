@@ -11,7 +11,7 @@ class Enterprise::DeviceVerificationMailer < ApplicationMailer
     @code = DeviceVerification.decrypt_code(encrypted_code)
     @meta = meta || {}
 
-    send_mail_with_liquid(to: user.email, subject: "Your #{brand_name} verification code")
+    send_mail_with_liquid(to: user.email, subject: I18n.t('mailers.subjects.verification_code', brand_name: brand_name))
   end
 
   def new_device(user, meta = {})
@@ -20,7 +20,7 @@ class Enterprise::DeviceVerificationMailer < ApplicationMailer
     @user = user
     @meta = meta || {}
 
-    send_mail_with_liquid(to: user.email, subject: "A new device signed in to your #{brand_name} account")
+    send_mail_with_liquid(to: user.email, subject: I18n.t('mailers.subjects.new_device', brand_name: brand_name))
   end
 
   private

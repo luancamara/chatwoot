@@ -90,11 +90,11 @@
 ## Project-Specific
 
 - **Translations**:
-  - For product and source-string changes, only update `en.yml` and `en.json`; other languages are handled through Crowdin and the community
+  - This fork requires Brazilian Portuguese (`pt_BR`) for all user-facing changes. Update the English source strings and the corresponding `pt_BR` translations together, including validation messages and notifications. Other languages remain managed through Crowdin and the community.
   - Crowdin-generated translation sync PRs may update non-English locale files; do not flag those changes solely for modifying translated locale files
   - Preserve product and brand names, OAuth scopes, API values, and other machine-readable identifiers unless an official localized form exists
   - When reviewing Crowdin syncs, verify protected terms remain unchanged. Add newly introduced product names, brand names, and machine-readable identifiers to the Crowdin glossary as non-translatable, and keep the glossary current
-  - Backend i18n → `en.yml`, Frontend i18n → `en.json`
+  - Backend i18n → `en.yml` and `pt_BR.yml`; frontend i18n → the matching English and `pt_BR` JSON catalogs. Keep new catalogs registered in both locale indexes.
 - **Frontend**:
   - Use `components-next/` for message bubbles (the rest is being deprecated)
 

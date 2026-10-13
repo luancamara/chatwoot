@@ -42,9 +42,9 @@
         "NRT": "Próximo limite de tempo de resposta",
         "RT": "Limite de tempo de resolução",
         "SHORT_HAND": {
-          "FRT": "FRT",
-          "NRT": "NRT",
-          "RT": "RT"
+          "FRT": "TPR",
+          "NRT": "TPP",
+          "RT": "TR"
         }
       }
     },

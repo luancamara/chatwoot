@@ -272,13 +272,18 @@
       "MESSAGE_CLOUD": "Você não faz parte de nenhuma conta no momento. Se acreditar que isso é um engano, entre em contato com nossa equipe de suporte.",
       "MESSAGE_SELF_HOSTED": "Você não faz parte de nenhuma conta no momento. Entre em contato com o seu administrador.",
       "LOGOUT": "Encerrar sessão"
+    },
+    "IMPERSONATION": {
+      "MESSAGE": "Você está acessando como {name} ({email}). Todas as suas ações serão registradas como ações desse usuário.",
+      "STOP": "Encerrar acesso como outro usuário"
     }
   },
   "COMPONENTS": {
     "CODE": {
       "BUTTON_TEXT": "Copiar",
       "CODEPEN": "Abrir em CodePen",
-      "COPY_SUCCESSFUL": "Código copiado para área de transferência com sucesso"
+      "COPY_SUCCESSFUL": "Código copiado para área de transferência com sucesso",
+      "COPY_ERROR": "Não foi possível copiar para a área de transferência. Tente novamente."
     },
     "SHOW_MORE_BLOCK": {
       "SHOW_MORE": "Mostrar Mais",
@@ -329,10 +334,10 @@
     "CAPTAIN_ASSISTANTS": "Assistentes",
     "CAPTAIN_OVERVIEW": "Visão geral",
     "CAPTAIN_DOCUMENTS": "Documentos",
-    "CAPTAIN_RESPONSES": "FAQs",
+    "CAPTAIN_RESPONSES": "Perguntas frequentes",
     "CAPTAIN_TOOLS": "Ferramentas",
     "CAPTAIN_SCENARIOS": "Cenários",
-    "CAPTAIN_PLAYGROUND": "Playground",
+    "CAPTAIN_PLAYGROUND": "Ambiente de testes",
     "CAPTAIN_INBOXES": "Caixas de Entrada",
     "CAPTAIN_SETTINGS": "Configurações",
     "HOME": "Principal",
@@ -414,7 +419,13 @@
     "DOCS": "Ler documentos",
     "SECURITY": "Segurança",
     "CAPTAIN_AI": "Capitão",
-    "CONVERSATION_WORKFLOW": "Fluxo de Conversa"
+    "CONVERSATION_WORKFLOW": "Fluxo de Conversa",
+    "CRM_TITLE": "CRM de vendas",
+    "CRM_PIPELINE": "Quadro de vendas",
+    "CRM_FUNNEL": "Funil de vendas",
+    "CRM_SALES_REPORTS": "Relatórios de vendas",
+    "CRM_AD_REPORTS": "Desempenho dos anúncios",
+    "CRM_AD_GALLERY": "Galeria de anúncios"
   },
   "DATA_IMPORTS": {
     "HEADER": "Dados",
@@ -596,7 +607,8 @@
       "PLAN_NOTE": "Você está atualmente inscrito no plano **{plan}** com **{quantity}** licenças",
       "SEAT_COUNT": "Número de assentos",
       "RENEWS_ON": "Renovações em",
-      "CURRENCY": "Moeda"
+      "CURRENCY": "Moeda",
+      "CANCELS_ON": "Cancelamento em"
     },
     "CURRENCY": {
       "SELECT": {
@@ -652,6 +664,42 @@
         "GO_BACK": "Voltar",
         "CONFIRM_PURCHASE": "Confirmar Compra"
       }
+    },
+    "PAYMENT_RECOVERY": {
+      "DESCRIPTION": "Seu pagamento está em atraso. Atualize a forma de pagamento ou pague a fatura pendente no portal de cobrança para manter sua assinatura ativa.",
+      "ACTION": "Regularizar pagamento"
+    },
+    "SHOPIFY": {
+      "TITLE": "Cobrança pela Shopify",
+      "DESCRIPTION": "Sua assinatura do Chatwoot é cobrada e gerenciada com segurança pela Shopify.",
+      "UNAVAILABLE": "A cobrança pela Shopify está indisponível no momento. Entre em contato com o suporte se o problema continuar.",
+      "LOADING": "Verificando sua assinatura na Shopify...",
+      "PLAN_TITLE": "Assinatura na Shopify",
+      "PLAN_DESCRIPTION": "Escolha ou gerencie seu plano do Chatwoot com segurança na Shopify.",
+      "CURRENT_PLAN": "Plano atual",
+      "SUBSCRIPTION_STATUS": "Status",
+      "PRICE": "Preço",
+      "PER_MONTH": "{price} / mês",
+      "PER_YEAR": "{price} / ano",
+      "TRIAL_ENDS_ON": "A avaliação termina em",
+      "RENEWS_ON": "Renovação em",
+      "ACCESS_UNTIL": "Acesso até",
+      "LAST_VERIFIED": "Última verificação",
+      "VIEW_PLANS": "Ver planos na Shopify",
+      "MANAGE_PLAN": "Gerenciar na Shopify",
+      "RETRY": "Tentar novamente",
+      "ERROR_TITLE": "Não foi possível verificar sua assinatura na Shopify",
+      "ERROR_DESCRIPTION": "Tente novamente em instantes. Seu último acesso verificado foi mantido.",
+      "STALE_TITLE": "Exibindo sua última assinatura verificada",
+      "STALE_DESCRIPTION": "Não foi possível acessar a Shopify. Seu acesso foi mantido.",
+      "STATUS": {
+        "PENDING": "Pendente",
+        "ACTIVE": "Ativa",
+        "TRIALING": "Avaliação",
+        "CANCELLED": "Cancelamento agendado",
+        "EXPIRED": "Expirada",
+        "MISSING": "Nenhum plano ativo"
+      }
     }
   },
   "SECURITY_SETTINGS": {
@@ -663,11 +711,11 @@
       "TITLE": "SAML SSO",
       "NOTE": "Configure o login único via SAML para sua conta. Os usuários se autenticarão por meio do seu provedor de identidade em vez de usar e-mail e senha.",
       "ACS_URL": {
-        "LABEL": "ACS URL",
+        "LABEL": "URL do ACS",
         "TOOLTIP": "URL do Assertion Consumer Service - Configure esta URL no seu IdP como o destino para as respostas SAML"
       },
       "SSO_URL": {
-        "LABEL": "SSO URL",
+        "LABEL": "URL do SSO",
         "HELP": "A URL para onde as solicitações de autenticação SAML serão enviadas",
         "PLACEHOLDER": "https://sso.example.com/saml/sso"
       },
@@ -682,7 +730,7 @@
       },
       "COPY_SUCCESS": "Código copiado para área de transferência com sucesso",
       "SP_ENTITY_ID": {
-        "LABEL": "SP Entity ID",
+        "LABEL": "ID da entidade SP",
         "HELP": "Identificador exclusivo desta aplicação como provedor de serviço (gerado automaticamente).",
         "TOOLTIP": "Identificador exclusivo do Chatwoot como Provedor de Serviço - configure-o nas configurações do seu IdP"
       },
@@ -724,7 +772,8 @@
         "TITLE": "Informações do Provedor de Serviço",
         "TOOLTIP": "Copie esses valores e configure-os no seu Provedor de Identidade para estabelecer a conexão SAML"
       }
-    }
+    },
+    "NO_SETTINGS_AVAILABLE": "Não há configurações de segurança disponíveis nesta instalação. Configure as chaves de criptografia de MFA para exigir a autenticação de dois fatores."
   },
   "CONVERSATION_WORKFLOW": {
     "INDEX": {
@@ -936,6 +985,10 @@
           "LONGEST_WAITING": {
             "LABEL": "Maior tempo de espera",
             "DESCRIPTION": "A conversa que está aguardando há mais tempo é atribuída primeiro."
+          },
+          "LATEST_CUSTOMER_MESSAGE": {
+            "LABEL": "Mensagem mais recente do cliente",
+            "DESCRIPTION": "Atribua primeiro a conversa com a mensagem mais recente do cliente. Respostas de agentes e notas privadas não alteram sua prioridade."
           }
         },
         "FAIR_DISTRIBUTION": {
@@ -961,6 +1014,12 @@
             "SUCCESS_MESSAGE": "Caixa de entrada adicionada à política com sucesso",
             "ERROR_MESSAGE": "Falha ao adicionar a caixa de entrada à política"
           }
+        },
+        "ELIGIBILITY": {
+          "BUSINESS_HOURS": "Atribuir somente durante o expediente da caixa de entrada",
+          "BUSINESS_HOURS_HELP": "Ative e configure o expediente em cada caixa de entrada vinculada. Fora desse horário, as conversas aguardam na fila. Somente agentes online recebem atribuições.",
+          "ROLE": "Perfil personalizado elegível",
+          "ALL_ROLES": "Todos os perfis"
         }
       },
       "DELETE_POLICY": {

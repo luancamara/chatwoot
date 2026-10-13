@@ -1,6 +1,19 @@
 require 'rails_helper'
 
 RSpec.describe Devise::Mailer do
+  it 'uses the installation locale for password reset emails without an account context' do
+    user = create(:user)
+
+    with_modified_env DEFAULT_LOCALE: 'pt_BR' do
+      mail = described_class.with(account: nil).reset_password_instructions(user, 'reset-token').message
+
+      expect(mail.subject).to eq(I18n.t('devise.mailer.reset_password_instructions.subject', locale: :pt_BR))
+      expect(mail.body.decoded).to include('Alterar minha senha', 'Se você não fez esta solicitação', 'Este e-mail foi enviado por')
+      expect(mail.body.decoded).to include('reset_password_token=reset-token')
+      expect(mail.body.decoded).not_to include('Someone has requested', 'Change my password')
+    end
+  end
+
   it 'carries the pending Shopify install redirect in the confirmation link' do
     user = create(:user, skip_confirmation: false)
     redirect_url = "settings/integrations/shopify?shopify_pending_install=#{'a' * 32}"

@@ -1,0 +1,32 @@
+{
+  "CONVERSATION_RISK_MONITOR": {
+    "TITLE": "Monitor de conversas",
+    "DESCRIPTION": "Detecte reclamações e riscos críticos sem interromper o fluxo de atendimento ao cliente.",
+    "LOADING": "Carregando as configurações do monitor de conversas...",
+    "STATUS": {
+      "TITLE": "Monitoramento silencioso",
+      "DESCRIPTION": "Monitore novas mensagens de clientes na caixa de entrada do WhatsApp selecionada."
+    },
+    "ROUTING": {
+      "TITLE": "Alertas internos",
+      "DESCRIPTION": "Escolha quem deve ser mencionado e quais etiquetas identificam reclamações."
+    },
+    "FIELDS": {
+      "INBOX": "Caixa de entrada do WhatsApp",
+      "TEAM": "Equipe de gerência",
+      "COMPLAINT_LABEL": "Etiqueta de reclamação",
+      "CRITICAL_LABEL": "Etiqueta de risco crítico",
+      "SELECT": "Selecione uma opção"
+    },
+    "SILENT": {
+      "TITLE": "O cliente não receberá mensagens do monitor",
+      "DESCRIPTION": "Este monitor apenas aplica etiquetas e cria uma nota privada. Ele nunca responde, altera a prioridade ou reatribui a conversa."
+    },
+    "SAVE": "Salvar monitor",
+    "API": {
+      "SUCCESS": "Configurações do monitor de conversas salvas.",
+      "ERROR": "Não foi possível salvar as configurações do monitor de conversas.",
+      "LOAD_ERROR": "Não foi possível carregar as configurações do monitor de conversas."
+    }
+  }
+}

@@ -26,6 +26,20 @@ RSpec.describe AgentNotifications::ConversationNotificationsMailer, type: :maile
     end
   end
 
+  context 'when the account uses Brazilian Portuguese' do
+    let(:account) { create(:account, locale: 'pt_BR') }
+    let(:policy) { create(:assignment_policy, account: account, name: 'Distribuição de vendedores') }
+
+    it 'localizes the response deadline subject, body and footer using the assignment policy' do
+      mail = described_class.with(account: account).sla_missed_first_response(conversation, agent, policy).message
+
+      expect(mail.subject).to eq("A conversa [ID - #{conversation.display_id}] excedeu o prazo de primeira resposta")
+      expect(mail.body.decoded).to include('excedeu o prazo de primeira resposta', policy.name, 'Gerenciar preferências de notificação')
+      expect(mail.body.decoded).to include("/app/accounts/#{account.id}/conversations/#{conversation.display_id}")
+      expect(mail.body.decoded).not_to include('Hi ', 'Please address', 'This email was sent by')
+    end
+  end
+
   describe 'sla_missed_next_response' do
     let(:sla_policy) { create(:sla_policy, account: account) }
     let(:mail) { described_class.with(account: account).sla_missed_next_response(conversation, agent, sla_policy).deliver_now }

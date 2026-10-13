@@ -1,0 +1,232 @@
+{
+  "CRM": {
+    "AD_GALLERY": {
+      "TITLE": "Galeria de Anúncios",
+      "SEARCH": "Buscar por título, texto ou campanha",
+      "CAMPAIGN": "Campanha:",
+      "RUNNING_SINCE": "Primeiro lead:",
+      "LAST_LEAD": "Último lead:",
+      "WATCH_VIDEO": "Assistir ao vídeo",
+      "VIEW_ON_META": "Ver publicação original",
+      "EMPTY": "Nenhum anúncio registrado ainda."
+    },
+    "AD_REPORTS": {
+      "TOTAL_LEADS": "Leads vindos de anúncios",
+      "BY_CAMPAIGN": "Leads por campanha",
+      "AD": "Anúncio",
+      "CAMPAIGN": "Campanha",
+      "ADSET": "Conjunto",
+      "LEADS": "Leads",
+      "RESOLVED": "Resolvidas",
+      "SPEND": "Investido",
+      "CPL": "Custo/lead",
+      "ORDERS": "Pedidos",
+      "REVENUE": "Receita",
+      "ROAS": "ROAS",
+      "UNKNOWN_CAMPAIGN": "Campanha não identificada",
+      "EMPTY": "Nenhum lead de anúncio no período selecionado."
+    },
+    "CONVERSATION_INSIGHT": {
+      "TITLE": "Análise da Conversa",
+      "SCORE": "Nota de qualidade",
+      "FINAL_SCORE": "Nota Final",
+      "SIGNALS": "Sinais Importantes",
+      "ESTIMATED_VALUE": "Valor Estimado",
+      "PRODUCT_CATEGORY": "Categoria do Produto",
+      "SENTIMENT": "Sentimento do Cliente",
+      "KEY_TOPICS": "Tópicos Principais",
+      "QUALITY_BREAKDOWN": "Detalhamento da Qualidade",
+      "LOADING": "Analisando conversa...",
+      "EMPTY": "Nenhuma análise disponível para esta conversa",
+      "ERROR": "Erro ao carregar análise da conversa",
+      "VIEW_FULL_ANALYSIS": "Ver Análise Completa",
+      "REGENERATE": "Regerar Análise",
+      "REGENERATE_SUCCESS": "Análise será regenerada em breve",
+      "REGENERATE_ERROR": "Erro ao solicitar nova análise",
+      "NOT_APPLICABLE": "N/A",
+      "NO_RESPONSE_LABEL": "Sem Resposta",
+      "ABANDONMENT_LABEL": "Abandono",
+      "MEDIA_SENT_LABEL": "Mídia Enviada",
+      "SCORE_LABELS": {
+        "HIGH": "Alto",
+        "MEDIUM": "Médio",
+        "LOW": "Baixo"
+      },
+      "SENTIMENT_LABELS": {
+        "positive": "Positivo",
+        "neutral": "Neutro",
+        "negative": "Negativo"
+      },
+      "CLASSIFICATION_LABELS": {
+        "complete_consultation": "Consulta Completa",
+        "quick_consultation": "Consulta Rápida",
+        "return_client": "Retorno de Cliente",
+        "non_commercial": "Não Comercial"
+      },
+      "BREAKDOWN_LABELS": {
+        "greeting": "Saudação",
+        "needs_identification": "Identificação de Necessidades",
+        "product_presentation": "Apresentação do Produto",
+        "objection_handling": "Tratamento de Objeções",
+        "closing_attempt": "Tentativa de Fechamento"
+      },
+      "AUTOMATIC_METRICS": {
+        "TITLE": "Métricas Automáticas",
+        "TPR": "Tempo de Primeira Resposta",
+        "TPR_SHORT": "TPR",
+        "TMER": "Tempo Médio Entre Respostas",
+        "TMER_SHORT": "TMER",
+        "NO_RESPONSE": "Conversa sem resposta humana",
+        "ABANDONMENT_LIGHT": "Abandono leve (4-12h úteis)",
+        "ABANDONMENT_SEVERE": "Abandono grave (>12h úteis)",
+        "MEDIA_SENT": "Mídia enviada pelo vendedor",
+        "MEDIA_NOT_SENT": "Nenhuma mídia enviada",
+        "MINUTES": "min",
+        "HOURS": "h",
+        "MESSAGES": "mensagens",
+        "HUMAN_RESPONSES": "respostas humanas"
+      },
+      "CRITERIA_LABELS": {
+        "TITLE": "Análise Qualitativa",
+        "needs_qualification": "Qualificação da Necessidade",
+        "closing_conduct": "Condução para Fechamento",
+        "media_usage": "Uso de Mídia",
+        "personalization": "Personalização",
+        "unfulfilled_promises": "Promessas Não Cumpridas",
+        "alternatives_offered": "Oferta de Alternativas",
+        "tone_communication": "Tom e Comunicação",
+        "return_client_continuity": "Continuidade em Retorno",
+        "cross_sell": "Venda complementar"
+      },
+      "PENALTIES": {
+        "TITLE": "Penalidades",
+        "no_response": "Sem resposta - nota automática 0",
+        "severe_abandonment": "Abandono grave (>12h úteis)",
+        "light_abandonment": "Abandono leve (4-12h úteis)",
+        "unfulfilled_promises": "Promessa não cumprida",
+        "PENALTY_VALUE": "-2.0",
+        "SCORE_DISPLAY": "%{score}/10",
+        "SCORE_FRACTION": "%{score}/%{max}"
+      },
+      "FEEDBACK": {
+        "TITLE": "Orientações para o agente"
+      },
+      "COMMERCIAL_INFO": {
+        "TITLE": "Informações Comerciais",
+        "FUNNEL_STAGE": "Estágio do Funil"
+      }
+    },
+    "FOLLOW_UP_REMINDERS": {
+      "TITLE": "Lembretes de acompanhamento",
+      "ADD": "Adicionar lembrete",
+      "EMPTY": "Nenhum lembrete configurado",
+      "ERROR": "Erro ao carregar lembretes",
+      "DELETE_CONFIRM": "Tem certeza que deseja excluir este lembrete?",
+      "FORM": {
+        "DUE_AT": "Data e hora",
+        "DESCRIPTION": "Descrição",
+        "DESCRIPTION_PLACEHOLDER": "Descreva o motivo do acompanhamento...",
+        "SAVE": "Salvar lembrete",
+        "CANCEL": "Cancelar"
+      },
+      "API": {
+        "CREATE_SUCCESS": "Lembrete criado com sucesso",
+        "CREATE_ERROR": "Erro ao criar lembrete",
+        "DELETE_SUCCESS": "Lembrete excluído com sucesso",
+        "DELETE_ERROR": "Erro ao excluir lembrete"
+      }
+    },
+    "CONDITIONAL_ATTRIBUTES": {
+      "DIVIDER_LABEL": "Informações adicionais"
+    },
+    "PIPELINE": {
+      "TITLE": "Quadro de vendas",
+      "DESCRIPTION": "Arraste as conversas entre os estágios para atualizar a posição no funil",
+      "NO_DATA": "Nenhuma conversa no quadro de vendas para os filtros selecionados",
+      "UNKNOWN_CONTACT": "Contato desconhecido",
+      "MOVE_SUCCESS": "Conversa movida para %{stage}",
+      "MOVE_ERROR": "Erro ao mover conversa",
+      "LOAD_ERROR": "Erro ao carregar o quadro de vendas",
+      "OPEN_CONVERSATION": "Abrir conversa",
+      "ADD_VALUE": "+ Valor",
+      "VALUE_PLACEHOLDER": "Valor",
+      "VALUE_ERROR": "Erro ao salvar o valor"
+    },
+    "FUNNEL": {
+      "TITLE": "Funil de Vendas",
+      "DESCRIPTION": "Taxas de conversão entre os estágios do funil",
+      "STAGE": "Estágio",
+      "COUNT": "Conversas",
+      "CONVERSION_RATE": "Taxa de Conversão",
+      "PIPELINE_SUMMARY": "Resumo do quadro de vendas",
+      "ESTIMATED_VALUE": "Valor Estimado",
+      "NO_DATA": "Nenhum dado de funil disponível para o período selecionado"
+    },
+    "SALES_REPORTS": {
+      "TITLE": "Relatórios de Vendas",
+      "DESCRIPTION": "Desempenho dos agentes e análise de disposição",
+      "AGENT_RANKING": "Classificação dos agentes",
+      "DISPOSITION_BREAKDOWN": "Resultado das Conversas",
+      "LOSS_REASONS": "Motivos de Perda",
+      "TOTAL_CONVERSATIONS": "Total de Conversas",
+      "RESOLVED": "Resolvidas",
+      "VENDAS": "Vendas",
+      "CONVERSION_RATE": "Taxa de Conversão",
+      "AVG_QUALITY_SCORE": "Nota média de qualidade",
+      "TOTAL_REVENUE": "Receita Total",
+      "NO_DATA": "Nenhum dado disponível para o período selecionado",
+      "AGENT": "Agente",
+      "NA": "N/D"
+    },
+    "EVALUATION_REPORTS": {
+      "TITLE": "Relatórios de Avaliação",
+      "DESCRIPTION": "Avaliação detalhada do atendimento por vendedor",
+      "TAB_AGENTS": "Vendedores",
+      "TAB_MANAGEMENT": "Gerencial",
+      "TAB_CONVERSATIONS": "Conversas",
+      "NO_DATA": "Nenhum dado disponível para o período selecionado",
+      "AGENT_RANKING": "Classificação dos vendedores",
+      "AVG_SCORE": "Nota Média",
+      "TREND": "Tendência",
+      "TREND_UP": "Melhorando",
+      "TREND_DOWN": "Piorando",
+      "TREND_STABLE": "Estável",
+      "TOTAL_EVALUATED": "Conversas Avaliadas",
+      "NO_RESPONSE_COUNT": "Sem Resposta",
+      "ABANDONMENT_COUNT": "Abandonos",
+      "AVG_TPR": "TPR Médio",
+      "BEST_CRITERIA": "Melhores Critérios",
+      "WORST_CRITERIA": "Piores Critérios",
+      "WEEKLY_GOAL": "Meta da Semana",
+      "ALERTS": "Alertas",
+      "MANAGEMENT": {
+        "TEAM_AVG": "Nota Média da Equipe",
+        "TPR_AVG": "TPR Médio da Equipe",
+        "ABANDONMENT_RATE": "Taxa de Abandono",
+        "NO_RESPONSE_RATE": "Taxa Sem Resposta",
+        "WORST_CONVERSATIONS": "Piores Conversas",
+        "BEST_CONVERSATIONS": "Melhores Conversas",
+        "SYSTEMIC_ISSUES": "Problemas Sistêmicos",
+        "WEEKLY_EVOLUTION": "Evolução Semanal",
+        "SYSTEMIC_ISSUE_DETAIL": "%{avgPercent}% média | %{agentsCount} agentes abaixo de 50%"
+      },
+      "PERIOD": {
+        "THIS_WEEK": "Esta Semana",
+        "LAST_WEEK": "Semana Passada",
+        "THIS_MONTH": "Este Mês",
+        "LAST_MONTH": "Mês Passado",
+        "CUSTOM": "Personalizado"
+      }
+    },
+    "FILTERS": {
+      "DATE_RANGE": "Período",
+      "AGENT": "Agente",
+      "TEAM": "Equipe",
+      "INBOX": "Caixa de Entrada",
+      "ALL_AGENTS": "Todos os Agentes",
+      "ALL_TEAMS": "Todas as Equipes",
+      "ALL_INBOXES": "Todas as Caixas",
+      "APPLY": "Aplicar Filtros"
+    }
+  }
+}

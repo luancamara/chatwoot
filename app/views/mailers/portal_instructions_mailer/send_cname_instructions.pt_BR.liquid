@@ -1,0 +1,30 @@
+<tr>
+  <td>
+    <p>Olá,</p>
+    <p>Para concluir a configuração da central de ajuda, atualize as configurações de DNS do seu domínio personalizado: <strong>{{ cname_record | split: ' ' | first }}</strong>.</p>
+    <p>Adicione o seguinte registro CNAME à configuração do seu provedor de DNS:</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><strong>{{ cname_record }}</strong></p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p>Instruções passo a passo:</p>
+
+    <ol>
+      <li>Entre no painel do seu provedor de DNS</li>
+      <li>Acesse a seção de gerenciamento de DNS</li>
+      <li>Crie um novo registro CNAME com as informações acima</li>
+      <li>Salve as alterações e aguarde até 24 horas para a propagação do DNS</li>
+    </ol>
+
+    <p>Quando o registro de DNS estiver ativo, seu domínio personalizado será protegido automaticamente por um certificado SSL.</p>
+
+    <p>Se tiver dúvidas ou precisar de ajuda, entre em contato com nossa equipe de suporte.</p>
+  </td>
+</tr>

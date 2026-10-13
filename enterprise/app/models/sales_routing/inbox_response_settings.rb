@@ -24,11 +24,11 @@ module SalesRouting::InboxResponseSettings
 
     unless response_reassignment_available? && working_hours_enabled?
       errors.add(:response_reassignment_mode,
-                 'requires store routing and business hours')
+                 I18n.t('errors.response_reassignment.requires_store_routing_and_business_hours'))
     end
     return if account.account_users.administrator.exists?(user_id: response_reassignment_notify_user_id)
 
-    errors.add(:response_reassignment_notify_user, 'must be an administrator of this account')
+    errors.add(:response_reassignment_notify_user, I18n.t('errors.response_reassignment.administrator_required'))
   end
 
   def clear_response_timers

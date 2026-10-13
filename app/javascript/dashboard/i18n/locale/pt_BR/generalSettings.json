@@ -121,6 +121,22 @@
       "FEATURES": {
         "INBOUND_EMAIL_ENABLED": "A continuidade das conversas com e-mails está ativada para sua conta.",
         "CUSTOM_EMAIL_DOMAIN_ENABLED": "Você pode receber e-mails em seu domínio personalizado agora."
+      },
+      "ENFORCE_MFA": {
+        "TITLE": "Exigir autenticação de dois fatores",
+        "NOTE": "Exija que todos os membros desta conta configurem a autenticação de dois fatores. Quem ainda não a configurou receberá essa solicitação no próximo acesso com senha. Acessos pelo Google ou SAML estão dispensados. Os tokens de acesso à API dos membros que ainda não configuraram a autenticação de dois fatores deixarão de funcionar nesta conta até que concluam a configuração.",
+        "API": {
+          "SUCCESS": "Exigência de autenticação de dois fatores atualizada com sucesso",
+          "ERROR": "Não foi possível atualizar a exigência de autenticação de dois fatores"
+        }
+      },
+      "AUTO_FIX_GRAMMAR": {
+        "TITLE": "Correção automática de gramática",
+        "NOTE": "Corrige automaticamente a gramática e ortografia de todas as mensagens enviadas pelos agentes antes do envio. Apenas administradores podem ativar ou desativar esta configuração.",
+        "API": {
+          "SUCCESS": "Configuração de correção automática atualizada com sucesso",
+          "ERROR": "Erro ao atualizar configuração de correção automática"
+        }
       }
     },
     "UPDATE_CHATWOOT": "Uma atualização {latestChatwootVersion} para o Chatwoot está disponível. Por favor, atualize sua instância.",
@@ -128,7 +144,8 @@
     "PAYMENT_PENDING": "Seu pagamento está pendente. Por favor, atualize suas informações de pagamento para continuar usando o Chatwoot",
     "UPGRADE": "Atualize para continuar usando o Chatwoot",
     "LIMITS_UPGRADE": "Sua conta excedeu os limites de uso. Por favor, faça um upgrade do seu plano para continuar usando o Chatwoot",
-    "OPEN_BILLING": "Abrir faturamento"
+    "OPEN_BILLING": "Abrir faturamento",
+    "PAYMENT_PENDING_AGENT": "O pagamento da sua conta está em atraso. Entre em contato com o administrador para regularizá-lo."
   },
   "FORMS": {
     "MULTISELECT": {
