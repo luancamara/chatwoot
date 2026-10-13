@@ -6,6 +6,10 @@ properties:
   name:
     type: string
     description: The name of the inbox
+  archived:
+    type: boolean
+    description: Hidden from the dashboard sidebar. History, message reception, and automations retain their existing behavior.
+    default: false
   website_url:
     type:
       - string

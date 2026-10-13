@@ -14,6 +14,7 @@ import {
 import ChannelName from './components/ChannelName.vue';
 import ChannelIcon from 'next/icon/ChannelIcon.vue';
 import Button from 'dashboard/components-next/button/Button.vue';
+import Select from 'dashboard/components-next/select/Select.vue';
 import { getInboxIdentifier, searchInboxes } from 'dashboard/helper/inbox';
 
 const IDENTIFIER_SEPARATOR = '·';
@@ -26,6 +27,14 @@ const { isAdmin } = useAdmin();
 const showDeletePopup = ref(false);
 const selectedInbox = ref({});
 const searchQuery = ref('');
+const activityFilter = ref('all');
+const updatingInboxId = ref(null);
+
+const activityOptions = computed(() => [
+  { value: 'all', label: t('INBOX_MGMT.ARCHIVE.FILTER.ALL') },
+  { value: 'active', label: t('INBOX_MGMT.ARCHIVE.FILTER.ACTIVE') },
+  { value: 'inactive', label: t('INBOX_MGMT.ARCHIVE.FILTER.INACTIVE') },
+]);
 
 const inboxes = useMapGetter('inboxes/getInboxes');
 
@@ -44,8 +53,13 @@ const inboxesList = computed(() => {
 
 const filteredInboxesList = computed(() => {
   const query = searchQuery.value.trim();
-  if (!query) return inboxesList.value;
-  return searchInboxes(inboxesList.value, query);
+  const matchingInboxes = query
+    ? searchInboxes(inboxesList.value, query)
+    : inboxesList.value;
+  if (activityFilter.value === 'all') return matchingInboxes;
+  return matchingInboxes.filter(inbox =>
+    activityFilter.value === 'inactive' ? inbox.archived : !inbox.archived
+  );
 });
 
 const uiFlags = computed(() => getters['inboxes/getUIFlags'].value);
@@ -89,6 +103,27 @@ const openDelete = inbox => {
   showDeletePopup.value = true;
   selectedInbox.value = inbox;
 };
+
+const toggleArchived = async inbox => {
+  const archived = !inbox.archived;
+  updatingInboxId.value = inbox.id;
+  try {
+    await store.dispatch('inboxes/updateInbox', {
+      id: inbox.id,
+      formData: false,
+      archived,
+    });
+    useAlert(
+      archived
+        ? t('INBOX_MGMT.ARCHIVE.DEACTIVATED')
+        : t('INBOX_MGMT.ARCHIVE.REACTIVATED')
+    );
+  } catch {
+    useAlert(t('INBOX_MGMT.ARCHIVE.ERROR'));
+  } finally {
+    updatingInboxId.value = null;
+  }
+};
 </script>
 
 <template>
@@ -112,6 +147,11 @@ const openDelete = inbox => {
           </span>
         </template>
         <template #actions>
+          <Select
+            v-model="activityFilter"
+            :options="activityOptions"
+            :aria-label="$t('INBOX_MGMT.ARCHIVE.FILTER_LABEL')"
+          />
           <router-link v-if="isAdmin" :to="{ name: 'settings_inbox_new' }">
             <Button :label="$t('SETTINGS.INBOXES.NEW_INBOX')" size="sm" />
           </router-link>
@@ -119,17 +159,24 @@ const openDelete = inbox => {
       </BaseSettingsHeader>
     </template>
     <template #body>
+      <p class="text-body-main text-n-slate-11 pb-4">
+        {{ $t('INBOX_MGMT.ARCHIVE.HELP') }}
+      </p>
       <span
-        v-if="!filteredInboxesList.length && searchQuery"
+        v-if="!filteredInboxesList.length"
         class="flex-1 flex items-center justify-center py-20 text-center text-body-main !text-base text-n-slate-11"
       >
-        {{ $t('INBOX_MGMT.NO_RESULTS') }}
+        {{
+          searchQuery
+            ? $t('INBOX_MGMT.NO_RESULTS')
+            : $t('INBOX_MGMT.ARCHIVE.EMPTY_FILTER')
+        }}
       </span>
       <div v-else class="divide-y divide-n-weak border-t border-n-weak">
         <div
           v-for="inbox in filteredInboxesList"
           :key="inbox.id"
-          class="flex justify-between flex-row items-start gap-4 py-4"
+          class="flex justify-between flex-col sm:flex-row items-start gap-4 py-4"
         >
           <div class="flex items-center gap-4 min-w-0 flex-1">
             <div
@@ -150,12 +197,20 @@ const openDelete = inbox => {
               <ChannelIcon class="size-6 text-n-slate-10" :inbox="inbox" />
             </div>
             <div class="flex flex-col items-start gap-1 min-w-0">
-              <span
-                :title="inbox.name"
-                class="block text-heading-3 text-n-slate-12 capitalize truncate max-w-full"
-              >
-                {{ inbox.name }}
-              </span>
+              <div class="flex items-center gap-2 min-w-0 max-w-full">
+                <span
+                  :title="inbox.name"
+                  class="block text-heading-3 text-n-slate-12 capitalize truncate min-w-0"
+                >
+                  {{ inbox.name }}
+                </span>
+                <span
+                  v-if="inbox.archived"
+                  class="shrink-0 rounded-md bg-n-slate-3 px-2 py-1 text-xs text-n-slate-11"
+                >
+                  {{ $t('INBOX_MGMT.ARCHIVE.INACTIVE') }}
+                </span>
+              </div>
               <div
                 class="flex items-center gap-1 min-w-0 max-w-full text-body-main text-n-slate-11"
               >
@@ -180,6 +235,33 @@ const openDelete = inbox => {
             </div>
           </div>
           <div class="flex gap-3 justify-end shrink-0">
+            <Button
+              v-if="isAdmin"
+              :label="
+                inbox.archived
+                  ? $t('INBOX_MGMT.ARCHIVE.REACTIVATE')
+                  : $t('INBOX_MGMT.ARCHIVE.DEACTIVATE')
+              "
+              :aria-label="
+                inbox.archived
+                  ? $t('INBOX_MGMT.ARCHIVE.REACTIVATE_NAMED', {
+                      inboxName: inbox.name,
+                    })
+                  : $t('INBOX_MGMT.ARCHIVE.DEACTIVATE_NAMED', {
+                      inboxName: inbox.name,
+                    })
+              "
+              :icon="
+                inbox.archived ? 'i-lucide-archive-restore' : 'i-lucide-archive'
+              "
+              :is-loading="updatingInboxId === inbox.id"
+              :disabled="updatingInboxId !== null"
+              :data-test-id="`inbox-archive-${inbox.id}`"
+              variant="faded"
+              color="slate"
+              size="sm"
+              @click="toggleArchived(inbox)"
+            />
             <router-link
               :to="{
                 name: 'settings_inbox_show',

@@ -1648,6 +1648,24 @@
       "SELECT_MANAGER": "Select an administrator",
       "SAVE": "Save response settings",
       "HELP": "The first deadline starts when a seller receives the conversation. Later deadlines start with the next customer message. Replies stop the timer; extra customer messages do not restart it. Manual transfers cancel the current window. Capacity and hourly limits still apply. With no eligible replacement, keep the current seller and notify the administrator."
+    },
+    "ARCHIVE": {
+      "FILTER_LABEL": "Inbox status",
+      "FILTER": {
+        "ALL": "All inboxes",
+        "ACTIVE": "Active inboxes",
+        "INACTIVE": "Inactive inboxes"
+      },
+      "INACTIVE": "Inactive",
+      "DEACTIVATE": "Deactivate",
+      "REACTIVATE": "Reactivate",
+      "DEACTIVATED": "Inbox deactivated and hidden from the sidebar.",
+      "REACTIVATED": "Inbox reactivated and shown in the sidebar.",
+      "ERROR": "Could not update the inbox status. Please try again.",
+      "EMPTY_FILTER": "No inboxes match this filter.",
+      "HELP": "Inactive inboxes are hidden from the sidebar for everyone. You can reactivate them here. Message reception, history, integrations, and automations keep their existing settings.",
+      "DEACTIVATE_NAMED": "Deactivate {inboxName}",
+      "REACTIVATE_NAMED": "Reactivate {inboxName}"
     }
   }
 }

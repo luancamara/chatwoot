@@ -186,17 +186,18 @@ RSpec.describe 'Super Admin accounts API', type: :request do
     end
 
     context 'when it is an authenticated user' do
-      it 'shows the list of accounts' do
+      it 'invalidates all cached lists and redirects to the accounts page' do
         expect(account.cache_keys.keys).to contain_exactly(:inbox, :label, :team, :canned_response)
         sign_in(super_admin, scope: :super_admin)
 
-        now_timestamp = Time.now.utc.to_i
+        previous_keys = account.cache_keys
         post "/super_admin/accounts/#{account.id}/reset_cache"
         expect(response).to have_http_status(:redirect)
         expect(flash[:notice]).to eq('Cache keys cleared')
 
-        range = now_timestamp..(now_timestamp + 10)
-        expect(account.reload.cache_keys.values.all? { |v| range.cover?(v.to_i) }).to be(true)
+        account.reload.cache_keys.each do |model, version|
+          expect(version).not_to eq(previous_keys.fetch(model))
+        end
       end
 
       it 'clears conversation unread count cache' do

@@ -4,6 +4,10 @@ properties:
     type: string
     description: The name of the inbox.
     example: 'Support'
+  archived:
+    type: boolean
+    description: Hide the inbox from the dashboard sidebar. Send a JSON boolean; messages and automations are not paused.
+    default: false
   avatar:
     type: string
     format: binary

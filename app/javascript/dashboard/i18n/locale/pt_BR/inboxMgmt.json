@@ -1650,6 +1650,24 @@
       "SELECT_MANAGER": "Selecione um administrador",
       "SAVE": "Salvar configurações de resposta",
       "HELP": "O primeiro prazo começa quando um vendedor recebe a conversa. Os prazos seguintes começam com a próxima mensagem do cliente. Uma resposta humana encerra a contagem; novas mensagens do cliente não a reiniciam. Transferências manuais cancelam a janela atual. Os limites de capacidade e de atribuições por hora continuam valendo. Sem outro vendedor elegível, o responsável atual é mantido e o administrador é avisado."
+    },
+    "ARCHIVE": {
+      "FILTER_LABEL": "Status da caixa de entrada",
+      "FILTER": {
+        "ALL": "Todas as caixas",
+        "ACTIVE": "Caixas ativas",
+        "INACTIVE": "Caixas inativas"
+      },
+      "INACTIVE": "Inativa",
+      "DEACTIVATE": "Desativar",
+      "REACTIVATE": "Reativar",
+      "DEACTIVATED": "Caixa desativada e ocultada do menu lateral.",
+      "REACTIVATED": "Caixa reativada e exibida no menu lateral.",
+      "ERROR": "Não foi possível atualizar o status da caixa. Tente novamente.",
+      "EMPTY_FILTER": "Nenhuma caixa de entrada corresponde a este filtro.",
+      "HELP": "Caixas inativas ficam ocultas no menu lateral para todos. Você pode reativá-las aqui. Recebimento de mensagens, histórico, integrações e automações mantêm suas configurações atuais.",
+      "DEACTIVATE_NAMED": "Desativar {inboxName}",
+      "REACTIVATE_NAMED": "Reativar {inboxName}"
     }
   }
 }
