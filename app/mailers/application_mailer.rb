@@ -55,7 +55,7 @@ class ApplicationMailer < ActionMailer::Base
     # expose variables you want to be exposed in liquid
     locals = {
       global_config: GlobalConfig.get('BRAND_NAME', 'BRAND_URL'),
-      mailer_text: I18n.t('mailers.shared'),
+      mailer_text: I18n.t('mailers.shared').stringify_keys,
       action_url: @action_url
     }
 
