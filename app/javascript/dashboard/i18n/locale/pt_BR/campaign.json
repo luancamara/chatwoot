@@ -234,7 +234,7 @@
         },
         "RATE": "{value}% do público",
         "SENT_ON": "Enviada em {date}",
-        "PAGE_INFO": "Exibindo {startItem} - {endItem} de {totalItems} contatos",
+        "PAGE_INFO": "Exibindo {startItem} - {endItem} de {totalItems} contato | Exibindo {startItem} - {endItem} de {totalItems} contatos",
         "BREADCRUMB": {
           "CAMPAIGNS": "Campanhas",
           "WHATSAPP": "WhatsApp"
@@ -295,6 +295,103 @@
           "MESSAGE_NOT_GENERATED": "Não gerado",
           "REASON": "Motivo",
           "ERROR_CODE": "Código {code}"
+        },
+        "PROCESSING_NOTICE": "Esta campanha ainda está enviando mensagens. As contagens, porcentagens e registros de entrega são parciais e incluem apenas os contatos processados até agora. Mais contatos aparecerão conforme o envio continuar.",
+        "PAYWALL": {
+          "TITLE": "Liberar análises de campanhas",
+          "AVAILABLE_ON": "As análises de campanhas estão disponíveis nos planos Business e Enterprise.",
+          "UPGRADE_PROMPT": "Atualize seu plano para acompanhar a entrega, a leitura e as falhas nas mensagens da campanha.",
+          "UPGRADE_NOW": "Ver planos",
+          "CANCEL_ANYTIME": "Altere ou cancele seu plano a qualquer momento."
+        },
+        "ENTERPRISE_PAYWALL": {
+          "AVAILABLE_ON": "As análises de campanhas estão disponíveis nos planos pagos de instalação própria.",
+          "UPGRADE_PROMPT": "Atualize sua instalação para acompanhar a entrega, a leitura e as falhas nas mensagens da campanha.",
+          "ASK_ADMIN": "Entre em contato com o administrador da sua instalação para atualizar o plano."
+        }
+      },
+      "FORM": {
+        "CREATE_TITLE": "Criar campanha",
+        "LIVE_TEST": "Teste real",
+        "LIVE_TEST_TOOLTIP": "O teste real estará disponível em breve",
+        "SCHEDULE": "Agendar campanha",
+        "SCHEDULED_FOR": "Agendada para {date}",
+        "RESCHEDULE": "Reagendar",
+        "DISCARD": "Descartar alterações",
+        "SAVE": "Salvar alterações",
+        "BASIC_SETTINGS": {
+          "TITLE": "Configurações básicas",
+          "NAME": {
+            "LABEL": "Título",
+            "PLACEHOLDER": "Digite o título da campanha"
+          },
+          "INBOX": {
+            "LABEL": "Caixa de entrada",
+            "PLACEHOLDER": "Selecione uma caixa de entrada"
+          }
+        },
+        "AUDIENCE": {
+          "TITLE": "Público",
+          "TIER_DESCRIPTION": "Sua conta do WhatsApp pode enviar mensagens para até {tier}.",
+          "TIER_UNKNOWN": "Selecione uma caixa de entrada para ver o limite de mensagens da sua conta do WhatsApp.",
+          "LEARN_MORE": "Saiba mais",
+          "LABELS": {
+            "LABEL": "Etiquetas",
+            "PLACEHOLDER": "Selecione as etiquetas dos clientes"
+          },
+          "SELECTED_COUNT": "{count} contatos selecionados",
+          "VIEW": "Visualizar",
+          "EMPTY_STATE": "Selecione pelo menos uma etiqueta para definir o público.",
+          "CONTACTS": {
+            "TITLE": "Contatos",
+            "TAGGED_WITH": "com a etiqueta",
+            "SEARCH_PLACEHOLDER": "Buscar por nome, e-mail ou telefone",
+            "EMPTY_STATE": "Nenhum contato encontrado"
+          }
+        },
+        "TEMPLATE": {
+          "TITLE": "Modelo",
+          "SELECT": {
+            "LABEL": "Modelo",
+            "PLACEHOLDER": "Selecione um modelo"
+          },
+          "EMPTY_STATE": "Selecione uma caixa de entrada para carregar seus modelos aprovados",
+          "NO_TEMPLATES": "Esta caixa de entrada não possui modelos aprovados que possam ser usados em uma campanha",
+          "HEADER_LABEL": "Cabeçalho",
+          "INVALID_MEDIA_URL": "Digite uma URL HTTP ou HTTPS válida.",
+          "HEADER_PLACEHOLDER": "Digite o cabeçalho do tipo {type}",
+          "DOCUMENT_NAME_PLACEHOLDER": "Digite o nome do documento",
+          "BODY_LABEL": "Corpo da mensagem",
+          "BUTTONS_LABEL": "Botões",
+          "VARIABLE_PLACEHOLDER": "Digite a variável {variable}",
+          "BUTTON_PLACEHOLDER": "Digite o parâmetro do botão {index}"
+        },
+        "ACCOUNT_INFORMATION": {
+          "TITLE": "Informações da conta",
+          "MESSAGING_TIER": "Faixa de limite de mensagens",
+          "ACCOUNT_STATUS": "Status da conta",
+          "ACCOUNT_HEALTH": "Saúde da conta",
+          "STATUS_DESCRIPTION": "Modo atual deste número do WhatsApp",
+          "HEALTH_DESCRIPTION": "Classificação de qualidade atribuída pela Meta",
+          "EMPTY_STATE": "Selecione uma caixa de entrada para ver as informações da conta do WhatsApp.",
+          "UNAVAILABLE": "Indisponível",
+          "OPEN": "Abrir no Gerenciador do WhatsApp"
+        },
+        "PREVIEW": {
+          "TITLE": "Prévia da mensagem",
+          "EMPTY_STATE": "Selecione um modelo para visualizar a mensagem.",
+          "FOOTNOTE": "A aparência pode variar um pouco conforme o sistema operacional. Faça um teste real para confirmar. Os valores padrão das variáveis destacadas serão armazenados ao salvar."
+        },
+        "SCHEDULE_POPOVER": {
+          "LABEL": "Agendar",
+          "CANCEL": "Cancelar",
+          "CREATE": "Criar"
+        },
+        "API": {
+          "CREATE_SUCCESS": "Campanha do WhatsApp criada com sucesso",
+          "CREATE_ERROR": "Ocorreu um erro. Tente novamente.",
+          "UPDATE_SUCCESS": "Campanha do WhatsApp atualizada com sucesso",
+          "UPDATE_ERROR": "Ocorreu um erro. Tente novamente."
         }
       }
     },
@@ -305,7 +402,12 @@
       "API": {
         "SUCCESS_MESSAGE": "Campanha excluída com sucesso",
         "ERROR_MESSAGE": "Houve um erro. Por favor, tente novamente."
-      }
+      },
+      "WHATSAPP_DESCRIPTION": "Excluir esta campanha também removerá seu histórico de mensagens salvo e os detalhes de entrega. As mensagens já enviadas no WhatsApp serão mantidas. Esta ação não pode ser desfeita."
+    },
+    "HISTORY": {
+      "LABEL": "Campanha",
+      "LOAD_MORE": "Carregar campanhas anteriores"
     }
   }
 }

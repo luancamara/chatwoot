@@ -9,12 +9,26 @@
       "STORE_URL": {
         "TITLE": "Conectar Loja Shopify",
         "LABEL": "URL da Loja",
-        "PLACEHOLDER": "your-store.myshopify.com",
+        "PLACEHOLDER": "sua-loja.myshopify.com",
         "HELP": "Insira a URL meushopify.com da sua loja Shopify",
         "CANCEL": "Cancelar",
-        "SUBMIT": "Conectar Loja"
+        "SUBMIT": "Conectar Loja",
+        "INVALID_URL": "Digite uma URL válida de loja Shopify (por exemplo: sua-loja.myshopify.com)"
       },
-      "ERROR": "Ocorreu um erro ao tentar conectar com o Shopify. Por favor, tente novamente ou entre em contato com o suporte se o problema persistir."
+      "ERROR": "Ocorreu um erro ao tentar conectar com o Shopify. Por favor, tente novamente ou entre em contato com o suporte se o problema persistir.",
+      "HELP_TEXT": {
+        "TITLE": "Como usar a integração com a Shopify?",
+        "BODY": "Com esta integração, sua loja Shopify ***{storeDomain}*** está conectada à sua conta do Chatwoot. Veja o que você pode fazer:\n\n**Acompanhar pedidos nas conversas:** ao abrir uma conversa, o painel lateral da Shopify exibe automaticamente os pedidos recentes do cliente com base no endereço de e-mail. Assim, sua equipe de atendimento tem contexto imediato sem trocar de aba.\n\n**Acessar detalhes dos pedidos:** veja o status do pedido, o status de processamento e o valor total diretamente no painel da conversa."
+      },
+      "PENDING_INSTALL": {
+        "SUCCESS": "Loja Shopify conectada com sucesso.",
+        "ERROR": "Não foi possível concluir a instalação na Shopify. Tente novamente."
+      },
+      "SELECT_ACCOUNT": {
+        "TITLE": "Escolha uma conta",
+        "DESCRIPTION": "Selecione a conta que será conectada à sua loja Shopify. Para restaurar uma conexão anterior, escolha a conta original.",
+        "UNAVAILABLE": "Nenhuma conta elegível ou instalação válida foi encontrada. Reinicie a instalação ou entre como administrador de uma conta."
+      }
     },
     "HEADER": "Integrações",
     "DESCRIPTION": "Chatwoot se integra com várias ferramentas e serviços para melhorar a eficiência de seu time. Explore a lista abaixo para configurar seus aplicativos favoritos.",
@@ -270,7 +284,7 @@
         "LOADING": "Buscando aplicativos...",
         "TABLE_HEADER": {
           "NAME": "Nome",
-          "ENDPOINT": "Endpoint",
+          "ENDPOINT": "Endereço do aplicativo",
           "ACTIONS": "Ações"
         },
         "EDIT_TOOLTIP": "Alterar aplicativo",
@@ -280,7 +294,7 @@
         "TITLE_LABEL": "Nome",
         "TITLE_PLACEHOLDER": "Digite um nome para o aplicativo",
         "TITLE_ERROR": "É necessário um nome para o aplicativo",
-        "URL_LABEL": "Endpoint",
+        "URL_LABEL": "Endereço do aplicativo",
         "URL_PLACEHOLDER": "Digite a URL do endpoint onde seu aplicativo está hospedado",
         "URL_ERROR": "É necessário uma URL válida"
       },
@@ -434,7 +448,10 @@
       "RANGES": {
         "LAST_DAYS": "Últimos {count} dias",
         "THIS_MONTH": "Este mês",
-        "LAST_MONTH": "Último mês"
+        "LAST_MONTH": "Último mês",
+        "INSUFFICIENT_HISTORY": "Ainda não há histórico suficiente para o relatório",
+        "THIS_WEEK": "Esta semana",
+        "LAST_WEEK": "Semana passada"
       },
       "METRICS": {
         "HANDLED": {
@@ -513,7 +530,8 @@
           "DURABLE": {
             "LABEL": "Resoluções do Captain permaneceram encerradas",
             "HINT": "A proporção de conversas resolvidas pelo Captain que permaneceram encerradas após sete dias.",
-            "NOTE": "Apenas resoluções com tempo suficiente para serem observadas por sete dias são incluídas."
+            "NOTE": "Apenas resoluções com tempo suficiente para serem observadas por sete dias são incluídas.",
+            "NOT_APPLICABLE_HINT": "Nenhuma resolução deste período completou sete dias de acompanhamento. A durabilidade está indisponível."
           },
           "MEDIAN_RESOLUTION": {
             "LABEL": "Tempo mediano de resolução",
@@ -558,7 +576,10 @@
           "HANDLED": "Atendidas",
           "RESOLVED": "Resolvidas pelo Captain",
           "ARIA_LABEL": "Conversas atendidas e resolvidas pelo Captain por período do relatório",
-          "RATE_ARIA_LABEL": "Taxas de resolução do Captain no período atual e anterior"
+          "RATE_ARIA_LABEL": "Taxas de resolução do Captain no período atual e anterior",
+          "COMPARISON_LABEL": "Comparação por dia da semana",
+          "COMPARISON_HINT": "Compare as taxas de resolução nos mesmos dias da semana, como segunda-feira com segunda-feira.",
+          "COMPARISON_NOTE": "O dia de hoje é comparado até o mesmo horário."
         },
         "CSAT": {
           "TITLE": "CSAT do Captain",
@@ -570,7 +591,7 @@
         },
         "USAGE": {
           "TITLE": "Uso",
-          "CREDITS": "Credits",
+          "CREDITS": "Créditos",
           "DOCUMENTS": "Documentos",
           "USED": "({percentage}% utilizado)",
           "VALUE": "{used}/{total}",
@@ -578,7 +599,23 @@
           "BUY_MORE": "Comprar mais créditos"
         },
         "KNOWLEDGE": {
-          "REVIEW": "Revisar FAQs"
+          "REVIEW": "Revisar FAQs",
+          "SUGGESTED": "Perguntas frequentes sugeridas"
+        },
+        "DRILLDOWN": {
+          "HANDLED": "Episódios em que o Captain participou durante o período selecionado.",
+          "RESOLVED": "Episódios resolvidos pelo Captain sem transferência ou resposta humana antes da resolução.",
+          "HANDED_OFF": "Episódios transferidos após a participação do Captain.",
+          "REOPENED": "Episódios resolvidos pelo Captain que foram reabertos posteriormente.",
+          "DURABLE": "Episódios resolvidos pelo Captain que permaneceram fechados por pelo menos sete dias.",
+          "CLOSED_WITH_TEAM": "Episódios em que o Captain participou, mas não resolveu de forma autônoma nem transferiu.",
+          "REOPENED_WITHIN_7_DAYS": "Episódios resolvidos pelo Captain que foram reabertos em até sete dias.",
+          "STAYED_CLOSED": "Episódios resolvidos pelo Captain sem reabertura registrada em até sete dias. Resoluções recentes estão incluídas.",
+          "HANDOFF_REASON": "Episódios transferidos por este motivo: {reason}.",
+          "COUNT": "Nenhum episódio | 1 episódio | {count} episódios",
+          "EPISODES_HINT": "Uma conversa pode aparecer mais de uma vez se o Captain a atendeu em episódios separados. Os episódios são agrupados pela data de início.",
+          "STARTED_AT": "Episódio iniciado {time}",
+          "RETRY": "Tentar novamente"
         }
       }
     },
@@ -630,7 +667,91 @@
       "MESSAGE_PLACEHOLDER": "Digite sua mensagem...",
       "HEADER": "Área de testes",
       "DESCRIPTION": "Use este playground para enviar mensagens para seu assistente e verificar se ele responde com precisão, rápido e no tom que você espera.",
-      "CREDIT_NOTE": "As mensagens enviadas aqui usam os créditos do seu Capitão."
+      "CREDIT_NOTE": "As mensagens enviadas aqui usam os créditos do seu Capitão.",
+      "SEND_MESSAGE": "Enviar mensagem",
+      "CLEAR_CONVERSATION": "Limpar conversa",
+      "RESPONSE_ERROR": "O Captain não conseguiu concluir este teste. Revise a configuração e tente novamente.",
+      "SETUP": {
+        "TITLE": "Configuração do teste",
+        "DESCRIPTION": "As alterações feitas aqui valem apenas para esta sessão de testes, a menos que você salve um item explicitamente.",
+        "TOGGLE": "Mostrar ou ocultar a configuração do teste",
+        "CLOSE": "Fechar configuração do teste",
+        "RESET": "Redefinir configuração do teste",
+        "TEMPORARY": "Temporário",
+        "SESSION_ONLY": "Somente nesta sessão",
+        "INCLUDE_IN_TEST": "Incluir neste teste",
+        "ADD_TO_TEST": "Adicionar ao teste (↵)",
+        "LOAD_ERROR": "Não foi possível carregar a configuração salva do assistente.",
+        "INVALID_CONFIGURATION": "Conclua ou remova os cenários temporários incluídos antes de enviar uma mensagem.",
+        "SAVE_SCENARIO_SUCCESS": "O cenário foi salvo e continua incluído neste teste.",
+        "SAVE_SCENARIO_ERROR": "Não foi possível salvar o cenário.",
+        "SAVE_RULE_SUCCESS": "A regra foi salva e continua incluída neste teste.",
+        "SAVE_RULE_ERROR": "Não foi possível salvar a regra.",
+        "RULE_ALREADY_SAVED": "Esta mesma regra já está salva, por isso não foi criada uma duplicata.",
+        "SCENARIOS": {
+          "TAB_TITLE": "Cenários",
+          "CREATE_TITLE": "Adicionar cenário temporário",
+          "CREATE_HINT": "Experimente um novo comportamento sem alterar a configuração do assistente.",
+          "SAVED_SUMMARY": "Cenários existentes ({count})",
+          "ADD_PERMANENTLY": "Adicionar cenário permanentemente",
+          "DISABLED": "Desativado",
+          "EMPTY": "Este assistente não possui cenários salvos.",
+          "COMPOSER_PLACEHOLDER": "Digite o título de um cenário temporário...",
+          "COLLAPSE": "Recolher cenário temporário",
+          "EXPAND": "Expandir cenário temporário",
+          "REMOVE": "Remover cenário temporário"
+        },
+        "GUIDELINES": {
+          "TAB_TITLE": "Orientações",
+          "CREATE_TITLE": "Adicionar orientação temporária",
+          "CREATE_HINT": "Teste uma preferência de resposta antes de adicioná-la ao assistente.",
+          "SAVED_SUMMARY": "Orientações existentes ({count})",
+          "ADD_PERMANENTLY": "Adicionar orientação permanentemente",
+          "EMPTY": "Este assistente não possui orientações de resposta salvas.",
+          "COMPOSER_PLACEHOLDER": "Digite uma orientação temporária...",
+          "PLACEHOLDER": "Adicione uma orientação de resposta",
+          "REMOVE": "Remover orientação de resposta temporária"
+        },
+        "GUARDRAILS": {
+          "TAB_TITLE": "Regras de segurança",
+          "CREATE_TITLE": "Adicionar regra de segurança temporária",
+          "CREATE_HINT": "Teste um limite de segurança antes de adicioná-lo ao assistente.",
+          "SAVED_SUMMARY": "Regras de segurança existentes ({count})",
+          "ADD_PERMANENTLY": "Adicionar regra de segurança permanentemente",
+          "EMPTY": "Este assistente não possui regras de segurança salvas.",
+          "COMPOSER_PLACEHOLDER": "Digite uma regra de segurança temporária...",
+          "PLACEHOLDER": "Adicione uma regra de segurança",
+          "REMOVE": "Remover regra de segurança temporária"
+        },
+        "KNOWLEDGE": {
+          "TAB_TITLE": "Conhecimento",
+          "AVAILABLE_TITLE": "Conhecimento disponível para o Captain",
+          "AVAILABLE_DESCRIPTION": "As fontes salvas estão resumidas aqui e são gerenciadas fora do ambiente de testes.",
+          "DOCUMENTS": "Documentos",
+          "FAQS": "Perguntas frequentes",
+          "TEMPORARY_TITLE": "Conhecimento temporário",
+          "ADD_PERMANENTLY": "Adicionar documento permanentemente",
+          "LABEL": "Texto de referência",
+          "PLACEHOLDER": "Cole ou escreva um novo conhecimento para este teste",
+          "HINT": "Este texto é incluído apenas nas solicitações do ambiente de testes, a menos que você o adicione como documento."
+        },
+        "SAVE_KNOWLEDGE_SUCCESS": "Conhecimento adicionado como documento.",
+        "SAVE_KNOWLEDGE_ERROR": "Não foi possível adicionar o conhecimento como documento."
+      },
+      "RUN_DETAILS": {
+        "SUMMARY": "Detalhes da execução · {duration}ms",
+        "HANDLER_VALUE": "Atendido por: {handler}",
+        "SCENARIOS": "Nenhum cenário | Um cenário | {count} cenários",
+        "RULES": "{count} regras",
+        "KNOWLEDGE_ATTACHED": "Foi incluído conhecimento temporário nesta execução.",
+        "NO_EVENTS": "Nenhuma chamada de ferramenta ou transferência de cenário foi registrada.",
+        "HANDOFF": "{from} → {to}",
+        "STATUS": {
+          "RUNNING": "Em execução",
+          "COMPLETED": "Concluído",
+          "FAILED": "Falhou"
+        }
+      }
     },
     "PAYWALL": {
       "TITLE": "Atualize para usar o Capitão IA",
@@ -1017,7 +1138,7 @@
     "DOCUMENTS": {
       "HEADER": "Documentos",
       "ADD_NEW": "Criar um novo documento",
-      "FAQ_COUNT": "{n} FAQ | {n} FAQs",
+      "FAQ_COUNT": "{n} pergunta frequente | {n} perguntas frequentes",
       "USED_IN_CONVERSATIONS": "Usado em {n} conversa | Usado em {n} conversas",
       "NO_USED_CONVERSATIONS": "Não foi encontrada nenhuma conversa para este documento.",
       "SELECTED": "{count} selecionado",
@@ -1172,7 +1293,8 @@
       "FORM_DESCRIPTION": "Configure sua ferramenta personalizada para se conectar a APIs externas",
       "OPTIONS": {
         "EDIT_TOOL": "Editar ferramenta",
-        "DELETE_TOOL": "Excluir ferramenta"
+        "DELETE_TOOL": "Excluir ferramenta",
+        "VIEW_TOOL": "Ver ferramenta"
       },
       "STATUS": {
         "ENABLED": "Ativado",
@@ -1249,12 +1371,12 @@
         },
         "AUTH_TYPES": {
           "NONE": "Nenhuma",
-          "BEARER": "Bearer Token",
-          "BASIC": "Basic Auth",
+          "BEARER": "Token Bearer",
+          "BASIC": "Autenticação básica",
           "API_KEY": "Chave API"
         },
         "AUTH_CONFIG": {
-          "BEARER_TOKEN": "Bearer Token",
+          "BEARER_TOKEN": "Token Bearer",
           "BEARER_TOKEN_PLACEHOLDER": "Insira seu bearer token",
           "USERNAME": "Nome de usuário",
           "USERNAME_PLACEHOLDER": "Informe o nome de usuário",
@@ -1277,11 +1399,11 @@
           "PLACEHOLDER": "Tipo"
         },
         "PARAM_TYPES": {
-          "STRING": "String",
+          "STRING": "Texto",
           "NUMBER": "Número",
-          "BOOLEAN": "Boolean",
-          "ARRAY": "Array",
-          "OBJECT": "Object"
+          "BOOLEAN": "Booleano",
+          "ARRAY": "Lista",
+          "OBJECT": "Objeto"
         },
         "PARAM_DESCRIPTION": {
           "PLACEHOLDER": "Descrição do parâmetro"
@@ -1295,15 +1417,81 @@
         },
         "RESPONSE_TEMPLATE": {
           "LABEL": "Modelo de Resposta (Opcional)",
-          "PLACEHOLDER": "Order {'{{'} order_id {'}}'} status: {'{{'} status {'}}'}"
+          "PLACEHOLDER": "Status do pedido {'{{'} order_id {'}}'}: {'{{'} status {'}}'}"
         },
         "ERRORS": {
           "PARAM_NAME_REQUIRED": "O nome do parâmetro é obrigatório"
+        },
+        "SECTIONS": {
+          "TEMPLATES": "Modelos",
+          "TEMPLATES_HELP_TEXT": "Aceita sintaxe Liquid, como {'{{'} order_id {'}}'} ou {'{{'} response.status {'}}'}."
+        },
+        "HEADERS": {
+          "LABEL": "Cabeçalhos",
+          "HELP_TEXT": "Cabeçalhos estáticos enviados em todas as solicitações. Os valores são enviados exatamente como foram digitados; use Autenticação para informar credenciais.",
+          "NAME_PLACEHOLDER": "Nome do cabeçalho (por exemplo: cal-api-version)",
+          "VALUE_PLACEHOLDER": "Valor do cabeçalho",
+          "NAME_REQUIRED": "O nome do cabeçalho é obrigatório",
+          "NAME_DUPLICATE": "Os nomes dos cabeçalhos devem ser únicos",
+          "ADD": "Adicionar cabeçalho"
         }
+      },
+      "CATALOG": {
+        "BUTTON": "Catálogo de ferramentas",
+        "HEADER": "Catálogo de ferramentas",
+        "DESCRIPTION": "Explore conjuntos do catálogo de ferramentas do Captain e instale-os neste assistente.",
+        "ALL": "Todos",
+        "EMPTY": "Ainda não há conjuntos de ferramentas nesta categoria.",
+        "LOAD_ERROR": "Não foi possível carregar o catálogo de ferramentas. Verifique a URL do catálogo nas configurações do Captain.",
+        "TOOL_COUNT": "{n} ferramenta | {n} ferramentas",
+        "VERSION": "v{version}",
+        "UPDATED": "Atualizado {time}",
+        "REPOSITORY": "Repositório",
+        "MANIFEST": "Manifesto",
+        "CONFIGURATION": "Configuração",
+        "REQUIRED": "Obrigatório",
+        "DETAILS_ERROR": "Não foi possível carregar os detalhes do conjunto de ferramentas.",
+        "INSTALLED": "Instalado",
+        "UPDATE_AVAILABLE": "Atualização disponível"
+      },
+      "INSTALL_LINK": {
+        "TITLE": "Escolha um assistente",
+        "DESCRIPTION": "Escolha o assistente em que deseja instalar este conjunto de ferramentas.",
+        "PLACEHOLDER": "Selecione um assistente",
+        "LOAD_ERROR": "Não foi possível carregar seus assistentes. Recarregue a página para tentar novamente."
+      },
+      "INSTALL_MANIFEST": {
+        "TITLE": "Instalar conjunto de ferramentas",
+        "DESCRIPTION": "Instale um conjunto do catálogo de ferramentas do Captain.",
+        "VERSION_LABEL": "v{version} · {revision}",
+        "UPDATE_NOTE": "Há outra versão instalada. A atualização substitui as ferramentas e preserva quais estão habilitadas. Digite as credenciais novamente.",
+        "TOOLS_LABEL": "Ferramentas",
+        "CONFIGURATION_LABEL": "Configuração",
+        "CONTINUE": "Continuar",
+        "INSTALL": "Instalar",
+        "UPDATE": "Atualizar",
+        "REINSTALL": "Reinstalar",
+        "REINSTALL_NOTE": "Algumas ferramentas deste conjunto foram excluídas. A reinstalação as adiciona novamente e preserva quais estão habilitadas. Digite as credenciais novamente.",
+        "ALREADY_INSTALLED": "Já instalado",
+        "SUCCESS_MESSAGE": "Conjunto de ferramentas instalado",
+        "ERROR_MESSAGE": "Não foi possível instalar o conjunto de ferramentas",
+        "PREVIEW_ERROR": "Não foi possível carregar o conjunto de ferramentas"
+      },
+      "ASSISTANT_TOOLS_BANNER": {
+        "MESSAGE": "As ferramentas personalizadas agora são gerenciadas por assistente. Troque de assistente para personalizar suas ferramentas.",
+        "LEARN_MORE": "Saiba mais",
+        "DISMISS": "Dispensar aviso",
+        "MODAL_TITLE": "Seus assistentes agora têm suas próprias ferramentas",
+        "MODAL_DESCRIPTION": "Cada assistente agora possui uma lista separada de ferramentas personalizadas. Copiamos suas ferramentas existentes para todos os assistentes, para que nenhuma fique faltando.",
+        "MODAL_INSTRUCTIONS": "Ao adicionar, editar, desativar ou excluir uma ferramenta, a alteração vale apenas para o assistente que você está visualizando. Troque de assistente no topo da página para revisar ou personalizar suas ferramentas.",
+        "ACKNOWLEDGE": "Entendi"
+      },
+      "VIEW": {
+        "TITLE": "Detalhes da ferramenta personalizada"
       }
     },
     "RESPONSES": {
-      "HEADER": "FAQs",
+      "HEADER": "Perguntas frequentes",
       "ADD_NEW": "Criar nova FAQ",
       "NO_USED_CONVERSATIONS": "Não foi encontrada nenhuma conversa para este FAQ.",
       "DOCUMENTABLE": {
@@ -1442,5 +1630,55 @@
         "SUBTITLE": "Conectar uma caixa de entrada permite ao assistente lidar com perguntas iniciais de seus clientes antes de transferi-las para você."
       }
     }
+  },
+  "STRIPE_INTEGRATION": {
+    "UNAVAILABLE": "O Stripe está indisponível para esta conta. Peça ao administrador que verifique a configuração da integração.",
+    "TITLE": "Stripe",
+    "DESCRIPTION": "Visualize dados dos clientes, assinaturas e faturas junto às suas conversas.",
+    "CONNECT": "Conectar",
+    "DISCONNECT": "Desconectar do Chatwoot",
+    "DISCONNECT_NOTE": "A desconexão remove as credenciais salvas no Chatwoot. Desinstale o aplicativo no Stripe para revogar o acesso por lá.",
+    "CONNECTED": "Conectado",
+    "RECONNECT": "Reconectar Stripe",
+    "REAUTHORIZATION_REQUIRED": "É necessário reconectar",
+    "ACCOUNT": "Conta conectada",
+    "ACCOUNT_ID": "ID da conta",
+    "ENVIRONMENT": "Ambiente",
+    "SANDBOX": "Ambiente de testes",
+    "LIVE": "Produção",
+    "CONNECTED_ON": "Conectado em",
+    "OPEN_STRIPE": "Abrir painel do Stripe",
+    "ERROR": "Não foi possível carregar o Stripe. Tente novamente ou reconecte a integração.",
+    "EMPTY": "Nenhum cliente do Stripe corresponde ao e-mail deste contato.",
+    "NO_EMAIL": "Adicione um e-mail a este contato para buscar clientes no Stripe.",
+    "SELECT": "Selecione o cliente correspondente",
+    "CUSTOMER_OPTION": "{name} — {id}",
+    "MORE": "Exibindo os primeiros 100 clientes correspondentes. Refine o e-mail do contato se o cliente não aparecer na lista.",
+    "SUBSCRIPTIONS": "Últimas cinco assinaturas",
+    "SUBSCRIPTION": "Assinatura",
+    "VIEW_SUBSCRIPTION": "Ver detalhes da assinatura de {name}",
+    "COPY_ID": "Copiar ID",
+    "COPIED": "Copiado",
+    "QUANTITY": "Quantidade: {count}",
+    "PRICE_INTERVAL": "{amount} / {interval}",
+    "INTERVAL": {
+      "day": "dia | {count} dias",
+      "week": "semana | {count} semanas",
+      "month": "mês | {count} meses",
+      "year": "ano | {count} anos"
+    },
+    "VARIABLE_PRICE": "Preço por uso ou por faixa",
+    "RENEWS": "Renovação em {date}",
+    "PERIOD_START": "O período começa em {date}",
+    "PERIOD_END": "O período termina em {date}",
+    "TRIAL_ENDS": "A avaliação termina em {date}",
+    "CANCELS": "Cancelamento em {date}",
+    "CANCELS_AT_PERIOD_END": "Cancelamento ao final do período de cobrança",
+    "CANCELED_ON": "Cancelada em {date}",
+    "MORE_ITEMS": "Os itens adicionais da assinatura não são exibidos.",
+    "PRICE_NOTE": "Os preços são por unidade, antes de descontos e impostos. Eles não representam uma estimativa da próxima fatura.",
+    "INVOICES": "Faturas recentes",
+    "NO_SUBSCRIPTIONS": "Nenhuma assinatura encontrada.",
+    "NO_INVOICES": "Nenhuma fatura encontrada."
   }
 }

@@ -43,6 +43,19 @@ RSpec.describe AgentNotifications::ConversationNotificationsMailer do
     end
   end
 
+  context 'when the account uses Brazilian Portuguese' do
+    let(:account) { create(:account, locale: 'pt_BR') }
+
+    it 'uses the localized assignment view while preserving the conversation link' do
+      mail = described_class.with(account: account).conversation_assignment(conversation, agent, nil).message
+
+      expect(mail.subject).to include('uma nova conversa', 'foi atribuída a você')
+      expect(mail.body.decoded).to include('Uma nova conversa foi atribuída a você', 'Este e-mail foi enviado por')
+      expect(mail.body.decoded).to include("/app/accounts/#{account.id}/conversations/#{conversation.display_id}")
+      expect(mail.body.decoded).not_to include('Time to save the world', 'Manage notification preferences')
+    end
+  end
+
   describe 'conversation_mention' do
     let(:contact) { create(:contact, name: nil, account: account) }
     let(:another_agent) { create(:user, email: 'agent2@example.com', account: account) }

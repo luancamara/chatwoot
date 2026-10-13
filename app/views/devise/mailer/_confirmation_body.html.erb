@@ -12,7 +12,7 @@
 </tr>
 <tr>
   <td style="padding: 0 0 8px;">
-    <p style="margin: 0; font-size: 14px; line-height: 21px; color: #334155;">Hi <%= recipient_name %>,</p>
+    <p style="margin: 0; font-size: 14px; line-height: 21px; color: #334155;"><%= t('mailers.shared.greeting', name: recipient_name) %></p>
   </td>
 </tr>
 <tr>
@@ -62,9 +62,9 @@
   <tr>
     <td style="padding: 0 0 20px;">
       <p style="margin: 0; font-size: 14px; line-height: 21px; color: #64748B;">
-        If the button does not work, open
+        <%= t('mailers.shared.secure_link_intro') %>
         <%= link_to(
-          'this secure link',
+          t('mailers.shared.secure_link'),
           action_url,
           style: 'color:#2781F6; text-decoration:none; font-weight:600;'
         ) %>.

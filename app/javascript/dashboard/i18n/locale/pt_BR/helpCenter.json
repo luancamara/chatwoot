@@ -83,7 +83,7 @@
           "PLACEHOLDER": "Adicione suas meta descriptions para melhorar os resultados de SEO..."
         },
         "META_TAGS": {
-          "LABEL": "Meta tags",
+          "LABEL": "Metadados",
           "PLACEHOLDER": "Adicione meta tags separadas por virgula..."
         }
       },
@@ -134,7 +134,7 @@
             "ITEMS": {
               "NAME": "Nome",
               "DOMAIN": "Domínio personalizado",
-              "SLUG": "Slug",
+              "SLUG": "Identificador da URL",
               "TITLE": "Título do portal",
               "THEME": "Cor do tema",
               "SUB_TEXT": "Sub texto do Portal"
@@ -253,7 +253,7 @@
           "ERROR": "O nome é obrigatório"
         },
         "SLUG": {
-          "LABEL": "Slug",
+          "LABEL": "Identificador da URL",
           "PLACEHOLDER": "Slug do Portal para URLs",
           "ERROR": "Slug é obrigatório"
         },
@@ -428,7 +428,7 @@
           "ERROR": "O nome é obrigatório"
         },
         "SLUG": {
-          "LABEL": "Slug",
+          "LABEL": "Identificador da URL",
           "PLACEHOLDER": "Categoria de slug para URLs",
           "HELP_TEXT": "app.chatwoot.com/hc/my-portal/en-US/categories/my-slug",
           "ERROR": "Slug é obrigatório"
@@ -459,7 +459,7 @@
           "ERROR": "O nome é obrigatório"
         },
         "SLUG": {
-          "LABEL": "Slug",
+          "LABEL": "Identificador da URL",
           "PLACEHOLDER": "Categoria de slug para URLs",
           "HELP_TEXT": "app.chatwoot.com/hc/my-portal/en-US/categories/my-slug",
           "ERROR": "Slug é obrigatório"
@@ -531,7 +531,7 @@
     "ARTICLES_PAGE": {
       "ARTICLE_CARD": {
         "CARD": {
-          "VIEWS": "Visualização {count} de {count} visualizações",
+          "VIEWS": "{count} visualização | {count} visualizações",
           "DROPDOWN_MENU": {
             "PUBLISH": "Publicar",
             "DRAFT": "Rascunho",
@@ -695,7 +695,7 @@
             "ERROR": "O nome é obrigatório"
           },
           "SLUG": {
-            "LABEL": "Slug",
+            "LABEL": "Identificador da URL",
             "PLACEHOLDER": "Categoria de slug para URLs",
             "ERROR": "Slug é obrigatório",
             "HELP_TEXT": "app.dominio.com/hc/{portalSlug}/{localeCode}/categories/{categorySlug}"
@@ -814,7 +814,8 @@
         "VIEW_CHANGES": "Ver alterações não publicadas",
         "DRAFT": "Rascunho",
         "ARCHIVE": "Arquivar",
-        "BACK_TO_ARTICLES": "Voltar aos artigos"
+        "BACK_TO_ARTICLES": "Voltar aos artigos",
+        "CREATE_IN_PROGRESS": "O artigo ainda está sendo criado. Tente adicionar os arquivos novamente em instantes."
       },
       "PENDING_CHANGES_POPOVER": {
         "TITLE": "Alterações não publicadas",
@@ -830,7 +831,7 @@
       "EDIT_ARTICLE": {
         "MORE_PROPERTIES": "Mais propriedades",
         "UNCATEGORIZED": "Não categorizado",
-        "EDITOR_PLACEHOLDER": "Write your content here. Type '/' for formatting options."
+        "EDITOR_PLACEHOLDER": "Escreva seu conteúdo aqui. Digite '/' para ver as opções de formatação."
       },
       "ARTICLE_PROPERTIES": {
         "ARTICLE_PROPERTIES": "Propriedades do artigo",
@@ -838,8 +839,15 @@
         "META_DESCRIPTION_PLACEHOLDER": "Adicionar meta descrição",
         "META_TITLE": "Meta título",
         "META_TITLE_PLACEHOLDER": "Adicionar meta título",
-        "META_TAGS": "Meta tags",
-        "META_TAGS_PLACEHOLDER": "Adicionar meta tags"
+        "META_TAGS": "Metadados",
+        "META_TAGS_PLACEHOLDER": "Adicionar meta tags",
+        "SLUG": "Identificador da URL",
+        "SLUG_PLACEHOLDER": "Adicione o identificador da URL",
+        "SLUG_USE_TITLE": "Usar o título como identificador da URL",
+        "SLUG_WARNING": "A URL atual deixará de funcionar e os links existentes para ela serão quebrados.",
+        "SLUG_UPDATE": "Atualizar",
+        "SLUG_UPDATED": "Identificador atualizado. O artigo já está disponível na nova URL.",
+        "SLUG_OPEN": "Abrir URL"
       },
       "API": {
         "ERROR": "Erro ao salvar artigo"
@@ -864,8 +872,8 @@
         "ERROR": "O nome é obrigatório"
       },
       "SLUG": {
-        "LABEL": "Slug",
-        "PLACEHOLDER": "user-guide",
+        "LABEL": "Identificador da URL",
+        "PLACEHOLDER": "guia-do-usuario",
         "ERROR": "Slug é obrigatório",
         "FORMAT_ERROR": "Por favor, insira um slug válido, por exemplo: guia do usuário"
       }
@@ -899,7 +907,7 @@
           "ERROR": "Digite uma URL válida. O link da página inicial deve começar com 'http://' ou 'https://'."
         },
         "SLUG": {
-          "LABEL": "Slug",
+          "LABEL": "Identificador da URL",
           "PLACEHOLDER": "Slug do portal"
         },
         "BRAND_COLOR": {
@@ -972,7 +980,7 @@
         "SOCIAL_LINKS": {
           "HEADER": "Links sociais",
           "DESCRIPTION": "Adicione o identificador de cada rede e sua central de ajuda criará o link completo automaticamente. Exibido no rodapé do leiaute da documentação.",
-          "PLACEHOLDER": "{'@'}usuario",
+          "PLACEHOLDER": "nome de usuário",
           "ADD": "Adicionar link social",
           "REMOVE": "Excluir"
         },

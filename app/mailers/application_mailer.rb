@@ -55,6 +55,7 @@ class ApplicationMailer < ActionMailer::Base
     # expose variables you want to be exposed in liquid
     locals = {
       global_config: GlobalConfig.get('BRAND_NAME', 'BRAND_URL'),
+      mailer_text: I18n.t('mailers.shared').stringify_keys,
       action_url: @action_url
     }
 
@@ -76,6 +77,7 @@ class ApplicationMailer < ActionMailer::Base
 
   def switch_locale(&)
     locale ||= locale_from_account(Current.account)
+    locale ||= ENV.fetch('DEFAULT_LOCALE', nil)
     locale ||= I18n.default_locale
     # ensure locale won't bleed into other requests
     # https://guides.rubyonrails.org/i18n.html#managing-the-locale-across-requests

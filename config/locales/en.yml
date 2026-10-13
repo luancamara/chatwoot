@@ -86,6 +86,8 @@ en:
   errors:
     response_reassignment:
       invalid_settings: Invalid response reassignment settings
+      requires_store_routing_and_business_hours: requires store routing and business hours
+      administrator_required: must be an administrator of this account
     store_routing:
       exclusive_team: Remove the seller from their current store team before adding them to another store.
     account:
@@ -110,6 +112,7 @@ en:
       call_already_accepted: '%{agent_name} is already handling the call.'
     assignment_policy:
       not_found: Assignment policy not found
+      eligible_role_account: must belong to the same account
     attachments:
       invalid: Invalid attachment
     upload:
@@ -1053,3 +1056,100 @@ en:
         test_email:
           queued: 'Test email on its way to %{email}. Ask the user to check their inbox and spam folder.'
           subject: 'Test email from %{brand_name} support'
+  mailers:
+    subjects:
+      conversation_creation: '%{agent_name}, A new conversation [ID - %{display_id}] has been created in %{inbox_name}.'
+      conversation_assignment: '%{agent_name}, A new conversation [ID - %{display_id}] has been assigned to you.'
+      conversation_mention: '%{agent_name}, You have been mentioned in conversation [ID - %{display_id}]'
+      assigned_conversation_new_message: '%{agent_name}, New message in your assigned conversation [ID - %{display_id}].'
+      participating_conversation_new_message: '%{agent_name}, New message in your participating conversation [ID - %{display_id}].'
+      sla_missed_first_response: Conversation [ID - %{display_id}] missed SLA for first response
+      sla_missed_next_response: Conversation [ID - %{display_id}] missed SLA for next response
+      sla_missed_resolution: Conversation [ID - %{display_id}] missed SLA for resolution time
+      facebook_disconnect: Your Facebook page connection has expired
+      instagram_disconnect: Your Instagram connection has expired
+      tiktok_disconnect: Your TikTok connection has expired
+      whatsapp_disconnect: Your Whatsapp connection has expired
+      email_disconnect: Your email inbox has been disconnected. Please update the credentials for SMTP/IMAP
+      slack_disconnect: Your Slack integration has expired
+      dialogflow_disconnect: Your Dialogflow integration was disconnected
+      openai_disconnect: Your OpenAI integration was disconnected
+      account_deletion_user_initiated: Your Chatwoot account deletion has been scheduled
+      account_deletion_for_inactivity: Your Chatwoot account is scheduled for deletion due to inactivity
+      contact_import_complete: Contact Import Completed
+      contact_import_failed: Contact Import Failed
+      contact_export_complete: Your contact's export file is available to download.
+      automation_rule_disabled: Automation rule disabled due to validation errors.
+      automation_notification: This email has been sent via automation rule actions.
+      account_deleted: Account Deletion Notice for %{account_id} - %{account_name}
+      verification_code: Your %{brand_name} verification code
+      new_device: A new device signed in to your %{brand_name} account
+    shared:
+      not_specified: not specified
+      not_available: not available
+      timestamp_format: '%B %d, %Y %H:%M:%S %Z'
+      sent_by: This email was sent by
+      notification_reason: You're receiving this email because email notifications are enabled for your account.
+      notification_preferences: Manage notification preferences
+      greeting: Hi %{name},
+      hello: Hello %{name}!
+      secure_link_intro: If the button does not work, open
+      secure_link: this secure link
+    confirmation:
+      welcome: Welcome
+      heading: Confirm your email to get started
+      supporting: This only takes a moment.
+      confirm: Confirm my account
+      new_email: New email
+      email_update: Email update
+      confirm_new_email: Confirm your new email address
+      email_update_supporting: Confirm the new address below to finish the change.
+      confirm_email: Confirm email address
+      account_ready: Account ready
+      ready_heading: Your account is ready
+      ready_supporting: Use the button below to sign in and continue where you left off.
+      open_account: Open my account
+      invitation: Workspace invitation
+      invitation_supporting: Create your account to start collaborating with your team.
+      accept_invitation: Accept invitation
+      invited_by: Invited by
+      workspace: Workspace
+      access_ready: Your access is ready
+      sign_in_method: Sign-in method
+      sso: Single Sign-On (SSO)
+      intro: Welcome to %{brand_name}. We just need to verify your email address before you can start using your account.
+      email_update_intro: We received a request to update the email address on your %{brand_name} account.
+      ready_intro: Your %{brand_name} account is already active.
+      invited_to_account: You're invited to join %{account_name}
+      invited_to_brand: You're invited to try %{brand_name}
+      invitation_intro_account: '%{inviter_name} invited you to join the %{account_name} workspace on %{brand_name}.'
+      invitation_intro_brand: '%{inviter_name} invited you to try %{brand_name}.'
+      sso_ready_intro: Your %{brand_name} access is already set up.
+      sso_portal: Use your organization's Single Sign-On (SSO) portal to access %{brand_name}.
+      sso_sign_in: Sign in with your organization's SSO
+      sso_password: You won't need a separate password for %{brand_name}. Start from your company identity provider portal.
+      sso_invitation_account: '%{inviter_name} invited you to access the %{account_name} workspace on %{brand_name}.'
+      sso_invitation_brand: '%{inviter_name} invited you to access %{brand_name}.'
+      sso_supporting: Your organization uses Single Sign-On (SSO), so you won't need to create a separate password.
+      sso_portal_title: Use your organization's SSO portal
+      sso_portal_help: Continue from your company identity provider portal to access %{brand_name}.
+    auth:
+      password_changed: We're contacting you to notify you that your password has been changed.
+      reset_request: Someone has requested a link to change your password. You can do this through the link below.
+      reset_ignored: If you didn't request this, please ignore this email.
+      reset_warning: Your password won't change until you access the link above and create a new one.
+      locked: Your account has been locked due to an excessive number of unsuccessful sign in attempts.
+      unlock_intro: 'Click the link below to unlock your account:'
+      change_password: Change my password
+      unlock: Unlock my account
+  activerecord:
+    attributes:
+      inbox:
+        response_reassignment_mode: Response reassignment mode
+        response_reassignment_notify_user: Response reassignment notify user
+      assignment_policy:
+        name: Name
+        fair_distribution_limit: Fair distribution limit
+        fair_distribution_window: Fair distribution window
+        exclude_older_than_hours: Exclude older than hours
+        eligible_custom_role: Eligible custom role

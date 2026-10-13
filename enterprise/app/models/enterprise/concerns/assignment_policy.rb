@@ -20,6 +20,6 @@ module Enterprise::Concerns::AssignmentPolicy
   def eligible_role_belongs_to_account
     return if eligible_custom_role_id.nil? || eligible_custom_role&.account_id == account_id
 
-    errors.add(:eligible_custom_role, 'must belong to the same account')
+    errors.add(:eligible_custom_role, I18n.t('errors.assignment_policy.eligible_role_account'))
   end
 end

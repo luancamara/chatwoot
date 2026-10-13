@@ -40,7 +40,7 @@ jobs:
           bundler-cache: true
       - name: Prepare isolated database
         run: bundle exec rails db:create db:schema:load
-      - name: Exercise store routing, reporting and native policy controls
+      - name: Exercise store routing, reporting, policy controls and localized notifications
         run: >-
           bundle exec rspec
           spec/enterprise/services/sales_routing
@@ -52,4 +52,8 @@ jobs:
           spec/services/auto_assignment/assignment_service_spec.rb
           spec/services/auto_assignment/rate_limiter_spec.rb
           spec/jobs/auto_assignment
+          spec/mailers
+          spec/enterprise/mailers/enterprise/agent_notifications/conversation_notifications_mailer_spec.rb
+          spec/enterprise/mailers/enterprise/device_verification_mailer_spec.rb
+          spec/enterprise/mailers/devise_mailer_spec.rb
           --format documentation
