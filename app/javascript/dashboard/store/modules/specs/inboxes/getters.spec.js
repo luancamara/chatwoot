@@ -10,6 +10,24 @@ describe('#getters', () => {
     expect(getters.getInboxes(state)).toEqual(inboxList);
   });
 
+  it('hides inactive inboxes only from the sidebar and restores them after reactivation', () => {
+    const records = [
+      { id: 1, archived: false },
+      { id: 2, archived: true },
+      { id: 3 },
+    ];
+    const state = { records };
+
+    expect(getters.getVisibleInboxes(state).map(inbox => inbox.id)).toEqual([
+      1, 3,
+    ]);
+    expect(getters.getInboxes(state)).toEqual(records);
+    expect(getters.getInbox(state)(2)).toEqual(records[1]);
+
+    records[1].archived = false;
+    expect(getters.getVisibleInboxes(state)).toEqual(records);
+  });
+
   it('getWebsiteInboxes', () => {
     const state = { records: inboxList };
     expect(getters.getWebsiteInboxes(state).length).toEqual(3);

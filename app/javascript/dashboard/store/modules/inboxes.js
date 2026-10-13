@@ -30,6 +30,9 @@ export const getters = {
   getInboxes($state) {
     return $state.records;
   },
+  getVisibleInboxes($state) {
+    return $state.records.filter(inbox => !inbox.archived);
+  },
   getAllInboxes($state) {
     return camelcaseKeys($state.records, { deep: true });
   },
