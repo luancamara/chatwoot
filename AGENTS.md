@@ -1,5 +1,12 @@
 # Chatwoot Development Guidelines
 
+## Agent analytics delivery
+
+- Codex orchestrates the Chatwoot/Hermes agent analytics delivery. Implementation and independent review are delegated to Claude Opus 5.5 (`claude-opus-5-5`), explicitly authorized by the user.
+- Do not substitute another implementation or review model without explicit user authorization.
+- Keep the current Chatwoot branch. Isolate Hermes changes in their own worktree and branch.
+- Do not run application servers, full test suites, Docker stacks, or production builds on this Mac. Use remote CI or isolated remote validation environments for heavy checks.
+
 ## Build / Test / Lint
 
 - **Setup**: `bundle install && pnpm install`

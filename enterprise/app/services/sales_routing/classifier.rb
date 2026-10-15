@@ -6,13 +6,30 @@ class SalesRouting::Classifier
 
   pattr_initialize [:conversation!]
 
+  # The store a conversation was first routed to; `store` itself changes on a manual team transfer. Older routes have no
+  # `origin_store`: their `store` is still the origin unless they were already re-routed by hand, in which case the origin
+  # is unknown (nil). A nil origin_store means the first message carried no store signal.
+  def self.origin_store(route)
+    return if route.blank?
+    return route['origin_store'] if route.key?('origin_store')
+
+    route['store'] unless route['rule'] == 'manual-team'
+  end
+
+  # Pins the origin before a route is rewritten by hand; an origin that is already unknown is never inferred.
+  def self.with_origin_store(route)
+    return route if route.key?('origin_store') || route['rule'] == 'manual-team'
+
+    route.merge('origin_store' => route['store'])
+  end
+
   def perform
     return true if conversation.additional_attributes[ATTRIBUTES_KEY].present?
     return false unless first_message
     return defer_classification if Time.current < first_message.created_at + ENRICHMENT_WAIT
 
     store, rule, previous_agent_id = resolve_store
-    route = { 'store' => store, 'rule' => rule, 'origin' => origin, 'campaign' => campaign,
+    route = { 'store' => store, 'origin_store' => store, 'rule' => rule, 'origin' => origin, 'campaign' => campaign,
               'preferred_agent_id' => previous_agent_id, 'first_customer_message_at' => first_message.created_at.iso8601(6),
               'outside_business_hours' => outside_business_hours? }
     save_classification(route)

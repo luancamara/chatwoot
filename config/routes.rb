@@ -640,6 +640,13 @@ Rails.application.routes.draw do
               end
             end
 
+            resources :agent_response_reports, only: [], controller: '/enterprise/api/v2/accounts/agent_response_reports' do
+              collection do
+                get :summary
+                get :details
+              end
+            end
+
             resources :contacts, only: [] do
               resource :erp_orders, only: [:show], controller: '/enterprise/api/v2/accounts/erp_orders'
             end

@@ -47,6 +47,8 @@ jobs:
           spec/enterprise/jobs/sales_routing
           spec/enterprise/controllers/api/v1/accounts/store_team_members_spec.rb
           spec/enterprise/controllers/api/v1/accounts/response_reassignment_settings_spec.rb
+          spec/enterprise/models/conversation_response_attempt_spec.rb
+          spec/enterprise/controllers/enterprise/api/v2/accounts/agent_response_reports_controller_spec.rb
           spec/enterprise/services/enterprise/auto_assignment/assignment_service_spec.rb
           spec/enterprise/services/enterprise/auto_assignment/assignment_service_policy_controls_spec.rb
           spec/services/auto_assignment/assignment_service_spec.rb

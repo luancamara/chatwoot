@@ -39,6 +39,7 @@ class SalesRouting::ResponseReassignmentService < AutoAssignment::AssignmentServ
   end
 
   def expire_response(watch, conversation)
+    watch.open_attempt&.breach!
     notify_manager(watch, conversation)
     agents = filter_agents_by_role(inbox.available_agents).where.not(user_id: watch.attempted_agent_ids | [conversation.assignee_id])
     agents = filter_agents_by_team(agents, conversation)

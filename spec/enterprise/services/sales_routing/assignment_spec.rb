@@ -139,6 +139,7 @@ RSpec.describe SalesRouting::Assignment do
     expect(conversation.reload.label_list).to include('loja-lap')
     expect(conversation.label_list).not_to include('loja-psd')
     expect(conversation.additional_attributes.dig('store_routing', 'store')).to eq('lap')
+    expect(conversation.additional_attributes.dig('store_routing', 'origin_store')).to eq('psd')
   end
 
   it 'uses structured campaign metadata when the customer removed the code' do

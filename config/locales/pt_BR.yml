@@ -226,6 +226,15 @@ pt_BR:
       no_payment_method: Nenhum método de pagamento encontrado. Por favor, adicione um método de pagamento antes de realizar uma compra.
     reports:
       date_range_too_long: O intervalo de datas não pode exceder 6 meses
+    agent_response_reports:
+      invalid_date: "%{field} deve ser uma data no formato AAAA-MM-DD"
+      invalid_timezone: fuso horário inválido
+      inverted_range: a data final não pode ser anterior à inicial
+      range_too_long: "o período não pode passar de %{days} dias"
+      invalid_ids: "%{field} deve ser uma lista de identificadores"
+      foreign_ids: "%{field} contém valores que não pertencem a esta conta"
+      invalid_detail: tipo, resultado ou métrica inválidos
+      invalid_page: "%{field} deve ser um inteiro positivo até %{max}"
     response_reassignment:
       invalid_settings: "Configurações de reatribuição por falta de resposta inválidas"
       requires_store_routing_and_business_hours: exige distribuição por loja e expediente configurados

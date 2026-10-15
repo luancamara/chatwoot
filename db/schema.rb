@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_13_112324) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_15_125240) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1132,6 +1132,35 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_13_112324) do
     t.index ["user_id", "conversation_id"], name: "index_conversation_read_states_on_user_id_and_conversation_id", unique: true
   end
 
+  create_table "conversation_response_attempts", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "inbox_id", null: false
+    t.bigint "conversation_id", null: false
+    t.bigint "conversation_display_id", null: false
+    t.bigint "assignee_id", null: false
+    t.bigint "customer_message_id", null: false
+    t.bigint "team_id"
+    t.bigint "responder_id"
+    t.bigint "reply_message_id"
+    t.string "store_code"
+    t.string "response_kind", null: false
+    t.datetime "waiting_since", null: false
+    t.datetime "started_at", null: false
+    t.datetime "due_at", null: false
+    t.integer "threshold_seconds", null: false
+    t.boolean "business_hours", default: false, null: false
+    t.string "outcome", default: "pending", null: false
+    t.string "end_reason"
+    t.datetime "ended_at"
+    t.datetime "replied_at"
+    t.integer "response_seconds"
+    t.integer "wait_seconds"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "started_at"], name: "response_attempts_account_started"
+    t.index ["conversation_id"], name: "response_attempts_open", unique: true, where: "(ended_at IS NULL)"
+  end
+
   create_table "conversation_response_timers", force: :cascade do |t|
     t.bigint "conversation_id", null: false
     t.bigint "inbox_id", null: false
@@ -1482,6 +1511,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_13_112324) do
     t.integer "response_reassignment_mode", default: 0, null: false
     t.bigint "response_reassignment_notify_user_id"
     t.boolean "archived", default: false, null: false
+    t.datetime "response_attempts_tracked_since"
     t.index ["account_id"], name: "index_inboxes_on_account_id"
     t.index ["channel_id", "channel_type"], name: "index_inboxes_on_channel_id_and_channel_type"
     t.index ["portal_id"], name: "index_inboxes_on_portal_id"
@@ -1783,6 +1813,17 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_13_112324) do
     t.index ["account_id", "date", "dimension_type", "dimension_id", "metric"], name: "index_rollup_unique_key", unique: true
     t.index ["account_id", "dimension_type", "date"], name: "index_rollup_summary"
     t.index ["account_id", "metric", "date"], name: "index_rollup_timeseries"
+  end
+
+  create_table "response_tracking_periods", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "inbox_id", null: false
+    t.datetime "started_at", null: false
+    t.datetime "ended_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "inbox_id", "started_at"], name: "response_tracking_periods_lookup"
+    t.index ["inbox_id"], name: "response_tracking_periods_open", unique: true, where: "(ended_at IS NULL)"
   end
 
   create_table "scheduled_messages", force: :cascade do |t|

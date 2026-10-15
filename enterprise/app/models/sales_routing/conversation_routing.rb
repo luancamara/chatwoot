@@ -17,7 +17,7 @@ module SalesRouting::ConversationRouting
 
     label_list.remove(*configuration.stores.values.map { |store| store.fetch('label') }, 'loja-indefinida')
     label_list.add(configuration.stores.fetch(code).fetch('label'))
-    additional_attributes[SalesRouting::Classifier::ATTRIBUTES_KEY] = route.merge(
+    additional_attributes[SalesRouting::Classifier::ATTRIBUTES_KEY] = SalesRouting::Classifier.with_origin_store(route).merge(
       'store' => code, 'rule' => 'manual-team', 'assignment_rule' => 'manual-team', 'preferred_agent_id' => nil
     )
   end
