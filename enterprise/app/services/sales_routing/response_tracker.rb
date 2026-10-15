@@ -10,13 +10,13 @@ class SalesRouting::ResponseTracker
     watch.arm!(start_time: message.created_at) if human_owner?
   end
 
-  def human_reply
-    timer&.destroy!
+  def human_reply(message)
+    finish_timer('replied', message: message)
   end
 
   def conversation_changed
-    return human_reply unless conversation.open?
-    return human_reply if manual_transfer?
+    return finish_timer('closed') unless conversation.open?
+    return finish_timer('manual_transfer') if manual_transfer?
 
     watch = timer || first_response_watch
     watch&.arm! if human_owner?
@@ -32,6 +32,10 @@ class SalesRouting::ResponseTracker
 
   def timer
     ConversationResponseTimer.find_by(conversation_id: conversation.id)
+  end
+
+  def finish_timer(reason, message: nil)
+    timer&.finish!(reason, message: message)
   end
 
   def response_kind

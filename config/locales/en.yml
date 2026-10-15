@@ -84,6 +84,15 @@ en:
       cannot_revoke_current: You cannot revoke the current session.
 
   errors:
+    agent_response_reports:
+      invalid_date: "%{field} must be a YYYY-MM-DD date"
+      invalid_timezone: timezone is invalid
+      inverted_range: until must not be before since
+      range_too_long: "the period must not exceed %{days} days"
+      invalid_ids: "%{field} must be a list of ids"
+      foreign_ids: "%{field} contains values outside this account"
+      invalid_detail: kind, outcome or metric is invalid
+      invalid_page: "%{field} must be a positive integer up to %{max}"
     response_reassignment:
       invalid_settings: Invalid response reassignment settings
       requires_store_routing_and_business_hours: requires store routing and business hours

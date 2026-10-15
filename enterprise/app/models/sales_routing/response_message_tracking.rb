@@ -20,6 +20,6 @@ module SalesRouting::ResponseMessageTracking
     self.conversation = Conversation.lock.find(conversation_id)
     yield
     tracker = SalesRouting::ResponseTracker.new(conversation: conversation)
-    incoming? ? tracker.customer_message(self) : tracker.human_reply
+    incoming? ? tracker.customer_message(self) : tracker.human_reply(self)
   end
 end
