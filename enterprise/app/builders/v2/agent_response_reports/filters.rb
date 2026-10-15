@@ -4,20 +4,14 @@
 # "Store" means the conversation's ORIGIN store in every section: the store the customer was first routed to
 # (SalesRouting::Classifier.origin_store). It survives manual team transfers, fallback sellers from other stores and
 # sellers changing teams. Conversations whose origin is unknown (re-routed by hand before origins were kept) or that had
-# no store signal are left out of any store filter and counted in coverage instead of being guessed.
+# no store signal are left out of any store filter and counted in coverage instead of being guessed. History kept after
+# a conversation is deleted (ledger events, deadline windows) falls back to its own snapshot under the same rule.
 class V2::AgentResponseReports::Filters
   class Invalid < StandardError; end
 
   MAX_DAYS = 93
   DATE_FORMAT = /\A\d{4}-\d{2}-\d{2}\z/
   ID_FORMAT = /\A[1-9]\d*\z/
-  ROUTE_SQL = "store_conversations.additional_attributes -> 'store_routing'".freeze
-  # SQL twin of SalesRouting::Classifier.origin_store; NULL when unknown or without store signal.
-  ORIGIN_STORE_SQL = "(CASE WHEN #{ROUTE_SQL} -> 'origin_store' IS NOT NULL THEN #{ROUTE_SQL} ->> 'origin_store' " \
-                     "WHEN #{ROUTE_SQL} ->> 'rule' IS DISTINCT FROM 'manual-team' THEN #{ROUTE_SQL} ->> 'store' END)".freeze
-  STORE_SQL = 'EXISTS (SELECT 1 FROM conversations store_conversations WHERE store_conversations.id = %<column>s ' \
-              "AND #{ORIGIN_STORE_SQL} IN (?))".freeze
-
   attr_reader :account, :since, :until, :timezone, :range, :now, :store_codes
 
   # Reads raw request params on purpose: a malformed list must be rejected, not silently dropped into "everything".
@@ -98,27 +92,19 @@ class V2::AgentResponseReports::Filters
     assignments_since.present? && day_end(date) > assignments_since
   end
 
-  # Conversations of the period that a store filter leaves out because their origin store is not known: `unknown` were
-  # re-routed by hand before origins were kept, `without_store` never had a store (no signal or not store-routed).
+  # Only with a store filter: conversations of the period it leaves out because their origin store is not known.
   def unattributed_origins
-    return unless store_codes
-
-    every_store = dup.tap { |filters| filters.store_codes = nil }
-    Conversation.from('conversations store_conversations')
-                .where('store_conversations.id IN (?) OR store_conversations.id IN (?)',
-                       every_store.attempts.select(:conversation_id), every_store.agent_messages.select(:conversation_id))
-                .where("#{ORIGIN_STORE_SQL} IS NULL")
-                .group(Arel.sql("CASE WHEN #{ROUTE_SQL} ->> 'rule' = 'manual-team' THEN 'unknown' ELSE 'without_store' END"))
-                .count
+    V2::AgentResponseReports::OriginStore.new(filters: dup.tap { |filters| filters.store_codes = nil }).unattributed if store_codes
   end
 
   # --- scopes -------------------------------------------------------------------------------------------------------
 
-  # Every recorded window counts; coverage gaps are reported separately instead of hiding evidence.
+  # Every recorded window counts; coverage gaps are reported separately instead of hiding evidence. The store comes from
+  # the live conversation (its origin may be classified after the window was armed), else from the window's snapshot.
   def attempts
     scope = ConversationResponseAttempt.where(account_id: account.id, inbox_id: inbox_ids, started_at: range)
-    scope = scope.where(store_code: store_codes) if store_codes
-    with_agents(scope, :assignee_id)
+    with_agents(with_store(scope, 'conversation_response_attempts.conversation_id', snapshot: 'conversation_response_attempts.store_code'),
+                :assignee_id)
   end
 
   # Authored human replies: public outgoing messages sent by a user, excluding automation, campaigns and forwards.
@@ -137,7 +123,7 @@ class V2::AgentResponseReports::Filters
 
   def assignment_events
     scope = ConversationAssignmentEvent.where(account_id: account.id, inbox_id: ledger_inbox_ids, assigned_at: range)
-    scope = with_store(scope, 'conversation_assignment_events.conversation_id')
+    scope = with_store(scope, 'conversation_assignment_events.conversation_id', snapshot: origin.sql(origin::LEDGER_ROUTE))
     with_agents(scope, :agent_id)
   end
 
@@ -234,8 +220,17 @@ class V2::AgentResponseReports::Filters
     end
   end
 
-  def with_store(scope, column)
-    store_codes ? scope.where(format(STORE_SQL, column: column), store_codes) : scope
+  # `snapshot` is the origin kept on rows that outlive their conversation; it is only read once the conversation is gone.
+  def with_store(scope, column, snapshot: nil)
+    return scope unless store_codes
+    return scope.where(format(origin::STORE_SQL, column: column), store_codes) unless snapshot
+
+    scope.where("#{format(origin::STORE_SQL, column: column)} OR (NOT #{format(origin::LIVE_SQL, column: column)} AND #{snapshot} IN (?))",
+                store_codes, store_codes)
+  end
+
+  def origin
+    V2::AgentResponseReports::OriginStore
   end
 
   def with_agents(scope, column)

@@ -20,14 +20,8 @@ class V2::AgentResponseReports::SummaryBuilder
       response_attempts: deadline_coverage,
       assignments: { available: filters.assignments_available?, complete: (filters.inbox_ids - filters.ledger_inbox_ids).empty?,
                      inbox_ids: filters.ledger_inbox_ids, since: filters.assignments_since&.iso8601 },
-      origin_store: origin_store_coverage
+      origin_store: filters.unattributed_origins
     }
-  end
-
-  # Only with a store filter: conversations left out because their origin store is not known.
-  def origin_store_coverage
-    counts = filters.unattributed_origins
-    { unknown: counts.fetch('unknown', 0), without_store: counts.fetch('without_store', 0) } if counts
   end
 
   def deadline_coverage
@@ -39,8 +33,8 @@ class V2::AgentResponseReports::SummaryBuilder
   end
 
   def summary
-    received, *assignment_values = filters.assignment_events.pick(*assignment_columns)
-    sent, handled = filters.agent_messages.pick(*message_columns)
+    received, *assignment_values = aggregate(filters.assignment_events, assignment_columns)
+    sent, handled = aggregate(filters.agent_messages, message_columns)
 
     deadline_summary.merge(
       conversations: { received: (received if filters.assignments_available?), handled: handled,
@@ -51,7 +45,7 @@ class V2::AgentResponseReports::SummaryBuilder
   end
 
   def deadline_summary
-    values = filters.attempts.pick(*deadline_columns, *response_columns, *wait_columns)
+    values = aggregate(filters.attempts, deadline_columns + response_columns + wait_columns)
     { deadline: deadline(values.first(6)), response_time: duration(*values[6, 3]), customer_wait: duration(*values[9, 3]) }
   end
 

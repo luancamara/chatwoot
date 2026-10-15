@@ -72,6 +72,12 @@ module V2::AgentResponseReports::Metrics
     sql_columns('COUNT(*)', 'COUNT(DISTINCT messages.conversation_id)')
   end
 
+  # ActiveRecord skips the query for a relation that can match nothing (an empty agent or inbox selection) and returns
+  # nil, where SQL returns one aggregate row; mirror that row so the selection reads as zero counts, not as an error.
+  def aggregate(scope, columns)
+    scope.pick(*columns) || columns.map { |column| column.to_s.start_with?('COUNT') ? 0 : nil }
+  end
+
   def sql_columns(*sql)
     sql.map { |column| Arel.sql(column) }
   end
