@@ -19,8 +19,15 @@ class V2::AgentResponseReports::SummaryBuilder
     {
       response_attempts: deadline_coverage,
       assignments: { available: filters.assignments_available?, complete: (filters.inbox_ids - filters.ledger_inbox_ids).empty?,
-                     inbox_ids: filters.ledger_inbox_ids, since: filters.assignments_since&.iso8601 }
+                     inbox_ids: filters.ledger_inbox_ids, since: filters.assignments_since&.iso8601 },
+      origin_store: origin_store_coverage
     }
+  end
+
+  # Only with a store filter: conversations left out because their origin store is not known.
+  def origin_store_coverage
+    counts = filters.unattributed_origins
+    { unknown: counts.fetch('unknown', 0), without_store: counts.fetch('without_store', 0) } if counts
   end
 
   def deadline_coverage

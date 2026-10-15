@@ -13,7 +13,7 @@ class Enterprise::Api::V2::Accounts::AgentResponseReportsController < Api::V1::A
   def details
     kind = params[:kind]
     metric = details_metric(kind)
-    builder = V2::AgentResponseReports::DetailsBuilder.new(filters: filters, kind: kind, metric: metric,
+    builder = V2::AgentResponseReports::DetailsBuilder.new(filters: filters, kind: kind, metric: metric, sample: attempts_sample(kind, metric),
                                                            page: page_param(:page, 1, MAX_PAGE),
                                                            per_page: page_param(:per_page, DEFAULT_PER_PAGE, MAX_PER_PAGE))
     render json: builder.build
@@ -38,6 +38,13 @@ class Enterprise::Api::V2::Accounts::AgentResponseReportsController < Api::V1::A
     when 'conversations'
       return params[:metric] if V2::AgentResponseReports::DetailsBuilder::CONVERSATION_METRICS.include?(params[:metric])
     end
+
+    raise V2::AgentResponseReports::Filters::Invalid, I18n.t('errors.agent_response_reports.invalid_detail')
+  end
+
+  def attempts_sample(kind, outcome)
+    return if params[:sample].nil?
+    return params[:sample] if kind == 'attempts' && outcome.nil? && V2::AgentResponseReports::DetailsBuilder::ATTEMPT_SAMPLES.key?(params[:sample])
 
     raise V2::AgentResponseReports::Filters::Invalid, I18n.t('errors.agent_response_reports.invalid_detail')
   end

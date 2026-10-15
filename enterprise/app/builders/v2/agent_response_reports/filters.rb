@@ -1,17 +1,22 @@
 # Validated filters shared by the agent response summary and its drilldowns, so cards, charts and detail lists always
 # read the same rows.
 #
-# "Store" means the conversation's origin store everywhere: the store the customer was routed to, kept on the
-# conversation, the assignment ledger and each deadline window. A lead from one store answered by a fallback seller of
-# another store stays in its origin store, and a seller moving stores never rewrites past figures.
+# "Store" means the conversation's ORIGIN store in every section: the store the customer was first routed to
+# (SalesRouting::Classifier.origin_store). It survives manual team transfers, fallback sellers from other stores and
+# sellers changing teams. Conversations whose origin is unknown (re-routed by hand before origins were kept) or that had
+# no store signal are left out of any store filter and counted in coverage instead of being guessed.
 class V2::AgentResponseReports::Filters
   class Invalid < StandardError; end
 
   MAX_DAYS = 93
   DATE_FORMAT = /\A\d{4}-\d{2}-\d{2}\z/
   ID_FORMAT = /\A[1-9]\d*\z/
-  STORE_SQL = 'EXISTS (SELECT 1 FROM conversations store_conversations WHERE store_conversations.id = %<column>s AND ' \
-              "store_conversations.additional_attributes -> 'store_routing' ->> 'store' IN (?))".freeze
+  ROUTE_SQL = "store_conversations.additional_attributes -> 'store_routing'".freeze
+  # SQL twin of SalesRouting::Classifier.origin_store; NULL when unknown or without store signal.
+  ORIGIN_STORE_SQL = "(CASE WHEN #{ROUTE_SQL} -> 'origin_store' IS NOT NULL THEN #{ROUTE_SQL} ->> 'origin_store' " \
+                     "WHEN #{ROUTE_SQL} ->> 'rule' IS DISTINCT FROM 'manual-team' THEN #{ROUTE_SQL} ->> 'store' END)".freeze
+  STORE_SQL = 'EXISTS (SELECT 1 FROM conversations store_conversations WHERE store_conversations.id = %<column>s ' \
+              "AND #{ORIGIN_STORE_SQL} IN (?))".freeze
 
   attr_reader :account, :since, :until, :timezone, :range, :now, :store_codes
 
@@ -93,6 +98,20 @@ class V2::AgentResponseReports::Filters
     assignments_since.present? && day_end(date) > assignments_since
   end
 
+  # Conversations of the period that a store filter leaves out because their origin store is not known: `unknown` were
+  # re-routed by hand before origins were kept, `without_store` never had a store (no signal or not store-routed).
+  def unattributed_origins
+    return unless store_codes
+
+    every_store = dup.tap { |filters| filters.store_codes = nil }
+    Conversation.from('conversations store_conversations')
+                .where('store_conversations.id IN (?) OR store_conversations.id IN (?)',
+                       every_store.attempts.select(:conversation_id), every_store.agent_messages.select(:conversation_id))
+                .where("#{ORIGIN_STORE_SQL} IS NULL")
+                .group(Arel.sql("CASE WHEN #{ROUTE_SQL} ->> 'rule' = 'manual-team' THEN 'unknown' ELSE 'without_store' END"))
+                .count
+  end
+
   # --- scopes -------------------------------------------------------------------------------------------------------
 
   # Every recorded window counts; coverage gaps are reported separately instead of hiding evidence.
@@ -118,7 +137,7 @@ class V2::AgentResponseReports::Filters
 
   def assignment_events
     scope = ConversationAssignmentEvent.where(account_id: account.id, inbox_id: ledger_inbox_ids, assigned_at: range)
-    scope = scope.where("conversation_assignment_events.routing ->> 'store' IN (?)", store_codes) if store_codes
+    scope = with_store(scope, 'conversation_assignment_events.conversation_id')
     with_agents(scope, :agent_id)
   end
 
@@ -155,6 +174,10 @@ class V2::AgentResponseReports::Filters
   def payload
     { since: since.iso8601, until: self.until.iso8601, timezone: timezone.tzinfo.name }
   end
+
+  protected
+
+  attr_writer :store_codes
 
   private
 

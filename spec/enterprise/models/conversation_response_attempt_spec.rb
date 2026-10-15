@@ -202,10 +202,22 @@ RSpec.describe ConversationResponseAttempt do
     expect(attempts.sole).to have_attributes(outcome: 'met', response_seconds: 180)
   end
 
-  it 'keeps a missed deadline charged when the window turns ineligible only after it' do
+  it 'gives no verdict when the deadline job finds the window ineligible, since it cannot tell when that happened' do
     message
+    travel 1.minute
     conversation.contact.update!(blocked: true)
+    travel 4.minutes
+    SalesRouting::ReassignResponseJob.perform_now(watch.id)
+    expect(attempts.sole).to have_attributes(outcome: 'canceled', end_reason: 'ineligible')
+  end
+
+  it 'keeps a breach already recorded at the deadline when the window turns ineligible afterwards' do
+    allow(OnlineStatusTracker).to receive(:get_available_users).with(account.id).and_return(seller.id.to_s => 'online')
+    message
     travel 5.minutes
+    SalesRouting::ReassignResponseJob.perform_now(watch.id)
+    conversation.contact.update!(blocked: true)
+    travel 1.minute
     SalesRouting::ReassignResponseJob.perform_now(watch.id)
     expect(attempts.sole).to have_attributes(outcome: 'breached', end_reason: 'ineligible')
   end

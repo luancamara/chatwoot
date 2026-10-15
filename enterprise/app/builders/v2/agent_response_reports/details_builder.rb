@@ -2,8 +2,10 @@
 class V2::AgentResponseReports::DetailsBuilder
   ATTEMPT_OUTCOMES = ConversationResponseAttempt::OUTCOMES
   CONVERSATION_METRICS = %w[received handled resolved].freeze
+  # Named attempt subsets matching a summary figure: `first_reply` is the sample behind the first-reply speed.
+  ATTEMPT_SAMPLES = { 'first_reply' => V2::AgentResponseReports::Metrics::OWNER_FIRST_REPLY }.freeze
 
-  pattr_initialize [:filters!, :kind!, :metric, :page!, :per_page!]
+  pattr_initialize [:filters!, :kind!, :metric, :sample, :page!, :per_page!]
   delegate :account, to: :filters
 
   def build
@@ -12,9 +14,14 @@ class V2::AgentResponseReports::DetailsBuilder
 
   private
 
-  def attempts
+  def attempt_scope
     scope = filters.attempts
     scope = scope.where("#{filters.effective_outcome_sql} = ?", metric) if metric
+    sample ? scope.where(ATTEMPT_SAMPLES.fetch(sample)) : scope
+  end
+
+  def attempts
+    scope = attempt_scope
     rows = scope.select('conversation_response_attempts.*', "#{filters.effective_outcome_sql} AS effective_outcome")
                 .order(started_at: :desc, id: :desc).offset(offset).limit(per_page).to_a
     names = user_names(rows.flat_map { |row| [row.assignee_id, row.responder_id] })
@@ -86,6 +93,6 @@ class V2::AgentResponseReports::DetailsBuilder
   end
 
   def meta(total)
-    { kind: kind, metric: metric, page: page, per_page: per_page, total: total, range: filters.payload }
+    { kind: kind, metric: metric, sample: sample, page: page, per_page: per_page, total: total, range: filters.payload }
   end
 end

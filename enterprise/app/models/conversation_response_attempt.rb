@@ -33,7 +33,7 @@ class ConversationResponseAttempt < ApplicationRecord
     conversation = timer.conversation
     create!(account_id: conversation.account_id, inbox_id: timer.inbox_id, conversation_id: conversation.id,
             conversation_display_id: conversation.display_id, team_id: conversation.team_id, assignee_id: timer.assignee_id,
-            store_code: conversation.additional_attributes.dig(SalesRouting::Classifier::ATTRIBUTES_KEY, 'store'),
+            store_code: SalesRouting::Classifier.origin_store(conversation.additional_attributes[SalesRouting::Classifier::ATTRIBUTES_KEY]),
             response_kind: timer.response_kind, customer_message_id: timer.customer_message_id, waiting_since: timer.waiting_since,
             started_at: started_at, due_at: due_at, threshold_seconds: ConversationResponseTimer::TIMEOUT.to_i,
             business_hours: timer.inbox.working_hours_enabled?)
@@ -45,17 +45,21 @@ class ConversationResponseAttempt < ApplicationRecord
 
   # Any ending at or after the deadline is a breach for the owner, including a reply saved before the deadline job ran.
   # Before the deadline only the owner's own reply is credited; another person's reply and other endings carry no verdict.
+  # An ineligible window is only detected by the deadline job, so it never adds a breach of its own: a real miss was
+  # already recorded by `breach!` when the job last found the window valid and overdue.
   def finish!(reason, message: nil)
     at = message ? message.created_at : Time.current
-    attributes = { end_reason: reason, ended_at: at, outcome: final_outcome(at, message) }
+    attributes = { end_reason: reason, ended_at: at, outcome: final_outcome(reason, at, message) }
     attributes.merge!(reply_attributes(message)) if message
     update!(attributes)
   end
 
   private
 
-  def final_outcome(at, message)
-    return 'breached' if outcome == 'breached' || at >= due_at
+  def final_outcome(reason, at, message)
+    return 'breached' if outcome == 'breached'
+    return 'canceled' if reason == 'ineligible'
+    return 'breached' if at >= due_at
     return 'canceled' unless message
 
     owner_reply?(message) ? 'met' : 'answered_by_other'

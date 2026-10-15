@@ -25,7 +25,7 @@ RSpec.describe 'Agent response reports API', type: :request do
   before do
     travel_to Time.utc(2026, 10, 14, 18)
     create(:team_member, team: team, user: seller)
-    stores = { psd: { team_id: team.id }, lap: { team_id: other_team.id } }
+    stores = { psd: { team_id: team.id, label: 'loja-psd' }, lap: { team_id: other_team.id, label: 'loja-lap' } }
     account.update!(internal_attributes: { assignment_ledger: { inbox_ids: [inbox.id] }, store_routing: { inbox_ids: [inbox.id], stores: stores } })
     event = { account: account, conversation: conversation, inbox_id: inbox.id, conversation_display_id: conversation.display_id,
               source: 'automatic', routing: { store: 'psd' } }
@@ -198,6 +198,56 @@ RSpec.describe 'Agent response reports API', type: :request do
       expect(summary['options']['agents'].find { |agent| agent['id'] == seller.id }['store_codes']).to eq(['lap'])
     end
 
+    it 'keeps every section in the origin store after the conversation is moved to another store by hand' do
+      conversation.update!(team: other_team)
+      expect(conversation.reload.additional_attributes['store_routing']).to include('store' => 'lap', 'origin_store' => 'psd')
+      create(:message, account: account, inbox: inbox, conversation: conversation, message_type: :outgoing, sender: replacement)
+
+      get_summary(admin, store_codes: ['psd'])
+      expect(summary['summary']['conversations']).to eq('received' => 1, 'handled' => 1, 'resolved' => 1)
+      expect(summary['summary']['messages']).to include('agent' => 4, 'customer' => 3)
+      expect(summary['summary']['deadline']).to include('met' => 1, 'breached' => 1)
+      expect(summary['coverage']['origin_store']).to eq('unknown' => 0, 'without_store' => 0)
+
+      get_summary(admin, store_codes: ['lap'])
+      expect(summary['summary']['conversations']).to eq('received' => 0, 'handled' => 0, 'resolved' => 0)
+      get_details(kind: 'conversations', metric: 'handled', store_codes: ['lap'])
+      expect(response.parsed_body['payload']).to eq([])
+    end
+
+    it 'leaves conversations with an unknown origin out of store filters and says how many' do
+      conversation.update!(additional_attributes: { store_routing: { store: 'lap', rule: 'manual-team' } })
+      ConversationResponseAttempt.find_each { |window| window.update!(store_code: nil) }
+
+      get_summary(admin, store_codes: ['psd'])
+      expect(summary['summary']['conversations']).to eq('received' => 0, 'handled' => 0, 'resolved' => 0)
+      expect(summary['coverage']['origin_store']).to eq('unknown' => 1, 'without_store' => 0)
+
+      get_summary(admin)
+      expect(summary['summary']['conversations']).to eq('received' => 1, 'handled' => 1, 'resolved' => 1)
+      expect(summary['coverage']['origin_store']).to be_nil
+    end
+
+    it 'measures first-reply speed and customer wait only on first-response windows' do
+      ConversationResponseAttempt.create!(attempt.merge(assignee_id: replacement.id, response_kind: 'next_response',
+                                                        started_at: Time.utc(2026, 10, 14, 16), due_at: Time.utc(2026, 10, 14, 16, 5),
+                                                        outcome: 'met', end_reason: 'replied', ended_at: Time.utc(2026, 10, 14, 16, 1),
+                                                        replied_at: Time.utc(2026, 10, 14, 16, 1), responder_id: replacement.id,
+                                                        response_seconds: 30, wait_seconds: 30))
+      get_summary(admin)
+      expect(summary['summary']['deadline']).to include('met' => 2, 'eligible' => 3)
+      expect(summary['summary']['response_time']).to eq('count' => 1, 'mean_seconds' => 120, 'median_seconds' => 120)
+      expect(summary['summary']['customer_wait']).to eq('count' => 1, 'mean_seconds' => 420, 'median_seconds' => 420)
+    end
+
+    it 'counts a loss to reassignment only when the transferred window had missed its deadline' do
+      ConversationResponseAttempt.create!(attempt.merge(assignee_id: seller.id, started_at: Time.utc(2026, 10, 14, 16),
+                                                        due_at: Time.utc(2026, 10, 14, 16, 5), outcome: 'canceled', end_reason: 'reassigned',
+                                                        ended_at: Time.utc(2026, 10, 14, 16, 2)))
+      get_summary(admin, agent_ids: [seller.id])
+      expect(summary['summary']['deadline']).to include('lost_to_reassignment' => 1, 'canceled' => 1)
+    end
+
     it 'treats agents outside the account as an empty selection, never as everyone' do
       get_summary(admin, agent_ids: [create(:user).id])
       expect(summary['agents']).to eq([])
@@ -224,9 +274,23 @@ RSpec.describe 'Agent response reports API', type: :request do
                                                               'conversation_display_id' => conversation.display_id)
     end
 
+    it 'opens exactly the samples behind the first-reply speed, late replies included and later responses excluded' do
+      late = ConversationResponseAttempt.find_by!(outcome: 'breached')
+      late.update!(replied_at: Time.utc(2026, 10, 14, 15, 9), responder_id: seller.id, response_seconds: 540)
+      ConversationResponseAttempt.create!(attempt.merge(assignee_id: replacement.id, response_kind: 'next_response',
+                                                        started_at: Time.utc(2026, 10, 14, 16), due_at: Time.utc(2026, 10, 14, 16, 5),
+                                                        outcome: 'met', replied_at: Time.utc(2026, 10, 14, 16, 1), responder_id: replacement.id))
+      get_summary(admin)
+      expect(summary['summary']['response_time']['count']).to eq(2)
+      get_details(kind: 'attempts', sample: 'first_reply')
+      expect(response.parsed_body['meta']['total']).to eq(2)
+      expect(response.parsed_body['payload'].pluck('outcome')).to contain_exactly('met', 'breached')
+    end
+
     it 'rejects unknown kinds and invalid pages' do
       [{ kind: 'messages' }, { kind: 'attempts', outcome: 'late' }, { kind: 'conversations', metric: 'handled', per_page: 101 },
-       { kind: 'attempts', page: '0' }].each do |invalid|
+       { kind: 'attempts', page: '0' }, { kind: 'attempts', sample: 'all' }, { kind: 'attempts', outcome: 'met', sample: 'first_reply' },
+       { kind: 'conversations', metric: 'handled', sample: 'first_reply' }].each do |invalid|
         get_details(invalid)
         expect(response).to have_http_status(:unprocessable_entity), invalid.inspect
       end

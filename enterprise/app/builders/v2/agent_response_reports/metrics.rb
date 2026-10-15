@@ -1,7 +1,9 @@
 # Aggregate columns and payload shapes for the agent response summary. Expects `filters` (V2::AgentResponseReports::Filters).
 module V2::AgentResponseReports::Metrics
-  OWNER_REPLY = 'conversation_response_attempts.replied_at IS NOT NULL AND ' \
-                'conversation_response_attempts.responder_id = conversation_response_attempts.assignee_id'.freeze
+  FIRST_RESPONSE = "conversation_response_attempts.response_kind = 'first_response'".freeze
+  # The samples behind the first-reply speed: the owner's own first reply, on time or late.
+  OWNER_FIRST_REPLY = "#{FIRST_RESPONSE} AND conversation_response_attempts.replied_at IS NOT NULL AND " \
+                      'conversation_response_attempts.responder_id = conversation_response_attempts.assignee_id'.freeze
 
   private
 
@@ -35,24 +37,25 @@ module V2::AgentResponseReports::Metrics
   def deadline_columns
     outcome = filters.effective_outcome_sql
     counts = %w[met breached answered_by_other pending canceled].map { |value| "COUNT(*) FILTER (WHERE #{outcome} = '#{value}')" }
-    sql_columns(*counts, "COUNT(*) FILTER (WHERE conversation_response_attempts.end_reason = 'reassigned')")
+    sql_columns(*counts, "COUNT(*) FILTER (WHERE conversation_response_attempts.end_reason = 'reassigned' AND #{outcome} = 'breached')")
   end
 
-  # Reply speed only counts the owner's own reply, measured from when that owner received the window.
+  # First-reply speed only counts the owner's own first reply, measured from when that owner received the window.
   def response_columns
     sql_columns(
-      "COUNT(*) FILTER (WHERE #{OWNER_REPLY})",
-      "AVG(conversation_response_attempts.response_seconds) FILTER (WHERE #{OWNER_REPLY})",
-      "percentile_cont(0.5) WITHIN GROUP (ORDER BY conversation_response_attempts.response_seconds) FILTER (WHERE #{OWNER_REPLY})"
+      "COUNT(*) FILTER (WHERE #{OWNER_FIRST_REPLY})",
+      "AVG(conversation_response_attempts.response_seconds) FILTER (WHERE #{OWNER_FIRST_REPLY})",
+      'percentile_cont(0.5) WITHIN GROUP (ORDER BY conversation_response_attempts.response_seconds) ' \
+      "FILTER (WHERE #{OWNER_FIRST_REPLY})"
     )
   end
 
-  # Customer wait runs from the customer message to whichever human reply closed the cycle.
+  # Customer wait runs from the first customer message to whichever human reply closed the first-response cycle.
   def wait_columns
     sql_columns(
-      'COUNT(conversation_response_attempts.wait_seconds)',
-      'AVG(conversation_response_attempts.wait_seconds)',
-      'percentile_cont(0.5) WITHIN GROUP (ORDER BY conversation_response_attempts.wait_seconds)'
+      "COUNT(conversation_response_attempts.wait_seconds) FILTER (WHERE #{FIRST_RESPONSE})",
+      "AVG(conversation_response_attempts.wait_seconds) FILTER (WHERE #{FIRST_RESPONSE})",
+      "percentile_cont(0.5) WITHIN GROUP (ORDER BY conversation_response_attempts.wait_seconds) FILTER (WHERE #{FIRST_RESPONSE})"
     )
   end
 
