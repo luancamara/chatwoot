@@ -135,8 +135,9 @@ RSpec.describe SalesRouting::ResponseReassignmentService do
   it 'returns a lead that fell back to another store to its own store at the deadline' do
     # The automatic fallback keeps the lead's store; only a manual team change rewrites it.
     Current.executed_by = policy
+    route = { store: 'psd', rule: 'campanha-meta', assignment_rule: 'fallback-geral' }
     fallback = create(:conversation, account: account, inbox: inbox, assignee: other_store_seller, team: other_team,
-                                     additional_attributes: { store_routing: { store: 'psd', rule: 'campanha-meta', assignment_rule: 'fallback-geral' } })
+                                     additional_attributes: { store_routing: route })
     Current.reset
     create(:message, account: account, conversation: fallback)
     travel timeout
