@@ -19,6 +19,7 @@ RSpec.describe ConversationResponseAttempt do
   let(:message) { create(:message, account: account, conversation: conversation, content: '[PSD]') }
   let(:watch) { ConversationResponseTimer.find_by!(conversation_id: conversation.id) }
   let(:attempts) { described_class.where(conversation_id: conversation.id).order(:id) }
+  let(:timeout) { ConversationResponseTimer::TIMEOUT }
 
   before do
     travel_to Time.utc(2026, 10, 12, 15)
@@ -47,8 +48,8 @@ RSpec.describe ConversationResponseAttempt do
     expect { reply(seller) }.to change(conversation.messages.outgoing, :count).by(1)
     expect(attempts.sole).to have_attributes(
       assignee_id: seller.id, responder_id: seller.id, outcome: 'met', end_reason: 'replied', response_seconds: 180, wait_seconds: 180,
-      conversation_display_id: conversation.display_id, team_id: team.id, threshold_seconds: 300, business_hours: true,
-      started_at: message.created_at, due_at: message.created_at + 5.minutes
+      conversation_display_id: conversation.display_id, team_id: team.id, threshold_seconds: timeout.to_i, business_hours: true,
+      started_at: message.created_at, due_at: message.created_at + timeout
     )
     expect(ConversationResponseTimer.where(conversation: conversation)).to be_empty
   end
@@ -62,7 +63,7 @@ RSpec.describe ConversationResponseAttempt do
 
   it 'does not credit the replacement when the previous owner answers inside the new window' do
     message
-    travel 5.minutes
+    travel timeout
     SalesRouting::ReassignResponseJob.perform_now(watch.id)
     travel 1.minute
     reply(seller)
@@ -71,14 +72,15 @@ RSpec.describe ConversationResponseAttempt do
 
   it 'treats a reply after the deadline as a breach even when the deadline job has not run yet' do
     message
-    travel 6.minutes
+    travel timeout + 1.minute
     reply(seller)
-    expect(attempts.sole).to have_attributes(outcome: 'breached', end_reason: 'replied', responder_id: seller.id, response_seconds: 360)
+    expect(attempts.sole).to have_attributes(outcome: 'breached', end_reason: 'replied', responder_id: seller.id,
+                                             response_seconds: (timeout + 1.minute).to_i)
   end
 
   it 'charges the missed deadline to the previous owner and gives the replacement a fresh window measured from the transfer' do
     message
-    travel 5.minutes
+    travel timeout
     SalesRouting::ReassignResponseJob.perform_now(watch.id)
     travel 2.minutes
     reply(replacement)
@@ -86,17 +88,18 @@ RSpec.describe ConversationResponseAttempt do
       [{ 'assignee_id' => seller.id, 'outcome' => 'breached', 'end_reason' => 'reassigned' },
        { 'assignee_id' => replacement.id, 'outcome' => 'met', 'end_reason' => 'replied' }]
     )
-    expect(attempts.last).to have_attributes(started_at: Time.utc(2026, 10, 12, 15, 5), response_seconds: 120, wait_seconds: 420)
+    expect(attempts.last).to have_attributes(started_at: Time.utc(2026, 10, 12, 15) + timeout, response_seconds: 120,
+                                             wait_seconds: (timeout + 2.minutes).to_i)
   end
 
   it 'does not charge the same customer wait twice when the same owner is re-armed after a breach' do
     allow(OnlineStatusTracker).to receive(:get_available_users).with(account.id).and_return(seller.id.to_s => 'online')
     message
-    travel 5.minutes
+    travel timeout
     SalesRouting::ReassignResponseJob.perform_now(watch.id)
     travel 1.minute
     watch.arm!
-    travel 5.minutes
+    travel timeout
     SalesRouting::ReassignResponseJob.perform_now(watch.id)
     expect(attempts.sole).to have_attributes(assignee_id: seller.id, outcome: 'breached', ended_at: nil)
   end
@@ -104,7 +107,7 @@ RSpec.describe ConversationResponseAttempt do
   it 'records a breach once when no substitute exists, however often the deadline is retried' do
     allow(OnlineStatusTracker).to receive(:get_available_users).with(account.id).and_return(seller.id.to_s => 'online')
     message
-    travel 5.minutes
+    travel timeout
     3.times do
       SalesRouting::ReassignResponseJob.perform_now(watch.id)
       travel 1.minute
@@ -117,7 +120,7 @@ RSpec.describe ConversationResponseAttempt do
   it 'does not breach or reassign when the reply wins the race against a due job' do
     message
     timer_id = watch.id
-    travel 299.seconds
+    travel timeout - 1.second
     reply(seller)
     travel 1.second
     SalesRouting::ReassignResponseJob.perform_now(timer_id)
@@ -134,7 +137,7 @@ RSpec.describe ConversationResponseAttempt do
 
   it 'keeps the breach when the conversation is resolved after the deadline' do
     message
-    travel 7.minutes
+    travel timeout + 2.minutes
     conversation.update!(status: :resolved)
     expect(attempts.sole).to have_attributes(outcome: 'breached', end_reason: 'closed')
   end
@@ -186,7 +189,7 @@ RSpec.describe ConversationResponseAttempt do
   it 'counts response speed in business time across the evening close' do
     travel_to Time.utc(2026, 10, 12, 19, 58)
     message
-    expect(attempts.sole.due_at).to eq(Time.utc(2026, 10, 13, 12, 3))
+    expect(attempts.sole.due_at).to eq(Time.utc(2026, 10, 13, 12, 8))
     travel_to Time.utc(2026, 10, 13, 12, 1)
     reply(seller)
     expect(attempts.sole).to have_attributes(outcome: 'met', response_seconds: 180, wait_seconds: 180)
@@ -196,7 +199,7 @@ RSpec.describe ConversationResponseAttempt do
     inbox.working_hours.find_by!(day_of_week: 0).update!(closed_all_day: false, open_hour: 10, open_minutes: 0, close_hour: 18, close_minutes: 0)
     travel_to Time.utc(2026, 10, 11, 20, 58)
     message
-    expect(attempts.sole.due_at).to eq(Time.utc(2026, 10, 12, 12, 3))
+    expect(attempts.sole.due_at).to eq(Time.utc(2026, 10, 12, 12, 8))
     travel_to Time.utc(2026, 10, 12, 12, 1)
     reply(seller)
     expect(attempts.sole).to have_attributes(outcome: 'met', response_seconds: 180)
@@ -206,7 +209,7 @@ RSpec.describe ConversationResponseAttempt do
     message
     travel 1.minute
     conversation.contact.update!(blocked: true)
-    travel 4.minutes
+    travel timeout - 1.minute
     SalesRouting::ReassignResponseJob.perform_now(watch.id)
     expect(attempts.sole).to have_attributes(outcome: 'canceled', end_reason: 'ineligible')
   end
@@ -214,7 +217,7 @@ RSpec.describe ConversationResponseAttempt do
   it 'keeps a breach already recorded at the deadline when the window turns ineligible afterwards' do
     allow(OnlineStatusTracker).to receive(:get_available_users).with(account.id).and_return(seller.id.to_s => 'online')
     message
-    travel 5.minutes
+    travel timeout
     SalesRouting::ReassignResponseJob.perform_now(watch.id)
     conversation.contact.update!(blocked: true)
     travel 1.minute
@@ -234,7 +237,7 @@ RSpec.describe ConversationResponseAttempt do
     message
     expect(attempts).to be_empty
     inbox.update!(response_attempts_tracked_since: Time.current)
-    travel 5.minutes
+    travel timeout
     SalesRouting::ReassignResponseJob.perform_now(watch.id)
     expect(attempts.sole).to have_attributes(assignee_id: replacement.id, outcome: 'pending', started_at: Time.current)
   end

@@ -1637,7 +1637,7 @@
     },
     "RESPONSE_REASSIGNMENT": {
       "TITLE": "Reassign unanswered conversations",
-      "DESCRIPTION": "Allow five business minutes for a human reply before offering the conversation to another online seller in the same store team.",
+      "DESCRIPTION": "Allow ten business minutes for a human reply before offering the conversation to another online seller from the lead's store, or from the current team when none is available.",
       "MODE": "Apply to",
       "MODES": {
         "DISABLED": "Disabled",
