@@ -1639,7 +1639,7 @@
     },
     "RESPONSE_REASSIGNMENT": {
       "TITLE": "Reatribuir conversas sem resposta",
-      "DESCRIPTION": "Aguarde cinco minutos dentro do expediente por uma resposta humana antes de oferecer a conversa a outro vendedor online da mesma equipe de loja.",
+      "DESCRIPTION": "Aguarde dez minutos dentro do expediente por uma resposta humana antes de oferecer a conversa a outro vendedor online da loja do lead ou, se não houver, da equipe atual.",
       "MODE": "Aplicar a",
       "MODES": {
         "DISABLED": "Desativado",

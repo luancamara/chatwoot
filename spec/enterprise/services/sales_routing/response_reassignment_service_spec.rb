@@ -20,6 +20,7 @@ RSpec.describe SalesRouting::ResponseReassignmentService do
   end
   let(:message) { create(:message, account: account, conversation: conversation, content: '[PSD]') }
   let(:watch) { ConversationResponseTimer.find_by!(conversation_id: conversation.id) }
+  let(:timeout) { ConversationResponseTimer::TIMEOUT }
 
   before do
     travel_to Time.utc(2026, 10, 12, 15)
@@ -40,10 +41,10 @@ RSpec.describe SalesRouting::ResponseReassignmentService do
     allow(OnlineStatusTracker).to receive(:get_available_users).with(account.id).and_return(online)
   end
 
-  it 'gives the first assigned seller five minutes and records the transfer in Hermes with automatic provenance' do
+  it 'gives the first assigned seller the full deadline and records the transfer in Hermes with automatic provenance' do
     message
     timer_id = watch.id
-    travel 299.seconds
+    travel timeout - 1.second
     SalesRouting::ReassignResponseJob.perform_now(timer_id)
     expect(conversation.reload.assignee).to eq(seller)
     travel 1.second
@@ -56,18 +57,18 @@ RSpec.describe SalesRouting::ResponseReassignmentService do
     expect(AutoAssignment::RateLimiter.new(inbox: inbox, agent: replacement).current_count).to eq(1)
   end
 
-  it 'starts five minutes at assignment when the customer waited unassigned' do
+  it 'starts the deadline at assignment when the customer waited unassigned' do
     conversation.update!(assignee: nil)
     message
     expect(watch.due_at).to be_nil
     travel 2.minutes
     AutoAssignment::AssignmentService.new(inbox: inbox).perform_bulk_assignment
-    expect(watch.reload.due_at).to eq(5.minutes.from_now)
+    expect(watch.reload.due_at).to eq(timeout.from_now)
   end
 
   it 'supplies the policy context expected by notification payloads and email templates' do
     message
-    travel 5.minutes
+    travel timeout
     SalesRouting::ReassignResponseJob.perform_now(watch.id)
     notification = Notification.find_by!(user: manager, notification_type: :sla_missed_first_response)
     expect(notification.secondary_actor).to eq(policy)
@@ -83,7 +84,7 @@ RSpec.describe SalesRouting::ResponseReassignmentService do
     create(:message, account: account, conversation: conversation, sender: seller, message_type: :outgoing, private: true)
     create(:message, account: account, conversation: conversation, sender: seller, message_type: :outgoing,
                      content_attributes: { automation_rule_id: 1 })
-    travel 4.minutes
+    travel timeout - 1.minute
     create(:message, account: account, conversation: conversation)
     expect(watch.reload.due_at).to eq(original_due)
     travel 1.minute
@@ -98,7 +99,7 @@ RSpec.describe SalesRouting::ResponseReassignmentService do
     # Native reporting metadata may lag or have been backfilled independently; use actual human replies too.
     conversation.update!(first_reply_created_at: nil)
     create(:message, account: account, conversation: conversation)
-    travel 6.minutes
+    travel timeout + 1.minute
     SalesRouting::ReassignResponseJob.perform_now(timer_id)
     expect(conversation.reload.assignee).to eq(seller)
     expect(ConversationResponseTimer.where(conversation: conversation)).to be_empty
@@ -113,7 +114,7 @@ RSpec.describe SalesRouting::ResponseReassignmentService do
     create(:message, account: account, conversation: conversation, sender: seller, message_type: :outgoing)
     create(:message, account: account, conversation: conversation)
     expect(watch.response_kind).to eq('next_response')
-    travel 5.minutes
+    travel timeout
     SalesRouting::ReassignResponseJob.perform_now(watch.id)
     expect(conversation.reload.assignee).to eq(replacement)
     expect(Notification.where(user: manager, notification_type: :sla_missed_next_response).count).to eq(1)
@@ -125,17 +126,31 @@ RSpec.describe SalesRouting::ResponseReassignmentService do
     message
     allow(OnlineStatusTracker).to receive(:get_available_users).with(account.id)
                                                                .and_return(seller.id.to_s => 'online', other_store_seller.id.to_s => 'online')
-    travel 5.minutes
+    travel timeout
     2.times { SalesRouting::ReassignResponseJob.perform_now(watch.id) }
     expect(conversation.reload.assignee).to eq(seller)
     expect(Notification.where(user: manager, notification_type: :sla_missed_first_response).count).to eq(1)
   end
 
+  it 'returns a lead that fell back to another store to its own store at the deadline' do
+    fallback = Current.set(executed_by: policy) do
+      create(:conversation, account: account, inbox: inbox, assignee: other_store_seller, team: other_team,
+                            additional_attributes: { store_routing: { store: 'psd', rule: 'campanha-meta', assignment_rule: 'fallback-geral' } })
+    end
+    create(:message, account: account, conversation: fallback)
+    travel timeout
+    SalesRouting::ReassignResponseJob.perform_now(fallback.conversation_response_timer.id)
+    fallback.reload
+    expect(fallback.team).to eq(team)
+    expect(team.members).to include(fallback.assignee)
+    expect(fallback.additional_attributes['store_routing']).to include('store' => 'psd', 'assignment_rule' => 'response-timeout')
+  end
+
   it 'does not bounce back to a seller who already missed the same response' do
     message
-    travel 5.minutes
+    travel timeout
     SalesRouting::ReassignResponseJob.perform_now(watch.id)
-    travel 5.minutes
+    travel timeout
     SalesRouting::ReassignResponseJob.perform_now(watch.id)
     expect(conversation.reload.assignee).to eq(replacement)
     expect(watch.reload.attempted_agent_ids).to contain_exactly(seller.id, replacement.id)
@@ -146,7 +161,7 @@ RSpec.describe SalesRouting::ResponseReassignmentService do
     message
     timer_id = watch.id
     conversation.update!(assignee: replacement)
-    travel 6.minutes
+    travel timeout + 1.minute
     SalesRouting::ReassignResponseJob.perform_now(timer_id)
     expect(conversation.reload.assignee).to eq(replacement)
     expect(ConversationResponseTimer.where(conversation: conversation)).to be_empty
@@ -156,7 +171,7 @@ RSpec.describe SalesRouting::ResponseReassignmentService do
     message
     timer_id = watch.id
     conversation.update!(status: :resolved)
-    travel 6.minutes
+    travel timeout + 1.minute
     SalesRouting::ReassignResponseJob.perform_now(timer_id)
     expect(conversation.reload.assignee).to eq(seller)
     expect(ConversationResponseTimer.where(conversation: conversation)).to be_empty
@@ -166,11 +181,11 @@ RSpec.describe SalesRouting::ResponseReassignmentService do
     message
     limiter = AutoAssignment::RateLimiter.new(inbox: inbox, agent: replacement)
     10.times { limiter.track_assignment(conversation) }
-    travel 5.minutes
+    travel timeout
     SalesRouting::ReassignResponseJob.perform_now(watch.id)
     expect(conversation.reload.assignee).to eq(seller)
     expect(limiter.current_count).to eq(10)
-    travel 56.minutes
+    travel 1.hour + 1.minute - timeout
     SalesRouting::ReassignResponseJob.perform_now(watch.id)
     expect(conversation.reload.assignee).to eq(replacement)
   end
@@ -181,7 +196,7 @@ RSpec.describe SalesRouting::ResponseReassignmentService do
     replacement.account_users.find_by!(account: account).update!(agent_capacity_policy: capacity)
     full = create(:conversation, account: account, inbox: inbox, assignee: replacement)
     message
-    travel 5.minutes
+    travel timeout
     SalesRouting::ReassignResponseJob.perform_now(watch.id)
     expect(conversation.reload.assignee).to eq(seller)
     full.update!(status: :resolved)
@@ -193,11 +208,11 @@ RSpec.describe SalesRouting::ResponseReassignmentService do
     inbox.working_hours.find_by!(day_of_week: 0).update!(closed_all_day: false, open_hour: 10, open_minutes: 0, close_hour: 18, close_minutes: 0)
     travel_to Time.utc(2026, 10, 11, 20, 58)
     message
-    expect(watch.due_at).to eq(Time.utc(2026, 10, 12, 12, 3))
+    expect(watch.due_at).to eq(Time.utc(2026, 10, 12, 12, 8))
     travel_to Time.utc(2026, 10, 12, 11, 59)
     SalesRouting::ReassignResponseJob.perform_now(watch.id)
     expect(conversation.reload.assignee).to eq(seller)
-    travel_to Time.utc(2026, 10, 12, 12, 3)
+    travel_to Time.utc(2026, 10, 12, 12, 8)
     SalesRouting::ReassignResponseJob.perform_now(watch.id)
     expect(conversation.reload.assignee).to eq(replacement)
   end
@@ -206,7 +221,7 @@ RSpec.describe SalesRouting::ResponseReassignmentService do
     message
     timer_id = watch.id
     inbox.update!(response_reassignment_mode: 'disabled')
-    travel 6.minutes
+    travel timeout + 1.minute
     SalesRouting::ReassignResponseJob.perform_now(timer_id)
     expect(conversation.reload.assignee).to eq(seller)
     expect(ConversationResponseTimer.where(conversation: conversation)).to be_empty

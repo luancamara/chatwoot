@@ -41,18 +41,27 @@ class SalesRouting::ResponseReassignmentService < AutoAssignment::AssignmentServ
   def expire_response(watch, conversation)
     watch.open_attempt&.breach!
     notify_manager(watch, conversation)
-    agents = filter_agents_by_role(inbox.available_agents).where.not(user_id: watch.attempted_agent_ids | [conversation.assignee_id])
-    agents = filter_agents_by_team(agents, conversation)
-    eligible = policy_eligible_agents(agents)
-    agent = SalesRouting::AgentSelector.new(conversation: conversation, configuration: store_routing, round: []).select(eligible)
+    route = conversation.additional_attributes.fetch(SalesRouting::Classifier::ATTRIBUTES_KEY)
+    agent, team = replacement(watch, conversation, route['store'])
     return unless agent
 
-    route = conversation.additional_attributes.fetch(SalesRouting::Classifier::ATTRIBUTES_KEY)
     attributes = conversation.additional_attributes.merge(SalesRouting::Classifier::ATTRIBUTES_KEY => route.merge(
       'assignment_rule' => 'response-timeout', 'response_kind' => watch.response_kind
     ))
-    conversation.update!(assignee: agent, additional_attributes: attributes)
+    conversation.update!(assignee: agent, team: team, additional_attributes: attributes)
     build_rate_limiter(agent).track_assignment(conversation)
+  end
+
+  # A lead that fell back to another store goes back to its own store's sellers first; otherwise it stays in the current team.
+  def replacement(watch, conversation, store)
+    agents = filter_agents_by_role(inbox.available_agents).where.not(user_id: watch.attempted_agent_ids | [conversation.assignee_id])
+    selector = SalesRouting::AgentSelector.new(conversation: conversation, configuration: store_routing, round: [])
+    teams = [store && store_routing.team_for(store), conversation.team].compact.uniq.select(&:allow_auto_assign?)
+    teams.each do |team|
+      agent = selector.select(policy_eligible_agents(agents.where(user_id: team.members.ids)))
+      return [agent, team] if agent
+    end
+    nil
   end
 
   def notify_manager(watch, conversation)

@@ -1,5 +1,5 @@
 class ConversationResponseTimer < ApplicationRecord
-  TIMEOUT = 5.minutes
+  TIMEOUT = 10.minutes
 
   belongs_to :conversation
   belongs_to :inbox
