@@ -647,6 +647,8 @@ Rails.application.routes.draw do
               end
             end
 
+            resource :distribution_status, only: [:show], controller: '/enterprise/api/v2/accounts/distribution_statuses'
+
             resources :contacts, only: [] do
               resource :erp_orders, only: [:show], controller: '/enterprise/api/v2/accounts/erp_orders'
             end
