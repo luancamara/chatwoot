@@ -35,7 +35,7 @@ class ScheduledMessage < ApplicationRecord
   belongs_to :inbox
   belongs_to :sender, class_name: 'User'
 
-  enum status: { pending: 0, sent: 1, failed: 2, cancelled: 3 }
+  enum :status, { pending: 0, sent: 1, failed: 2, cancelled: 3 }
 
   validates :content, presence: true
   validates :scheduled_at, presence: true

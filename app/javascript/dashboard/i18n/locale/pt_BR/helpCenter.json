@@ -807,6 +807,7 @@
         "PUBLISH_CHANGES_ERROR": "Não foi possível publicar as alterações",
         "SAVE_IN_PROGRESS": "Ainda estamos salvando suas alterações mais recentes. Por favor, tente novamente em instantes.",
         "UPLOAD_IN_PROGRESS": "Há um upload de arquivo não concluído. Aguarde a conclusão ou remova-o primeiro.",
+        "CREATE_IN_PROGRESS": "O artigo ainda está sendo criado. Tente adicionar os arquivos novamente em instantes.",
         "DISCARD_CHANGES": "Descartar alterações",
         "DISCARD_CHANGES_SUCCESS": "Alterações descartadas",
         "DISCARD_CHANGES_ERROR": "Não foi possível descartar as alterações",
@@ -814,8 +815,7 @@
         "VIEW_CHANGES": "Ver alterações não publicadas",
         "DRAFT": "Rascunho",
         "ARCHIVE": "Arquivar",
-        "BACK_TO_ARTICLES": "Voltar aos artigos",
-        "CREATE_IN_PROGRESS": "O artigo ainda está sendo criado. Tente adicionar os arquivos novamente em instantes."
+        "BACK_TO_ARTICLES": "Voltar aos artigos"
       },
       "PENDING_CHANGES_POPOVER": {
         "TITLE": "Alterações não publicadas",
@@ -980,7 +980,7 @@
         "SOCIAL_LINKS": {
           "HEADER": "Links sociais",
           "DESCRIPTION": "Adicione o identificador de cada rede e sua central de ajuda criará o link completo automaticamente. Exibido no rodapé do leiaute da documentação.",
-          "PLACEHOLDER": "nome de usuário",
+          "PLACEHOLDER": "{'@'}usuario",
           "ADD": "Adicionar link social",
           "REMOVE": "Excluir"
         },

@@ -1,27 +1,11 @@
 module Enterprise::Api::V1::Accounts::InboxesController
   extend ActiveSupport::Concern
   include SalesRouting::ResponseReassignmentParams
+  include Concerns::TwilioVoiceCredentials
+  include Concerns::WhatsappCallingActions
 
   def inbox_attributes
     super + ee_inbox_attributes
-  end
-
-  def enable_whatsapp_calling
-    return unless ensure_whatsapp_calling_supported
-
-    @inbox.channel.enable_voice_calling!
-    head :ok
-  rescue StandardError => e
-    render_could_not_create_error(e.message)
-  end
-
-  def disable_whatsapp_calling
-    return unless ensure_whatsapp_calling_supported
-
-    @inbox.channel.disable_voice_calling!
-    head :ok
-  rescue StandardError => e
-    render_could_not_create_error(e.message)
   end
 
   # Toggles only the inbound-calls flag in provider_config. Saved with validate: false
@@ -64,13 +48,7 @@ module Enterprise::Api::V1::Accounts::InboxesController
 
   private
 
-  def ensure_whatsapp_calling_supported
-    channel = @inbox.channel
-    return true if channel.is_a?(Channel::Whatsapp) && channel.voice_calling_supported?
-
-    render_could_not_create_error('Inbox does not support WhatsApp calling')
-    false
-  end
+  def inbox_scope = super.with_attached_call_greeting_audio.with_attached_unanswered_call_audio.with_attached_out_of_hours_call_audio
 
   # Call settings can be toggled on any voice-enabled inbox (WhatsApp calling or Twilio voice).
   def ensure_calling_supported
@@ -124,6 +102,7 @@ module Enterprise::Api::V1::Accounts::InboxesController
       api_key_sid: config[:api_key_sid],
       api_key_secret: config[:api_key_secret],
       medium: :sms,
+      provider_config: { 'account_auth_token_configured' => true },
       voice_enabled: true
     )
 

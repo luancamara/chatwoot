@@ -92,6 +92,9 @@
   "MFA_VERIFICATION": {
     "TITLE": "Autenticação em Dois Fatores",
     "DESCRIPTION": "Informe o código de verificação para continuar",
+    "EMAIL_TITLE": "Verifique seu e-mail",
+    "EMAIL_DESCRIPTION": "Você está entrando por um novo dispositivo.",
+    "ENTER_EMAIL_CODE": "Digite o código de 6 dígitos recebido por e-mail",
     "AUTHENTICATOR_APP": "Aplicativo Autenticador",
     "BACKUP_CODE": "Código de Recuperação",
     "ENTER_OTP_CODE": "Insira o código de 6 dígitos do seu aplicativo autenticador",
@@ -113,9 +116,6 @@
       "CONTACT_DESC_SELF_HOSTED": "Se você perdeu o acesso tanto ao aplicativo autenticador quanto aos códigos de backup, entre em contato com o administrador para obter ajuda."
     },
     "VERIFICATION_FAILED": "Falha na verificação. Tente novamente.",
-    "EMAIL_TITLE": "Verifique seu e-mail",
-    "EMAIL_DESCRIPTION": "Você está entrando por um novo dispositivo.",
-    "ENTER_EMAIL_CODE": "Digite o código de 6 dígitos recebido por e-mail",
     "REMEMBER_DEVICE": "Não perguntar novamente neste dispositivo por 30 dias"
   },
   "MFA_ENFORCED_SETUP": {

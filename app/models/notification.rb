@@ -44,10 +44,13 @@ class Notification < ApplicationRecord
     sla_missed_first_response: 6,
     sla_missed_next_response: 7,
     sla_missed_resolution: 8,
-    follow_up_alert: 9
+    voice_call_missed: 9,
+    # Fork-only types start at 20 so upstream can keep adding 10..19.
+    # Each value is also a bit position in notification_settings.email_flags/push_flags (integer, max 31).
+    follow_up_alert: 20
   }.freeze
 
-  enum notification_type: NOTIFICATION_TYPES
+  enum :notification_type, NOTIFICATION_TYPES
 
   before_create :set_last_activity_at
   after_create_commit :process_notification_delivery, :dispatch_create_event
@@ -208,3 +211,5 @@ class Notification < ApplicationRecord
     }
   end
 end
+
+Notification.prepend_mod_with('Notification')

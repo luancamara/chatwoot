@@ -156,6 +156,15 @@ const sendAnalyticsEvent = channelType => {
 };
 
 export const actions = {
+  getItem: async ({ commit }, inboxId) => {
+    try {
+      const { data } = await InboxesAPI.show(inboxId);
+      commit(types.default.EDIT_INBOXES, data);
+      return data;
+    } catch (error) {
+      return throwErrorMessage(error);
+    }
+  },
   revalidate: async ({ commit }, { newKey }) => {
     try {
       const isExistingKeyValid = await InboxesAPI.validateCacheKey(newKey);

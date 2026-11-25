@@ -15,6 +15,11 @@ module Enterprise::AutoAssignment::AssignmentService
     }.compact
   end
 
+  # A run's batch can predate the call, so a conversation is rechecked before it is claimed
+  def assignable?(conversation)
+    super && !(inbox.rings_for_calls? && conversation.calls.holding_assignment.exists?)
+  end
+
   # Extend agent finding to add capacity checks
   def find_available_agent(conversation = nil)
     agents = filter_agents_by_team(inbox.available_agents, conversation)
@@ -78,6 +83,9 @@ module Enterprise::AutoAssignment::AssignmentService
 
     # Then apply the capacity policy's exclusion rules (labels and age)
     scope = apply_exclusion_rules(scope)
+
+    # A conversation whose inbound call is ringing waits for the agent who answers
+    scope = scope.where.not(id: inbox.calls.holding_assignment.select(:conversation_id)) if inbox.rings_for_calls?
 
     prioritize_conversations(scope).limit(limit)
   end
