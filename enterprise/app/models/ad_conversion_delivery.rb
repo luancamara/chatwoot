@@ -1,8 +1,8 @@
 class AdConversionDelivery < ApplicationRecord
   belongs_to :ad_conversion
 
-  enum provider: { meta: 'meta', google: 'google' }
-  enum status: {
+  enum :provider, { meta: 'meta', google: 'google' }
+  enum :status, {
     pending: 'pending',
     submitted: 'submitted',
     accepted: 'accepted',

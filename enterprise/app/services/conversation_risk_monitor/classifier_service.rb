@@ -16,8 +16,7 @@ class ConversationRiskMonitor::ClassifierService < Llm::BaseAiService
     return if content.blank?
 
     response = instrument_llm_call(instrumentation_params(content)) do
-      chat(temperature: 0.0)
-        .with_provider_options(response_format: { type: 'json_object' })
+      json_chat(temperature: 0.0)
         .with_instructions(system_prompt)
         .ask(content)
     end

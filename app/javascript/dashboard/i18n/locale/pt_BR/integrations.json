@@ -1,4 +1,54 @@
 {
+  "STRIPE_INTEGRATION": {
+    "UNAVAILABLE": "O Stripe está indisponível para esta conta. Peça ao administrador que verifique a configuração da integração.",
+    "TITLE": "Stripe",
+    "DESCRIPTION": "Visualize dados dos clientes, assinaturas e faturas junto às suas conversas.",
+    "CONNECT": "Conectar",
+    "DISCONNECT": "Desconectar do Chatwoot",
+    "DISCONNECT_NOTE": "A desconexão remove as credenciais salvas no Chatwoot. Desinstale o aplicativo no Stripe para revogar o acesso por lá.",
+    "CONNECTED": "Conectado",
+    "RECONNECT": "Reconectar Stripe",
+    "REAUTHORIZATION_REQUIRED": "É necessário reconectar",
+    "ACCOUNT": "Conta conectada",
+    "ACCOUNT_ID": "ID da conta",
+    "ENVIRONMENT": "Ambiente",
+    "SANDBOX": "Ambiente de testes",
+    "LIVE": "Produção",
+    "CONNECTED_ON": "Conectado em",
+    "OPEN_STRIPE": "Abrir painel do Stripe",
+    "ERROR": "Não foi possível carregar o Stripe. Tente novamente ou reconecte a integração.",
+    "EMPTY": "Nenhum cliente do Stripe corresponde ao e-mail deste contato.",
+    "NO_EMAIL": "Adicione um e-mail a este contato para buscar clientes no Stripe.",
+    "SELECT": "Selecione o cliente correspondente",
+    "CUSTOMER_OPTION": "{name} — {id}",
+    "MORE": "Exibindo os primeiros 100 clientes correspondentes. Refine o e-mail do contato se o cliente não aparecer na lista.",
+    "SUBSCRIPTIONS": "Últimas cinco assinaturas",
+    "SUBSCRIPTION": "Assinatura",
+    "VIEW_SUBSCRIPTION": "Ver detalhes da assinatura de {name}",
+    "COPY_ID": "Copiar ID",
+    "COPIED": "Copiado",
+    "QUANTITY": "Quantidade: {count}",
+    "PRICE_INTERVAL": "{amount} / {interval}",
+    "INTERVAL": {
+      "day": "dia | {count} dias",
+      "week": "semana | {count} semanas",
+      "month": "mês | {count} meses",
+      "year": "ano | {count} anos"
+    },
+    "VARIABLE_PRICE": "Preço por uso ou por faixa",
+    "RENEWS": "Renovação em {date}",
+    "PERIOD_START": "O período começa em {date}",
+    "PERIOD_END": "O período termina em {date}",
+    "TRIAL_ENDS": "A avaliação termina em {date}",
+    "CANCELS": "Cancelamento em {date}",
+    "CANCELS_AT_PERIOD_END": "Cancelamento ao final do período de cobrança",
+    "CANCELED_ON": "Cancelada em {date}",
+    "MORE_ITEMS": "Os itens adicionais da assinatura não são exibidos.",
+    "PRICE_NOTE": "Os preços são por unidade, antes de descontos e impostos. Eles não representam uma estimativa da próxima fatura.",
+    "INVOICES": "Faturas recentes",
+    "NO_SUBSCRIPTIONS": "Nenhuma assinatura encontrada.",
+    "NO_INVOICES": "Nenhuma fatura encontrada."
+  },
   "INTEGRATION_SETTINGS": {
     "SHOPIFY": {
       "HEADER": "Shopify",
@@ -11,15 +61,15 @@
         "LABEL": "URL da Loja",
         "PLACEHOLDER": "sua-loja.myshopify.com",
         "HELP": "Insira a URL meushopify.com da sua loja Shopify",
+        "INVALID_URL": "Digite uma URL válida de loja Shopify (por exemplo: sua-loja.myshopify.com)",
         "CANCEL": "Cancelar",
-        "SUBMIT": "Conectar Loja",
-        "INVALID_URL": "Digite uma URL válida de loja Shopify (por exemplo: sua-loja.myshopify.com)"
+        "SUBMIT": "Conectar Loja"
       },
-      "ERROR": "Ocorreu um erro ao tentar conectar com o Shopify. Por favor, tente novamente ou entre em contato com o suporte se o problema persistir.",
       "HELP_TEXT": {
         "TITLE": "Como usar a integração com a Shopify?",
         "BODY": "Com esta integração, sua loja Shopify ***{storeDomain}*** está conectada à sua conta do Chatwoot. Veja o que você pode fazer:\n\n**Acompanhar pedidos nas conversas:** ao abrir uma conversa, o painel lateral da Shopify exibe automaticamente os pedidos recentes do cliente com base no endereço de e-mail. Assim, sua equipe de atendimento tem contexto imediato sem trocar de aba.\n\n**Acessar detalhes dos pedidos:** veja o status do pedido, o status de processamento e o valor total diretamente no painel da conversa."
       },
+      "ERROR": "Ocorreu um erro ao tentar conectar com o Shopify. Por favor, tente novamente ou entre em contato com o suporte se o problema persistir.",
       "PENDING_INSTALL": {
         "SUCCESS": "Loja Shopify conectada com sucesso.",
         "ERROR": "Não foi possível concluir a instalação na Shopify. Tente novamente."
@@ -39,8 +89,8 @@
     "CAPTAIN": {
       "DISABLED": "O Captain não está ativado na sua conta.",
       "CLICK_HERE_TO_CONFIGURE": "Clique aqui para configurar",
-      "LOADING_CONSOLE": "Carregando console do Capitão...",
-      "FAILED_TO_LOAD_CONSOLE": "Falha ao carregar o Console do Capitão. Atualize e tente novamente."
+      "LOADING_CONSOLE": "Carregando console do Captain...",
+      "FAILED_TO_LOAD_CONSOLE": "Falha ao carregar o Console do Captain. Atualize e tente novamente."
     },
     "WEBHOOK": {
       "SUBSCRIBED_EVENTS": "Eventos Inscritos",
@@ -220,7 +270,7 @@
         "GRAMMAR": "Corrigir gramática e ortografia",
         "SUGGESTION": "Sugerir uma resposta",
         "SUMMARIZE": "Resumir a conversa",
-        "ASK_COPILOT": "Perguntar ao Copiloto"
+        "ASK_COPILOT": "Perguntar ao Copilot"
       },
       "ASSISTANCE_MODAL": {
         "DRAFT_TITLE": "Conteúdo do rascunho",
@@ -416,6 +466,37 @@
         "BUTTON_TEXT": "Conectar espaço de trabalho do Linear"
       }
     },
+    "GOOGLE_TRANSLATE": {
+      "HEADER": "Tradutor do Google",
+      "DELETE_MESSAGE": "Os agentes não poderão mais traduzir mensagens com o Google Translate. Se o Google Translate for seu serviço de tradução, a tradução automática será interrompida até que você escolha outro serviço.",
+      "SETUP": {
+        "TITLE": "Configurar o Google Translate",
+        "DESCRIPTION": "Você precisará de um projeto do Google Cloud. Isso leva cerca de cinco minutos.",
+        "STEPS": {
+          "ENABLE_API": {
+            "TITLE": "Ativar a Cloud Translation API",
+            "DESCRIPTION": "Escolha um projeto no console do Google Cloud e ative a Cloud Translation API. Anote o ID do projeto.",
+            "LINK": "Abrir a Cloud Translation API"
+          },
+          "CREATE_KEY": {
+            "TITLE": "Criar uma chave de conta de serviço",
+            "DESCRIPTION": "Crie uma conta de serviço com a função Cloud Translation API User. Depois, abra a conta, acesse Chaves e adicione uma chave JSON.",
+            "LINK": "Abrir contas de serviço"
+          },
+          "CONNECT": {
+            "TITLE": "Conectar aqui",
+            "DESCRIPTION": "Clique em Conectar, insira o ID do projeto e cole o arquivo da chave. Faremos a verificação com o Google antes de salvar."
+          }
+        }
+      },
+      "DETAILS": {
+        "PROJECT": "Projeto do Google Cloud",
+        "SERVICE": "Serviço de tradução",
+        "SERVICE_GOOGLE": "O Google Translate processa todas as traduções das suas conversas. Quando a tradução automática está ativada, ele traduz as mensagens recebidas para o idioma de cada agente e envia as respostas no idioma do cliente. Os agentes também o utilizam ao traduzir uma mensagem pelo menu da mensagem.",
+        "SERVICE_OTHER": "O Captain está selecionado como seu serviço de tradução, por isso o Google Translate não está sendo usado no momento. Tanto a tradução automática quanto a ação Traduzir nas mensagens são processadas pelo Captain. Altere o serviço para o Google Translate para usar esta integração.",
+        "CHANGE": "Trocar"
+      }
+    },
     "NOTION": {
       "HEADER": "Notion",
       "DELETE": {
@@ -427,12 +508,12 @@
     }
   },
   "CAPTAIN": {
-    "NAME": "Capitão",
+    "NAME": "Captain",
     "HEADER_KNOW_MORE": "Saiba mais",
     "OVERVIEW": {
       "HEADER": "Visão geral",
       "WELCOME": {
-        "LABEL": "Resumo do Capitão",
+        "LABEL": "Resumo do Captain",
         "LOADING": "Gerando resumo…"
       },
       "INBOX_BANNER": {
@@ -446,12 +527,12 @@
         "DISMISS": "Fechar"
       },
       "RANGES": {
-        "LAST_DAYS": "Últimos {count} dias",
-        "THIS_MONTH": "Este mês",
-        "LAST_MONTH": "Último mês",
         "INSUFFICIENT_HISTORY": "Ainda não há histórico suficiente para o relatório",
         "THIS_WEEK": "Esta semana",
-        "LAST_WEEK": "Semana passada"
+        "LAST_WEEK": "Semana passada",
+        "LAST_DAYS": "Últimos {count} dias",
+        "THIS_MONTH": "Este mês",
+        "LAST_MONTH": "Último mês"
       },
       "METRICS": {
         "HANDLED": {
@@ -510,6 +591,21 @@
         }
       },
       "V2": {
+        "DRILLDOWN": {
+          "HANDLED": "Episódios em que o Captain participou durante o período selecionado.",
+          "RESOLVED": "Episódios resolvidos pelo Captain sem transferência ou resposta humana antes da resolução.",
+          "HANDED_OFF": "Episódios transferidos após a participação do Captain.",
+          "REOPENED": "Episódios resolvidos pelo Captain que foram reabertos posteriormente.",
+          "DURABLE": "Episódios resolvidos pelo Captain que permaneceram fechados por pelo menos sete dias.",
+          "CLOSED_WITH_TEAM": "Episódios em que o Captain participou, mas não resolveu de forma autônoma nem transferiu.",
+          "REOPENED_WITHIN_7_DAYS": "Episódios resolvidos pelo Captain que foram reabertos em até sete dias.",
+          "STAYED_CLOSED": "Episódios resolvidos pelo Captain sem reabertura registrada em até sete dias. Resoluções recentes estão incluídas.",
+          "HANDOFF_REASON": "Episódios transferidos por este motivo: {reason}.",
+          "COUNT": "Nenhum episódio | 1 episódio | {count} episódios",
+          "EPISODES_HINT": "Uma conversa pode aparecer mais de uma vez se o Captain a atendeu em episódios separados. Os episódios são agrupados pela data de início.",
+          "STARTED_AT": "Episódio iniciado {time}",
+          "RETRY": "Tentar novamente"
+        },
         "EMPTY": "Nenhum dado disponível para este período.",
         "SUMMARY": {
           "GREETING": "Olá, {name}!",
@@ -528,10 +624,10 @@
             "LABEL": "Economia de esforço e tempo dos agentes"
           },
           "DURABLE": {
-            "LABEL": "Resoluções do Captain permaneceram encerradas",
+            "LABEL": "Resoluções do Captain que permaneceram encerradas",
+            "NOT_APPLICABLE_HINT": "Nenhuma resolução deste período completou sete dias de acompanhamento. A durabilidade está indisponível.",
             "HINT": "A proporção de conversas resolvidas pelo Captain que permaneceram encerradas após sete dias.",
-            "NOTE": "Apenas resoluções com tempo suficiente para serem observadas por sete dias são incluídas.",
-            "NOT_APPLICABLE_HINT": "Nenhuma resolução deste período completou sete dias de acompanhamento. A durabilidade está indisponível."
+            "NOTE": "Apenas resoluções com tempo suficiente para serem observadas por sete dias são incluídas."
           },
           "MEDIAN_RESOLUTION": {
             "LABEL": "Tempo mediano de resolução",
@@ -569,6 +665,9 @@
         },
         "RESOLUTION_TREND": {
           "TITLE": "Tendência de resolução",
+          "COMPARISON_LABEL": "Comparação por dia da semana",
+          "COMPARISON_HINT": "Compare as taxas de resolução nos mesmos dias da semana, como segunda-feira com segunda-feira.",
+          "COMPARISON_NOTE": "O dia de hoje é comparado até o mesmo horário.",
           "CONVERSATION_COUNT": "Quantidade de conversas",
           "RESOLUTION_RATE": "Taxa de resolução",
           "CURRENT_PERIOD": "Período atual",
@@ -576,10 +675,7 @@
           "HANDLED": "Atendidas",
           "RESOLVED": "Resolvidas pelo Captain",
           "ARIA_LABEL": "Conversas atendidas e resolvidas pelo Captain por período do relatório",
-          "RATE_ARIA_LABEL": "Taxas de resolução do Captain no período atual e anterior",
-          "COMPARISON_LABEL": "Comparação por dia da semana",
-          "COMPARISON_HINT": "Compare as taxas de resolução nos mesmos dias da semana, como segunda-feira com segunda-feira.",
-          "COMPARISON_NOTE": "O dia de hoje é comparado até o mesmo horário."
+          "RATE_ARIA_LABEL": "Taxas de resolução do Captain no período atual e anterior"
         },
         "CSAT": {
           "TITLE": "CSAT do Captain",
@@ -599,23 +695,8 @@
           "BUY_MORE": "Comprar mais créditos"
         },
         "KNOWLEDGE": {
-          "REVIEW": "Revisar FAQs",
-          "SUGGESTED": "Perguntas frequentes sugeridas"
-        },
-        "DRILLDOWN": {
-          "HANDLED": "Episódios em que o Captain participou durante o período selecionado.",
-          "RESOLVED": "Episódios resolvidos pelo Captain sem transferência ou resposta humana antes da resolução.",
-          "HANDED_OFF": "Episódios transferidos após a participação do Captain.",
-          "REOPENED": "Episódios resolvidos pelo Captain que foram reabertos posteriormente.",
-          "DURABLE": "Episódios resolvidos pelo Captain que permaneceram fechados por pelo menos sete dias.",
-          "CLOSED_WITH_TEAM": "Episódios em que o Captain participou, mas não resolveu de forma autônoma nem transferiu.",
-          "REOPENED_WITHIN_7_DAYS": "Episódios resolvidos pelo Captain que foram reabertos em até sete dias.",
-          "STAYED_CLOSED": "Episódios resolvidos pelo Captain sem reabertura registrada em até sete dias. Resoluções recentes estão incluídas.",
-          "HANDOFF_REASON": "Episódios transferidos por este motivo: {reason}.",
-          "COUNT": "Nenhum episódio | 1 episódio | {count} episódios",
-          "EPISODES_HINT": "Uma conversa pode aparecer mais de uma vez se o Captain a atendeu em episódios separados. Os episódios são agrupados pela data de início.",
-          "STARTED_AT": "Episódio iniciado {time}",
-          "RETRY": "Tentar novamente"
+          "SUGGESTED": "Perguntas frequentes sugeridas",
+          "REVIEW": "Revisar FAQs"
         }
       }
     },
@@ -626,16 +707,22 @@
       "EMPTY_LIST": "Nenhum assistente encontrado. Crie um para começar"
     },
     "COPILOT": {
-      "TITLE": "Copiloto",
+      "TITLE": "Copilot",
       "TRY_THESE_PROMPTS": "Experimente estes comandos",
-      "PANEL_TITLE": "Comece a usar o Copiloto",
-      "KICK_OFF_MESSAGE": "Precisa de um resumo rápido, quer verificar conversas passadas ou redigir uma resposta melhor? O Copiloto está aqui para acelerar as coisas.",
+      "PANEL_TITLE": "Comece a usar o Copilot",
+      "KICK_OFF_MESSAGE": "Precisa de um resumo rápido, quer verificar conversas passadas ou redigir uma resposta melhor? O Copilot está aqui para acelerar as coisas.",
       "SEND_MESSAGE": "Enviar mensagem...",
       "EMPTY_MESSAGE": "Houve um erro ao gerar a resposta. Por favor, tente novamente.",
-      "LOADER": "Capitão está pensando",
+      "LOADER": "O Captain está pensando",
       "YOU": "Você",
       "USE": "Use isto",
       "RESET": "Reiniciar",
+      "NEW_CHAT": "Novo chat",
+      "HISTORY": "Chats anteriores",
+      "NO_HISTORY": "Seus chats anteriores com o Copilot aparecerão aqui.",
+      "LOAD_MORE": "Carregar mais chats",
+      "LOADING_CHAT": "Carregando chat...",
+      "LOADING_HISTORY": "Carregando chats anteriores...",
       "SHOW_STEPS": "Mostrar etapas",
       "SELECT_ASSISTANT": "Selecione o Assistente",
       "PROMPTS": {
@@ -665,10 +752,10 @@
       "USER": "Você",
       "ASSISTANT": "Assistente",
       "MESSAGE_PLACEHOLDER": "Digite sua mensagem...",
+      "SEND_MESSAGE": "Enviar mensagem",
       "HEADER": "Área de testes",
       "DESCRIPTION": "Use este playground para enviar mensagens para seu assistente e verificar se ele responde com precisão, rápido e no tom que você espera.",
-      "CREDIT_NOTE": "As mensagens enviadas aqui usam os créditos do seu Capitão.",
-      "SEND_MESSAGE": "Enviar mensagem",
+      "CREDIT_NOTE": "As mensagens enviadas aqui usam os créditos do seu Captain.",
       "CLEAR_CONVERSATION": "Limpar conversa",
       "RESPONSE_ERROR": "O Captain não conseguiu concluir este teste. Revise a configuração e tente novamente.",
       "SETUP": {
@@ -754,20 +841,20 @@
       }
     },
     "PAYWALL": {
-      "TITLE": "Atualize para usar o Capitão IA",
-      "AVAILABLE_ON": "O Capitão não está disponível no plano gratuito.",
-      "UPGRADE_PROMPT": "Atualize seu plano para ter acesso aos nossos assistentes, copilotos e muito mais.",
+      "TITLE": "Atualize para usar o Captain AI",
+      "AVAILABLE_ON": "O Captain não está disponível no plano gratuito.",
+      "UPGRADE_PROMPT": "Atualize seu plano para ter acesso aos nossos assistentes, Copilot e muito mais.",
       "UPGRADE_NOW": "Atualizar agora",
       "CANCEL_ANYTIME": "Você pode alterar ou cancelar seu plano a qualquer momento"
     },
     "ENTERPRISE_PAYWALL": {
-      "AVAILABLE_ON": "O Capitão IA está disponível apenas nos planos Enterprise.",
-      "UPGRADE_PROMPT": "Atualize seu plano para ter acesso aos nossos assistentes, copilotos e muito mais.",
+      "AVAILABLE_ON": "O Captain AI está disponível apenas nos planos Enterprise.",
+      "UPGRADE_PROMPT": "Atualize seu plano para ter acesso aos nossos assistentes, Copilot e muito mais.",
       "ASK_ADMIN": "Entre em contato com seu administrador para fazer a atualização."
     },
     "BANNER": {
-      "RESPONSES": "Você usou mais de 80% do seu limite de respostas. Para continuar usando o Capitão AI, faça o upgrade.",
-      "DOCUMENTS": "Limite de documentos atingido. Atualize para continuar usando o Capitão AI."
+      "RESPONSES": "Você usou mais de 80% do seu limite de respostas. Para continuar usando o Captain AI, faça o upgrade.",
+      "DOCUMENTS": "Limite de documentos atingido. Atualize para continuar usando o Captain AI."
     },
     "FORM": {
       "CANCEL": "Cancelar",
@@ -780,7 +867,7 @@
       "ADD_NEW": "Criar um novo assistente",
       "DELETE": {
         "TITLE": "Tem certeza que deseja excluir o assistente?",
-        "DESCRIPTION": "Esta ação é permanente. Excluir este assistente irá removê-lo de todas as caixas de entrada conectadas e apagará permanentemente todo o conhecimento gerado.",
+        "DESCRIPTION": "Esta ação é permanente. Excluir este assistente o removerá de todas as caixas de entrada conectadas e apagará permanentemente suas ferramentas personalizadas e todo o conhecimento gerado.",
         "CONFIRM": "Sim, excluir",
         "SUCCESS_MESSAGE": "O assistente foi excluído com sucesso",
         "ERROR_MESSAGE": "Ocorreu um erro ao excluir o assistente, por favor tente novamente."
@@ -953,7 +1040,7 @@
         },
         "DELETE": {
           "TITLE": "Excluir Assistente",
-          "DESCRIPTION": "Esta ação é permanente. Excluir este assistente irá removê-lo de todas as caixas de entrada conectadas e apagará permanentemente todo o conhecimento gerado.",
+          "DESCRIPTION": "Esta ação é permanente. Excluir este assistente o removerá de todas as caixas de entrada conectadas e apagará permanentemente suas ferramentas personalizadas e todo o conhecimento gerado.",
           "BUTTON_TEXT": "Excluir {assistantName}"
         }
       },
@@ -966,8 +1053,8 @@
         "TITLE": "Não há assistentes disponíveis",
         "SUBTITLE": "Crie um assistente para fornecer respostas rápidas e precisas aos seus usuários. Ele pode aprender com seus artigos de ajuda e conversas passadas.",
         "FEATURE_SPOTLIGHT": {
-          "TITLE": "Assistente Capitão",
-          "NOTE": "O Assistente Capitão interage diretamente com os clientes, aprende com seus documentos de ajuda e conversas anteriores e fornece respostas instantâneas e precisas. Ele lida com as solicitações iniciais, oferecendo resoluções rápidas antes de transferir para um agente quando necessário."
+          "TITLE": "Assistente Captain",
+          "NOTE": "O Assistente Captain interage diretamente com os clientes, aprende com seus documentos de ajuda e conversas anteriores e fornece respostas instantâneas e precisas. Ele lida com as solicitações iniciais, oferecendo resoluções rápidas antes de transferir para um agente quando necessário."
         }
       },
       "GUARDRAILS": {
@@ -1273,172 +1360,17 @@
         "FILTERED_TITLE": "Nenhum documento correspondente",
         "FILTERED_SUBTITLE": "Tente alterar a origem, o status ou o termo de pesquisa.",
         "FEATURE_SPOTLIGHT": {
-          "TITLE": "Documento do Capitão",
-          "NOTE": "Um documento no Capitão serve como um recurso de conhecimento para o assistente. Ao conectar sua central de ajuda ou guias, o Capitão pode analisar o conteúdo e fornecer respostas precisas para as dúvidas dos clientes."
+          "TITLE": "Documento do Captain",
+          "NOTE": "Um documento no Captain serve como um recurso de conhecimento para o assistente. Ao conectar sua central de ajuda ou guias, o Captain pode analisar o conteúdo e fornecer respostas precisas para as dúvidas dos clientes."
         }
       }
     },
     "CUSTOM_TOOLS": {
       "HEADER": "Ferramentas",
       "ADD_NEW": "Criar ferramenta",
-      "SOFT_LIMIT_WARNING": "Ter mais de 10 ferramentas pode reduzir a confiabilidade do assistente na seleção da ferramenta certa. Considere remover ferramentas não utilizadas para melhores resultados.",
-      "EMPTY_STATE": {
-        "TITLE": "Não há ferramentas personalizadas disponíveis",
-        "SUBTITLE": "Crie ferramentas personalizadas para conectar com APIs e serviços externos, permitindo obter dados e agir por você.",
-        "FEATURE_SPOTLIGHT": {
-          "TITLE": "Ferramentas Personalizadas",
-          "NOTE": "Ferramentas personalizadas permitem seu assistente interagir com APIs e serviços externos. Crie ferramentas para obter dados, realizar ações ou integre com seus sistemas existentes para melhorar as capacidades do seu assistente."
-        }
-      },
-      "FORM_DESCRIPTION": "Configure sua ferramenta personalizada para se conectar a APIs externas",
-      "OPTIONS": {
-        "EDIT_TOOL": "Editar ferramenta",
-        "DELETE_TOOL": "Excluir ferramenta",
-        "VIEW_TOOL": "Ver ferramenta"
-      },
-      "STATUS": {
-        "ENABLED": "Ativado",
-        "DISABLED": "Desativado",
-        "TOGGLE": "Alternar {title}"
-      },
-      "TOGGLE": {
-        "ENABLED": "Ferramenta habilitada com sucesso",
-        "DISABLED": "Ferramenta desabilitada com sucesso",
-        "ERROR": "Falha ao atualizar o status da ferramenta"
-      },
-      "DISABLE_CONFIRMATION": {
-        "TITLE": "Desabilitar {title}?",
-        "DESCRIPTION_ONE": "Esta ferramenta é usada por {count} cenário habilitado. Desabilitá-la pode fazer com que esse cenário deixe de funcionar como esperado.",
-        "DESCRIPTION_OTHER": "Esta ferramenta é usada por {count} cenários habilitados. Desabilitá-la pode fazer com que esses cenários deixem de funcionar como esperado.",
-        "CONFIRM": "Desabilitar ferramenta"
-      },
-      "CREATE": {
-        "TITLE": "Criar Ferramenta Personalizada",
-        "SUCCESS_MESSAGE": "Ferramenta personalizada criada com sucesso",
-        "ERROR_MESSAGE": "Falha ao criar a ferramenta personalizada"
-      },
-      "EDIT": {
-        "TITLE": "Editar Ferramenta Personalizada",
-        "SUCCESS_MESSAGE": "Ferramenta personalizada atualizada com sucesso",
-        "ERROR_MESSAGE": "Falha ao atualizar a ferramenta personalizada"
-      },
-      "DELETE": {
-        "TITLE": "Excluir ferramenta personalizada",
-        "DESCRIPTION": "Tem certeza que deseja excluir está ferramenta customizável? Está ação não pode ser desfeita.",
-        "CONFIRM": "Sim, excluir",
-        "SUCCESS_MESSAGE": "Ferramenta personalizada excluída com sucesso",
-        "ERROR_MESSAGE": "Falha ao excluir a ferramenta personalizada"
-      },
-      "PAYWALL": {
-        "TITLE": "Atualize para usar ferramentas com o Capitão",
-        "AVAILABLE_ON": "As ferramentas do Capitão estão disponíveis apenas nos planos Business e Enterprise. Faça upgrade para o plano Business para utilizar esse recurso.",
-        "UPGRADE_PROMPT": "",
-        "UPGRADE_NOW": "Abrir faturamento",
-        "CANCEL_ANYTIME": ""
-      },
-      "ENTERPRISE_PAYWALL": {
-        "AVAILABLE_ON": "Ferramentas do Capitão estão disponíveis apenas nos planos pagos.",
-        "UPGRADE_PROMPT": "Por favor, faça o upgrade para um plano pago para utilizar este recurso.",
-        "ASK_ADMIN": "Entre em contato com seu administrador para fazer a atualização."
-      },
-      "TEST": {
-        "BUTTON": "Testar conexão",
-        "SUCCESS": "Endpoint retornou HTTP {status}",
-        "ERROR": "Conexão falhou",
-        "DISABLED_HINT": "Testes estão disponíveis apenas para endpoints que não possuem modelos ou corpos de requisição."
-      },
-      "FORM": {
-        "TITLE": {
-          "LABEL": "Nome da Ferramenta",
-          "PLACEHOLDER": "Consulta de pedido",
-          "ERROR": "Nome da ferramente obrigatória",
-          "MAX_LENGTH_ERROR": "O nome da ferramenta deve ter {max} caracteres ou menos"
-        },
-        "DESCRIPTION": {
-          "LABEL": "Descrição",
-          "PLACEHOLDER": "Consulta os detalhes do pedido pelo ID do pedido"
-        },
-        "HTTP_METHOD": {
-          "LABEL": "Método"
-        },
-        "ENDPOINT_URL": {
-          "LABEL": "URL do endpoint",
-          "PLACEHOLDER": "https://api.example.com/orders/{'{{'} order_id {'}}'}",
-          "ERROR": "É necessário informar uma URL válida"
-        },
-        "AUTH_TYPE": {
-          "LABEL": "Tipo de Autenticação"
-        },
-        "AUTH_TYPES": {
-          "NONE": "Nenhuma",
-          "BEARER": "Token Bearer",
-          "BASIC": "Autenticação básica",
-          "API_KEY": "Chave API"
-        },
-        "AUTH_CONFIG": {
-          "BEARER_TOKEN": "Token Bearer",
-          "BEARER_TOKEN_PLACEHOLDER": "Insira seu bearer token",
-          "USERNAME": "Nome de usuário",
-          "USERNAME_PLACEHOLDER": "Informe o nome de usuário",
-          "PASSWORD": "Senha",
-          "PASSWORD_PLACEHOLDER": "Informe a senha",
-          "API_KEY": "Nome do Cabeçalho",
-          "API_KEY_PLACEHOLDER": "X-API-Key",
-          "API_VALUE": "Valor do Cabeçalho",
-          "API_VALUE_PLACEHOLDER": "Insira o valor da chave de API"
-        },
-        "PARAMETERS": {
-          "LABEL": "Parâmetros",
-          "HELP_TEXT": "Defina os parâmetros que serão extraídos das consultas dos usuários"
-        },
-        "ADD_PARAMETER": "Adicionar Parâmetro",
-        "PARAM_NAME": {
-          "PLACEHOLDER": "Nome do parâmetro (ex.: order_id)"
-        },
-        "PARAM_TYPE": {
-          "PLACEHOLDER": "Tipo"
-        },
-        "PARAM_TYPES": {
-          "STRING": "Texto",
-          "NUMBER": "Número",
-          "BOOLEAN": "Booleano",
-          "ARRAY": "Lista",
-          "OBJECT": "Objeto"
-        },
-        "PARAM_DESCRIPTION": {
-          "PLACEHOLDER": "Descrição do parâmetro"
-        },
-        "PARAM_REQUIRED": {
-          "LABEL": "Obrigatório"
-        },
-        "REQUEST_TEMPLATE": {
-          "LABEL": "Modelo do Corpo da Requisição (Opcional)",
-          "PLACEHOLDER": "{'{'}\n  \"order_id\": \"{'{{'} order_id {'}}'}\"\n{'}'}"
-        },
-        "RESPONSE_TEMPLATE": {
-          "LABEL": "Modelo de Resposta (Opcional)",
-          "PLACEHOLDER": "Status do pedido {'{{'} order_id {'}}'}: {'{{'} status {'}}'}"
-        },
-        "ERRORS": {
-          "PARAM_NAME_REQUIRED": "O nome do parâmetro é obrigatório"
-        },
-        "SECTIONS": {
-          "TEMPLATES": "Modelos",
-          "TEMPLATES_HELP_TEXT": "Aceita sintaxe Liquid, como {'{{'} order_id {'}}'} ou {'{{'} response.status {'}}'}."
-        },
-        "HEADERS": {
-          "LABEL": "Cabeçalhos",
-          "HELP_TEXT": "Cabeçalhos estáticos enviados em todas as solicitações. Os valores são enviados exatamente como foram digitados; use Autenticação para informar credenciais.",
-          "NAME_PLACEHOLDER": "Nome do cabeçalho (por exemplo: cal-api-version)",
-          "VALUE_PLACEHOLDER": "Valor do cabeçalho",
-          "NAME_REQUIRED": "O nome do cabeçalho é obrigatório",
-          "NAME_DUPLICATE": "Os nomes dos cabeçalhos devem ser únicos",
-          "ADD": "Adicionar cabeçalho"
-        }
-      },
       "CATALOG": {
         "BUTTON": "Catálogo de ferramentas",
-        "HEADER": "Catálogo de ferramentas",
+        "HEADER": "Catálogo de Ferramentas",
         "DESCRIPTION": "Explore conjuntos do catálogo de ferramentas do Captain e instale-os neste assistente.",
         "ALL": "Todos",
         "EMPTY": "Ainda não há conjuntos de ferramentas nesta categoria.",
@@ -1486,8 +1418,185 @@
         "MODAL_INSTRUCTIONS": "Ao adicionar, editar, desativar ou excluir uma ferramenta, a alteração vale apenas para o assistente que você está visualizando. Troque de assistente no topo da página para revisar ou personalizar suas ferramentas.",
         "ACKNOWLEDGE": "Entendi"
       },
+      "SOFT_LIMIT_WARNING": "Ter mais de 10 ferramentas pode reduzir a confiabilidade do assistente na seleção da ferramenta certa. Considere remover ferramentas não utilizadas para melhores resultados.",
+      "EMPTY_STATE": {
+        "TITLE": "Não há ferramentas personalizadas disponíveis",
+        "SUBTITLE": "Crie ferramentas personalizadas para conectar com APIs e serviços externos, permitindo obter dados e agir por você.",
+        "FEATURE_SPOTLIGHT": {
+          "TITLE": "Ferramentas Personalizadas",
+          "NOTE": "Ferramentas personalizadas permitem seu assistente interagir com APIs e serviços externos. Crie ferramentas para obter dados, realizar ações ou integre com seus sistemas existentes para melhorar as capacidades do seu assistente."
+        }
+      },
+      "FORM_DESCRIPTION": "Configure sua ferramenta personalizada para se conectar a APIs externas",
+      "OPTIONS": {
+        "EDIT_TOOL": "Editar ferramenta",
+        "VIEW_TOOL": "Ver ferramenta",
+        "DELETE_TOOL": "Excluir ferramenta"
+      },
+      "STATUS": {
+        "ENABLED": "Ativado",
+        "DISABLED": "Desativado",
+        "TOGGLE": "Alternar {title}"
+      },
+      "TOGGLE": {
+        "ENABLED": "Ferramenta habilitada com sucesso",
+        "DISABLED": "Ferramenta desabilitada com sucesso",
+        "ERROR": "Falha ao atualizar o status da ferramenta"
+      },
+      "DISABLE_CONFIRMATION": {
+        "TITLE": "Desabilitar {title}?",
+        "DESCRIPTION_ONE": "Esta ferramenta é usada por {count} cenário habilitado. Desabilitá-la pode fazer com que esse cenário deixe de funcionar como esperado.",
+        "DESCRIPTION_OTHER": "Esta ferramenta é usada por {count} cenários habilitados. Desabilitá-la pode fazer com que esses cenários deixem de funcionar como esperado.",
+        "CONFIRM": "Desabilitar ferramenta"
+      },
+      "CREATE": {
+        "TITLE": "Criar Ferramenta Personalizada",
+        "SUCCESS_MESSAGE": "Ferramenta personalizada criada com sucesso",
+        "ERROR_MESSAGE": "Falha ao criar a ferramenta personalizada"
+      },
       "VIEW": {
-        "TITLE": "Detalhes da ferramenta personalizada"
+        "TITLE": "Detalhes da ferramenta personalizada",
+        "REQUEST": "Requisição e resposta",
+        "INSTALLED_NOTE": "Esta ferramenta é somente leitura porque foi instalada a partir do Catálogo de Ferramentas."
+      },
+      "EDIT": {
+        "TITLE": "Editar Ferramenta Personalizada",
+        "SUCCESS_MESSAGE": "Ferramenta personalizada atualizada com sucesso",
+        "ERROR_MESSAGE": "Falha ao atualizar a ferramenta personalizada"
+      },
+      "DELETE": {
+        "TITLE": "Excluir ferramenta personalizada",
+        "DESCRIPTION": "Tem certeza que deseja excluir está ferramenta customizável? Está ação não pode ser desfeita.",
+        "CONFIRM": "Sim, excluir",
+        "SUCCESS_MESSAGE": "Ferramenta personalizada excluída com sucesso",
+        "ERROR_MESSAGE": "Falha ao excluir a ferramenta personalizada"
+      },
+      "PAYWALL": {
+        "TITLE": "Atualize para usar ferramentas com o Captain",
+        "AVAILABLE_ON": "As ferramentas do Captain estão disponíveis apenas nos planos Business e Enterprise. Faça upgrade para o plano Business para utilizar esse recurso.",
+        "UPGRADE_PROMPT": "",
+        "UPGRADE_NOW": "Abrir faturamento",
+        "CANCEL_ANYTIME": ""
+      },
+      "ENTERPRISE_PAYWALL": {
+        "AVAILABLE_ON": "Ferramentas do Captain estão disponíveis apenas nos planos pagos.",
+        "UPGRADE_PROMPT": "Por favor, faça o upgrade para um plano pago para utilizar este recurso.",
+        "ASK_ADMIN": "Entre em contato com seu administrador para fazer a atualização."
+      },
+      "TEST": {
+        "BUTTON": "Testar conexão",
+        "SUCCESS": "Endpoint retornou HTTP {status}",
+        "ERROR": "Conexão falhou",
+        "DISABLED_HINT": "Testes estão disponíveis apenas para endpoints que não possuem modelos ou corpos de requisição."
+      },
+      "FORM": {
+        "TITLE": {
+          "LABEL": "Nome da Ferramenta",
+          "PLACEHOLDER": "Consulta de pedido",
+          "ERROR": "Nome da ferramente obrigatória",
+          "MAX_LENGTH_ERROR": "O nome da ferramenta deve ter {max} caracteres ou menos"
+        },
+        "DESCRIPTION": {
+          "LABEL": "Descrição",
+          "PLACEHOLDER": "Consulta os detalhes do pedido pelo ID do pedido"
+        },
+        "HTTP_METHOD": {
+          "LABEL": "Método"
+        },
+        "ENDPOINT_URL": {
+          "LABEL": "URL do endpoint",
+          "PLACEHOLDER": "https://api.example.com/orders/{'{{'} order_id {'}}'}",
+          "ERROR": "É necessário informar uma URL válida"
+        },
+        "AUTH_TYPE": {
+          "LABEL": "Tipo de Autenticação"
+        },
+        "EMAIL_VERIFICATION": {
+          "LABEL": "Exigir verificação de e-mail",
+          "DESCRIPTION": "O Captain só pode usar esta ferramenta depois que o cliente verificar o e-mail com um código de uso único.",
+          "IMPLIED": "Um parâmetro recebe o e-mail verificado do cliente, portanto a verificação de e-mail é sempre obrigatória."
+        },
+        "AUTH_TYPES": {
+          "NONE": "Nenhuma",
+          "BEARER": "Token Bearer",
+          "BASIC": "Autenticação básica",
+          "API_KEY": "Chave API"
+        },
+        "AUTH_CONFIG": {
+          "BEARER_TOKEN": "Token Bearer",
+          "BEARER_TOKEN_PLACEHOLDER": "Insira seu bearer token",
+          "USERNAME": "Nome de usuário",
+          "USERNAME_PLACEHOLDER": "Informe o nome de usuário",
+          "PASSWORD": "Senha",
+          "PASSWORD_PLACEHOLDER": "Informe a senha",
+          "API_KEY": "Nome do Cabeçalho",
+          "API_KEY_PLACEHOLDER": "X-API-Key",
+          "API_VALUE": "Valor do Cabeçalho",
+          "API_VALUE_PLACEHOLDER": "Insira o valor da chave de API"
+        },
+        "SECTIONS": {
+          "TEMPLATES": "Modelos",
+          "TEMPLATES_HELP_TEXT": "Aceita sintaxe Liquid, como {'{{'} order_id {'}}'} ou {'{{'} response.status {'}}'}."
+        },
+        "HEADERS": {
+          "LABEL": "Cabeçalhos",
+          "HELP_TEXT": "Cabeçalhos estáticos enviados em todas as solicitações. Os valores são enviados exatamente como foram digitados; use Autenticação para informar credenciais.",
+          "NAME_PLACEHOLDER": "Nome do cabeçalho (por exemplo: cal-api-version)",
+          "VALUE_PLACEHOLDER": "Valor do cabeçalho",
+          "NAME_REQUIRED": "O nome do cabeçalho é obrigatório",
+          "NAME_DUPLICATE": "Os nomes dos cabeçalhos devem ser únicos",
+          "ADD": "Adicionar cabeçalho"
+        },
+        "PARAMETERS": {
+          "LABEL": "Parâmetros",
+          "HELP_TEXT": "Defina os parâmetros que serão extraídos das consultas dos usuários"
+        },
+        "ADD_PARAMETER": "Adicionar Parâmetro",
+        "PARAM_NAME": {
+          "PLACEHOLDER": "Nome do parâmetro (ex.: order_id)"
+        },
+        "PARAM_TYPE": {
+          "PLACEHOLDER": "Tipo"
+        },
+        "PARAM_TYPES": {
+          "STRING": "Texto",
+          "NUMBER": "Número",
+          "BOOLEAN": "Booleano",
+          "ARRAY": "Lista",
+          "OBJECT": "Objeto"
+        },
+        "PARAM_DESCRIPTION": {
+          "PLACEHOLDER": "Descrição do parâmetro"
+        },
+        "PARAM_REQUIRED": {
+          "LABEL": "Obrigatório"
+        },
+        "RISK": {
+          "MEDIUM": "Esta ferramenta pode retornar dados do cliente. Considere exigir a verificação de e-mail.",
+          "HIGH": "Esta ferramenta parece ler ou alterar dados do cliente. Exija a verificação de e-mail para que apenas um cliente verificado possa usá-la.",
+          "TITLE": "Salvar sem verificação de e-mail?",
+          "GO_BACK": "Voltar atrás",
+          "SAVE_ANYWAY": "Salvar mesmo assim",
+          "EMAIL_PARAM": "Este e-mail não foi verificado. Um cliente pode informar o e-mail de outra pessoa.",
+          "USE_VERIFIED_EMAIL": "Usar e-mail verificado"
+        },
+        "VERIFIED_VALUES": {
+          "ADD": "Adicionar e-mail verificado",
+          "EMAIL": "E-mail do contato",
+          "EMAIL_DESCRIPTION": "O endereço de e-mail verificado do contato",
+          "HELP": "Preenchido pelo Chatwoot com o e-mail que o contato confirmou por meio de um código de uso único. O Captain não pode vê-lo nem alterá-lo nas conversas com clientes."
+        },
+        "REQUEST_TEMPLATE": {
+          "LABEL": "Modelo do Corpo da Requisição (Opcional)",
+          "PLACEHOLDER": "{'{'}\n  \"order_id\": \"{'{{'} order_id {'}}'}\"\n{'}'}"
+        },
+        "RESPONSE_TEMPLATE": {
+          "LABEL": "Modelo de Resposta (Opcional)",
+          "PLACEHOLDER": "Status do pedido {'{{'} order_id {'}}'}: {'{{'} status {'}}'}"
+        },
+        "ERRORS": {
+          "PARAM_NAME_REQUIRED": "O nome do parâmetro é obrigatório"
+        }
       }
     },
     "RESPONSES": {
@@ -1557,8 +1666,8 @@
         "SUBTITLE": "Perguntas Frequentes ajudam seu assistente a fornecer respostas rápidas e precisas para perguntas de seus clientes. Eles podem ser gerados automaticamente a partir do seu conteúdo ou podem ser adicionados manualmente.",
         "CLEAR_SEARCH": "Limpar filtros ativos",
         "FEATURE_SPOTLIGHT": {
-          "TITLE": "FAQ do Capitão",
-          "NOTE": "As FAQs do Capitão identificam as perguntas mais comuns dos clientes — tanto as que ainda não existem na sua base de conhecimento quanto as mais recorrentes — e gera FAQs relevantes para melhorar o atendimento. Você pode revisar cada sugestão e decidir se aprova ou rejeita."
+          "TITLE": "FAQ do Captain",
+          "NOTE": "As FAQs do Captain identificam as perguntas mais comuns dos clientes — tanto as que ainda não existem na sua base de conhecimento quanto as mais recorrentes — e gera FAQs relevantes para melhorar o atendimento. Você pode revisar cada sugestão e decidir se aprova ou rejeita."
         }
       }
     },
@@ -1630,55 +1739,5 @@
         "SUBTITLE": "Conectar uma caixa de entrada permite ao assistente lidar com perguntas iniciais de seus clientes antes de transferi-las para você."
       }
     }
-  },
-  "STRIPE_INTEGRATION": {
-    "UNAVAILABLE": "O Stripe está indisponível para esta conta. Peça ao administrador que verifique a configuração da integração.",
-    "TITLE": "Stripe",
-    "DESCRIPTION": "Visualize dados dos clientes, assinaturas e faturas junto às suas conversas.",
-    "CONNECT": "Conectar",
-    "DISCONNECT": "Desconectar do Chatwoot",
-    "DISCONNECT_NOTE": "A desconexão remove as credenciais salvas no Chatwoot. Desinstale o aplicativo no Stripe para revogar o acesso por lá.",
-    "CONNECTED": "Conectado",
-    "RECONNECT": "Reconectar Stripe",
-    "REAUTHORIZATION_REQUIRED": "É necessário reconectar",
-    "ACCOUNT": "Conta conectada",
-    "ACCOUNT_ID": "ID da conta",
-    "ENVIRONMENT": "Ambiente",
-    "SANDBOX": "Ambiente de testes",
-    "LIVE": "Produção",
-    "CONNECTED_ON": "Conectado em",
-    "OPEN_STRIPE": "Abrir painel do Stripe",
-    "ERROR": "Não foi possível carregar o Stripe. Tente novamente ou reconecte a integração.",
-    "EMPTY": "Nenhum cliente do Stripe corresponde ao e-mail deste contato.",
-    "NO_EMAIL": "Adicione um e-mail a este contato para buscar clientes no Stripe.",
-    "SELECT": "Selecione o cliente correspondente",
-    "CUSTOMER_OPTION": "{name} — {id}",
-    "MORE": "Exibindo os primeiros 100 clientes correspondentes. Refine o e-mail do contato se o cliente não aparecer na lista.",
-    "SUBSCRIPTIONS": "Últimas cinco assinaturas",
-    "SUBSCRIPTION": "Assinatura",
-    "VIEW_SUBSCRIPTION": "Ver detalhes da assinatura de {name}",
-    "COPY_ID": "Copiar ID",
-    "COPIED": "Copiado",
-    "QUANTITY": "Quantidade: {count}",
-    "PRICE_INTERVAL": "{amount} / {interval}",
-    "INTERVAL": {
-      "day": "dia | {count} dias",
-      "week": "semana | {count} semanas",
-      "month": "mês | {count} meses",
-      "year": "ano | {count} anos"
-    },
-    "VARIABLE_PRICE": "Preço por uso ou por faixa",
-    "RENEWS": "Renovação em {date}",
-    "PERIOD_START": "O período começa em {date}",
-    "PERIOD_END": "O período termina em {date}",
-    "TRIAL_ENDS": "A avaliação termina em {date}",
-    "CANCELS": "Cancelamento em {date}",
-    "CANCELS_AT_PERIOD_END": "Cancelamento ao final do período de cobrança",
-    "CANCELED_ON": "Cancelada em {date}",
-    "MORE_ITEMS": "Os itens adicionais da assinatura não são exibidos.",
-    "PRICE_NOTE": "Os preços são por unidade, antes de descontos e impostos. Eles não representam uma estimativa da próxima fatura.",
-    "INVOICES": "Faturas recentes",
-    "NO_SUBSCRIPTIONS": "Nenhuma assinatura encontrada.",
-    "NO_INVOICES": "Nenhuma fatura encontrada."
   }
 }

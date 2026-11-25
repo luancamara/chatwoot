@@ -36,8 +36,8 @@ class AdConversion < ApplicationRecord
 
   # Cancelamentos são guardados, não descartados: 5% dos pedidos são cancelados
   # e precisam sair da receita em vez de nunca terem existido.
-  enum status: { sold: 'sold', cancelled: 'cancelled' }
-  enum origin_classification: { unknown: 'unknown', physical_store: 'physical_store', ecommerce: 'ecommerce' }
+  enum :status, { sold: 'sold', cancelled: 'cancelled' }
+  enum :origin_classification, { unknown: 'unknown', physical_store: 'physical_store', ecommerce: 'ecommerce' }
 
   validates :erp_order_ref, presence: true, uniqueness: { scope: :account_id }
   validates :last_observed_at, presence: true

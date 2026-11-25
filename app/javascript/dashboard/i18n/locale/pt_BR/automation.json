@@ -28,6 +28,19 @@
           "PLACEHOLDER": "Por favor, selecione um",
           "ERROR": "O campo evento é obrigatório"
         },
+        "MONITOR": {
+          "LABEL": "Monitor",
+          "PLACEHOLDER": "Selecione um monitor ativo",
+          "ERROR": "Selecione um monitor ativo",
+          "FETCH_FAILED": "Não foi possível carregar os monitores. Tente novamente mais tarde.",
+          "API_UNAVAILABLE": "Este monitor não está mais disponível. Selecione um monitor ativo e tente novamente.",
+          "EMPTY": "Ainda não há monitores ativos. Crie ou retome um monitor para usar este evento.",
+          "GO_TO_MONITORS": "Ir para os monitores",
+          "RETRY": "Tentar novamente",
+          "UNAVAILABLE": "Monitor indisponível",
+          "UNAVAILABLE_HELP": "Este monitor está indisponível para automação. Selecione um monitor ativo para ativar esta regra.",
+          "HELP": "Executa uma vez quando o monitor identifica pela primeira vez uma conversa a partir de uma nova atividade em tempo real. Análises do histórico não acionam ações."
+        },
         "RUN_TYPE": {
           "LABEL": "Quando esta regra deve ser executada?",
           "OPTIONS": {
@@ -70,19 +83,6 @@
         },
         "ACTIONS": {
           "LABEL": "Ações"
-        },
-        "MONITOR": {
-          "LABEL": "Monitor",
-          "PLACEHOLDER": "Selecione um monitor ativo",
-          "ERROR": "Selecione um monitor ativo",
-          "FETCH_FAILED": "Não foi possível carregar os monitores. Tente novamente mais tarde.",
-          "API_UNAVAILABLE": "Este monitor não está mais disponível. Selecione um monitor ativo e tente novamente.",
-          "EMPTY": "Ainda não há monitores ativos. Crie ou retome um monitor para usar este evento.",
-          "GO_TO_MONITORS": "Ir para os monitores",
-          "RETRY": "Tentar novamente",
-          "UNAVAILABLE": "Monitor indisponível",
-          "UNAVAILABLE_HELP": "Este monitor está indisponível para automação. Selecione um monitor ativo para ativar esta regra.",
-          "HELP": "Executa uma vez quando o monitor identifica pela primeira vez uma conversa a partir de uma nova atividade em tempo real. Análises do histórico não acionam ações."
         }
       },
       "CONDITION_BUTTON_LABEL": "Adicionar condição",
@@ -96,8 +96,7 @@
       "TABLE_HEADER": {
         "NAME": "Nome",
         "ACTIVE": "Ativo",
-        "CREATED_ON": "Criado em",
-        "ACTIONS": "Ações"
+        "CREATED_ON": "Criado em"
       },
       "404": "Nenhuma regra de automação encontrada",
       "404_DELAYED": "Ainda não há regras executadas após um período de espera",
@@ -106,10 +105,10 @@
         "DELAYED": "Executadas após um período de espera"
       },
       "DELAY_BADGE": "Executadas após {delay}",
-      "DELAY_DISABLED_BANNER": "A execução com atraso está desativada para esta conta, portanto as regras abaixo que executam após um período de espera estão pausadas até que ela seja ativada novamente.",
       "MONITOR_PAUSED": "Monitor pausado",
       "MONITOR_DELETED": "Monitor excluído",
-      "MONITOR_UNAVAILABLE": "Recurso de monitoramento indisponível"
+      "MONITOR_UNAVAILABLE": "Recurso de monitoramento indisponível",
+      "DELAY_DISABLED_BANNER": "A execução com atraso está desativada para esta conta, portanto as regras abaixo que executam após um período de espera estão pausadas até que ela seja ativada novamente."
     },
     "DELETE": {
       "TITLE": "Excluir regra de automação",

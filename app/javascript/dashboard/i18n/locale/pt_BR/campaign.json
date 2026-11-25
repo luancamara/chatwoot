@@ -157,159 +157,6 @@
           "ON": "ativado"
         }
       },
-      "CREATE": {
-        "TITLE": "Criar campanha do WhatsApp",
-        "CANCEL_BUTTON_TEXT": "Cancelar",
-        "CREATE_BUTTON_TEXT": "Criar",
-        "FORM": {
-          "TITLE": {
-            "LABEL": "Título",
-            "PLACEHOLDER": "Por favor, digite o título da campanha",
-            "ERROR": "Título é obrigatório"
-          },
-          "INBOX": {
-            "LABEL": "Selecione uma caixa de entrada",
-            "PLACEHOLDER": "Selecione uma caixa de entrada",
-            "ERROR": "Caixa de entrada obrigatória"
-          },
-          "TEMPLATE": {
-            "LABEL": "Modelo do WhatsApp",
-            "PLACEHOLDER": "Selecione um modelo",
-            "INFO": "Selecione um modelo para usar para esta campanha.",
-            "ERROR": "Modelo é obrigatório",
-            "PREVIEW_TITLE": "Processar {templateName}",
-            "LANGUAGE": "Idioma",
-            "CATEGORY": "Categorias",
-            "VARIABLES_LABEL": "Variáveis",
-            "VARIABLE_PLACEHOLDER": "Digite um valor para {variable}"
-          },
-          "AUDIENCE": {
-            "LABEL": "Público",
-            "PLACEHOLDER": "Selecionar etiquetas dos clientes",
-            "ERROR": "Público é necessário"
-          },
-          "SCHEDULED_AT": {
-            "LABEL": "Horário agendado",
-            "PLACEHOLDER": "Por favor insira a hora",
-            "ERROR": "Horário agendado é necessário"
-          },
-          "BUTTONS": {
-            "CREATE": "Criar",
-            "CANCEL": "Cancelar"
-          },
-          "API": {
-            "SUCCESS_MESSAGE": "Campanha do WhatsApp criada com sucesso",
-            "ERROR_MESSAGE": "Houve um erro. Por favor, tente novamente."
-          }
-        }
-      },
-      "ANALYTICS": {
-        "LOADING": "Carregando análises...",
-        "EMPTY": "Nenhum registro de entrega encontrado.",
-        "EMPTY_FILTER": "Nenhum registro de entrega com status {status} encontrado.",
-        "DELIVERIES_ERROR": "Não foi possível carregar os registros de entrega. Atualize a página para tentar novamente.",
-        "EMPTY_STATE": {
-          "ERROR": {
-            "TITLE": "Não foi possível carregar as análises",
-            "DESCRIPTION": "Atualize a página para tentar novamente."
-          },
-          "PENDING": {
-            "TITLE": "Os dados de entrega aparecerão assim que o envio começar",
-            "DESCRIPTION": "Os dados de entrega aparecerão assim que o envio começar."
-          },
-          "UNAVAILABLE": {
-            "TITLE": "As análises não estão disponíveis para esta campanha",
-            "DESCRIPTION": "Nenhum dado de entrega foi registrado para esta campanha. Isso pode acontecer com campanhas enviadas antes da introdução das análises de campanha."
-          }
-        },
-        "PROCESSING_BANNER": {
-          "DEFAULT": "Esta campanha ainda está sendo processada. As análises serão atualizadas automaticamente.",
-          "BOTH": "Esta campanha ainda está sendo processada. {queued} mensagens estão na fila e {awaitingUpdate} aguardam uma atualização de entrega do WhatsApp.",
-          "BOTH_SINGLE": "Esta campanha ainda está sendo processada. {queued} mensagem está na fila e {awaitingUpdate} aguarda uma atualização de entrega do WhatsApp.",
-          "BOTH_QUEUED_SINGLE": "Esta campanha ainda está sendo processada. {queued} mensagem está na fila e {awaitingUpdate} aguardam uma atualização de entrega do WhatsApp.",
-          "BOTH_AWAITING_SINGLE": "Esta campanha ainda está sendo processada. {queued} mensagens estão na fila e {awaitingUpdate} aguarda uma atualização de entrega do WhatsApp.",
-          "QUEUED": "Esta campanha ainda está sendo processada. {count} mensagem está na fila. | Esta campanha ainda está sendo processada. {count} mensagens estão na fila.",
-          "AWAITING_UPDATE": "Esta campanha ainda está sendo processada. {count} mensagem aguarda uma atualização de entrega do WhatsApp. | Esta campanha ainda está sendo processada. {count} mensagens aguardam uma atualização de entrega do WhatsApp.",
-          "COMPLETING": "Esta campanha está sendo concluída. As análises serão atualizadas automaticamente."
-        },
-        "RATE": "{value}% do público",
-        "SENT_ON": "Enviada em {date}",
-        "PAGE_INFO": "Exibindo {startItem} - {endItem} de {totalItems} contato | Exibindo {startItem} - {endItem} de {totalItems} contatos",
-        "BREADCRUMB": {
-          "CAMPAIGNS": "Campanhas",
-          "WHATSAPP": "WhatsApp"
-        },
-        "FILTERS": {
-          "ALL": "Todos"
-        },
-        "METRICS": {
-          "AUDIENCE": {
-            "LABEL": "Público",
-            "HINT": "Contatos incluídos nesta campanha."
-          },
-          "SENT": {
-            "LABEL": "Enviadas ao WhatsApp",
-            "HINT": "Mensagens aceitas pelo WhatsApp para entrega."
-          },
-          "DELIVERED": {
-            "LABEL": "Entregues",
-            "HINT": "Mensagens que chegaram ao dispositivo do contato. As mensagens lidas estão incluídas."
-          },
-          "READ": {
-            "LABEL": "Lida",
-            "HINT": "Mensagens abertas pelo contato."
-          },
-          "FAILED": {
-            "LABEL": "Falha",
-            "HINT": "Mensagens que o WhatsApp não conseguiu entregar."
-          },
-          "SKIPPED": {
-            "LABEL": "Ignoradas",
-            "HINT": "Contatos ignorados antes do envio, geralmente por número de telefone ausente ou inválido."
-          }
-        },
-        "STATUS": {
-          "QUEUED": "Na fila",
-          "SENT": "Aguardando atualização de entrega",
-          "DELIVERED": "Entregues",
-          "READ": "Lida",
-          "FAILED": "Falha",
-          "SKIPPED": "Ignoradas"
-        },
-        "BREAKDOWN": {
-          "TITLE": "Detalhamento da entrega",
-          "DELIVERY_RATE": "{value}% entregues",
-          "LEGEND": {
-            "READ": "Lida",
-            "DELIVERED": "Entregues",
-            "FAILED": "Falha",
-            "SKIPPED": "Ignoradas",
-            "PENDING": "Na fila ou aguardando atualização"
-          }
-        },
-        "TABLE": {
-          "TITLE": "Entregas",
-          "CONTACT": "Contato",
-          "STATUS": "Status",
-          "MESSAGE": "Mensagem",
-          "MESSAGE_NOT_GENERATED": "Não gerado",
-          "REASON": "Motivo",
-          "ERROR_CODE": "Código {code}"
-        },
-        "PROCESSING_NOTICE": "Esta campanha ainda está enviando mensagens. As contagens, porcentagens e registros de entrega são parciais e incluem apenas os contatos processados até agora. Mais contatos aparecerão conforme o envio continuar.",
-        "PAYWALL": {
-          "TITLE": "Liberar análises de campanhas",
-          "AVAILABLE_ON": "As análises de campanhas estão disponíveis nos planos Business e Enterprise.",
-          "UPGRADE_PROMPT": "Atualize seu plano para acompanhar a entrega, a leitura e as falhas nas mensagens da campanha.",
-          "UPGRADE_NOW": "Ver planos",
-          "CANCEL_ANYTIME": "Altere ou cancele seu plano a qualquer momento."
-        },
-        "ENTERPRISE_PAYWALL": {
-          "AVAILABLE_ON": "As análises de campanhas estão disponíveis nos planos pagos de instalação própria.",
-          "UPGRADE_PROMPT": "Atualize sua instalação para acompanhar a entrega, a leitura e as falhas nas mensagens da campanha.",
-          "ASK_ADMIN": "Entre em contato com o administrador da sua instalação para atualizar o plano."
-        }
-      },
       "FORM": {
         "CREATE_TITLE": "Criar campanha",
         "LIVE_TEST": "Teste real",
@@ -393,21 +240,130 @@
           "UPDATE_SUCCESS": "Campanha do WhatsApp atualizada com sucesso",
           "UPDATE_ERROR": "Ocorreu um erro. Tente novamente."
         }
-      }
-    },
-    "CONFIRM_DELETE": {
-      "TITLE": "Você tem certeza que deseja excluir?",
-      "DESCRIPTION": "A ação de exclusão é permanente e não pode ser revertida.",
-      "CONFIRM": "Excluir",
-      "API": {
-        "SUCCESS_MESSAGE": "Campanha excluída com sucesso",
-        "ERROR_MESSAGE": "Houve um erro. Por favor, tente novamente."
       },
-      "WHATSAPP_DESCRIPTION": "Excluir esta campanha também removerá seu histórico de mensagens salvo e os detalhes de entrega. As mensagens já enviadas no WhatsApp serão mantidas. Esta ação não pode ser desfeita."
+      "ANALYTICS": {
+        "LOADING": "Carregando análises...",
+        "EMPTY": "Nenhum registro de entrega encontrado.",
+        "EMPTY_FILTER": "Nenhum registro de entrega com status {status} encontrado.",
+        "DELIVERIES_ERROR": "Não foi possível carregar os registros de entrega. Atualize a página para tentar novamente.",
+        "EMPTY_STATE": {
+          "ERROR": {
+            "TITLE": "Não foi possível carregar as análises",
+            "DESCRIPTION": "Atualize a página para tentar novamente."
+          },
+          "PENDING": {
+            "TITLE": "Os dados de entrega aparecerão assim que o envio começar",
+            "DESCRIPTION": "Os dados de entrega aparecerão assim que o envio começar."
+          },
+          "UNAVAILABLE": {
+            "TITLE": "As análises não estão disponíveis para esta campanha",
+            "DESCRIPTION": "Nenhum dado de entrega foi registrado para esta campanha. Isso pode acontecer com campanhas enviadas antes da introdução das análises de campanha."
+          }
+        },
+        "PROCESSING_NOTICE": "Esta campanha ainda está enviando mensagens. As contagens, porcentagens e registros de entrega são parciais e incluem apenas os contatos processados até agora. Mais contatos aparecerão conforme o envio continuar.",
+        "RATE": "{value}% do público",
+        "SENT_ON": "Enviada em {date}",
+        "PAGE_INFO": "Exibindo {startItem} - {endItem} de {totalItems} contatos",
+        "BREADCRUMB": {
+          "CAMPAIGNS": "Campanhas",
+          "WHATSAPP": "WhatsApp"
+        },
+        "FILTERS": {
+          "ALL": "Todos"
+        },
+        "METRICS": {
+          "AUDIENCE": {
+            "LABEL": "Público",
+            "HINT": "Contatos incluídos nesta campanha."
+          },
+          "SENT": {
+            "LABEL": "Enviadas ao WhatsApp",
+            "HINT": "Mensagens aceitas pelo WhatsApp para entrega."
+          },
+          "DELIVERED": {
+            "LABEL": "Entregues",
+            "HINT": "Mensagens que chegaram ao dispositivo do contato. As mensagens lidas estão incluídas."
+          },
+          "READ": {
+            "LABEL": "Lida",
+            "HINT": "Mensagens abertas pelo contato."
+          },
+          "FAILED": {
+            "LABEL": "Falha",
+            "HINT": "Mensagens que o WhatsApp não conseguiu entregar."
+          },
+          "SKIPPED": {
+            "LABEL": "Ignoradas",
+            "HINT": "Contatos ignorados antes do envio, geralmente por número de telefone ausente ou inválido."
+          }
+        },
+        "STATUS": {
+          "QUEUED": "Na fila",
+          "SENT": "Aguardando atualização de entrega",
+          "DELIVERED": "Entregues",
+          "READ": "Lida",
+          "FAILED": "Falha",
+          "SKIPPED": "Ignoradas"
+        },
+        "BREAKDOWN": {
+          "TITLE": "Detalhamento da entrega",
+          "DELIVERY_RATE": "{value}% entregues",
+          "LEGEND": {
+            "READ": "Lida",
+            "DELIVERED": "Entregues",
+            "FAILED": "Falha",
+            "SKIPPED": "Ignoradas",
+            "PENDING": "Na fila ou aguardando atualização"
+          }
+        },
+        "TABLE": {
+          "TITLE": "Entregas",
+          "CONTACT": "Contato",
+          "STATUS": "Status",
+          "MESSAGE": "Mensagem",
+          "MESSAGE_NOT_GENERATED": "Não gerado",
+          "REASON": "Motivo",
+          "ERROR_CODE": "Código {code}"
+        },
+        "PAYWALL": {
+          "TITLE": "Liberar análises de campanhas",
+          "AVAILABLE_ON": "As análises de campanhas estão disponíveis nos planos Business e Enterprise.",
+          "UPGRADE_PROMPT": "Atualize seu plano para acompanhar a entrega, a leitura e as falhas nas mensagens da campanha.",
+          "UPGRADE_NOW": "Ver planos",
+          "CANCEL_ANYTIME": "Altere ou cancele seu plano a qualquer momento."
+        },
+        "ENTERPRISE_PAYWALL": {
+          "AVAILABLE_ON": "As análises de campanhas estão disponíveis nos planos pagos de instalação própria.",
+          "UPGRADE_PROMPT": "Atualize sua instalação para acompanhar a entrega, a leitura e as falhas nas mensagens da campanha.",
+          "ASK_ADMIN": "Entre em contato com o administrador da sua instalação para atualizar o plano."
+        },
+        "PROCESSING_BANNER": {}
+      },
+      "CREATE": {
+        "FORM": {
+          "TITLE": {},
+          "INBOX": {},
+          "TEMPLATE": {},
+          "AUDIENCE": {},
+          "SCHEDULED_AT": {},
+          "BUTTONS": {},
+          "API": {}
+        }
+      }
     },
     "HISTORY": {
       "LABEL": "Campanha",
       "LOAD_MORE": "Carregar campanhas anteriores"
+    },
+    "CONFIRM_DELETE": {
+      "TITLE": "Você tem certeza que deseja excluir?",
+      "DESCRIPTION": "A ação de exclusão é permanente e não pode ser revertida.",
+      "WHATSAPP_DESCRIPTION": "Excluir esta campanha também removerá seu histórico de mensagens salvo e os detalhes de entrega. As mensagens já enviadas no WhatsApp serão mantidas. Esta ação não pode ser desfeita.",
+      "CONFIRM": "Excluir",
+      "API": {
+        "SUCCESS_MESSAGE": "Campanha excluída com sucesso",
+        "ERROR_MESSAGE": "Houve um erro. Por favor, tente novamente."
+      }
     }
   }
 }

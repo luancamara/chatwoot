@@ -52,6 +52,7 @@ import {
   removeSignature,
   getEffectiveChannelType,
   getReplyVariables,
+  stripUnsupportedMarkdown,
 } from 'dashboard/helper/editorHelper';
 import { useCopilotReply } from 'dashboard/composables/useCopilotReply';
 import { useAutoReplySuggestion } from 'dashboard/composables/useAutoReplySuggestion';
@@ -61,6 +62,8 @@ import { useKbd } from 'dashboard/composables/utils/useKbd';
 import TasksAPI from 'dashboard/api/captain/tasks';
 import { isFileTypeAllowedForChannel } from 'shared/helpers/FileHelper';
 import { isAIAssigneeType } from 'dashboard/helper/agentHelper';
+import { getLastMessage } from 'dashboard/helper/conversationHelper';
+import { CONTENT_TYPES } from 'dashboard/components-next/message/constants';
 
 import { LOCAL_STORAGE_KEYS } from 'dashboard/constants/localStorage';
 import { FEATURE_FLAGS } from 'dashboard/featureFlags';
@@ -140,8 +143,8 @@ export default {
       '$mod+KeyK': {
         action: e => {
           e.preventDefault();
-          const ninja = document.querySelector('ninja-keys');
-          ninja.open();
+          // ninja-keys skips its own hotkey inside the editor; the v2 bar binds its own.
+          document.querySelector('ninja-keys')?.open();
         },
         allowOnFocusedInput: true,
       },
@@ -298,6 +301,13 @@ export default {
         this.isWithinMessagingWindow &&
         !this.isAIOwnedPendingConversation &&
         !this.isInstagramReplyRestricted
+      );
+    },
+    isVoiceCallConversation() {
+      if (!this.currentChat.messages) return false;
+      return (
+        getLastMessage(this.currentChat)?.content_type ===
+        CONTENT_TYPES.VOICE_CALL
       );
     },
     isInstagramReplyRestricted() {
@@ -672,6 +682,11 @@ export default {
         // Reset Copilot editor state (includes cancelling ongoing generation)
         this.copilot.reset();
         this.autoReplySuggestion.clear();
+        // Default to a note on calls so a reply is not sent as SMS by accident.
+        // Only on open, so an agent who switches to reply keeps it.
+        if (this.isVoiceCallConversation) {
+          this.replyType = REPLY_EDITOR_MODES.NOTE;
+        }
       }
 
       if (this.isInstagramReplyRestricted) {
@@ -752,7 +767,7 @@ export default {
   },
 
   mounted() {
-    if (this.isInstagramReplyRestricted) {
+    if (this.isInstagramReplyRestricted || this.isVoiceCallConversation) {
       this.replyType = REPLY_EDITOR_MODES.NOTE;
     }
 
@@ -786,6 +801,10 @@ export default {
       this.onNewConversationModalActive
     );
     emitter.on(CMD_AI_ASSIST, this.executeCopilotAction);
+    emitter.on(
+      BUS_EVENTS.INSERT_INTO_RICH_EDITOR,
+      this.onInsertWhileCopilotActive
+    );
   },
   unmounted() {
     document.removeEventListener('paste', this.onPaste);
@@ -796,6 +815,10 @@ export default {
     );
     emitter.off(CMD_AI_ASSIST, this.executeCopilotAction);
     this.autoReplySuggestion.clear();
+    emitter.off(
+      BUS_EVENTS.INSERT_INTO_RICH_EDITOR,
+      this.onInsertWhileCopilotActive
+    );
   },
   methods: {
     openContactInfoTemplateModal() {
@@ -1560,6 +1583,27 @@ export default {
         targetMessageId: acceptedSuggestion.targetMessageId,
       });
       this.$nextTick(() => this.messageEditor?.focusEditorInputField('end'));
+    },
+    onInsertWhileCopilotActive(content) {
+      if (!this.copilot.isActive.value) return;
+      this.copilot.reset();
+      const channelType = getEffectiveChannelType(
+        this.channelType,
+        this.inbox?.medium || ''
+      );
+      const insert = stripUnsupportedMarkdown(
+        content,
+        this.isPrivate ? 'Context::PrivateNote' : channelType,
+        false
+      );
+      const body = removeSignature(
+        this.message,
+        this.messageSignature,
+        channelType
+      );
+      this.message = this.toggleSignatureForDraft(
+        body.trim() ? `${body.trimEnd()}\n${insert}` : insert
+      );
     },
   },
 };

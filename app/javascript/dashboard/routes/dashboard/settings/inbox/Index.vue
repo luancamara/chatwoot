@@ -264,6 +264,19 @@ const toggleArchived = async inbox => {
             />
             <router-link
               :to="{
+                name: 'inbox_dashboard',
+                params: { inbox_id: inbox.id },
+              }"
+            >
+              <Button
+                v-tooltip.top="$t('INBOX_MGMT.VIEW_CONVERSATIONS')"
+                icon="i-woot-messages"
+                slate
+                sm
+              />
+            </router-link>
+            <router-link
+              :to="{
                 name: 'settings_inbox_show',
                 params: { inboxId: inbox.id },
               }"

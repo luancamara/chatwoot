@@ -20,7 +20,7 @@ class SamlUserBuilder
 
     return create_user unless user
     return existing_user_for_account(user) if user_belongs_to_account?(user) &&
-                                              (!user_has_additional_accounts?(user) || allowed_multi_account_user?(user))
+                                              (@saml_settings&.trusted_by_accounts_of?(user) || allowed_multi_account_user?(user))
 
     raise AuthenticationFailed, I18n.t('auth.saml.authentication_failed')
   end
@@ -33,10 +33,6 @@ class SamlUserBuilder
 
   def user_belongs_to_account?(user)
     user.account_users.exists?(account_id: @account_id)
-  end
-
-  def user_has_additional_accounts?(user)
-    user.account_users.where.not(account_id: @account_id).exists?
   end
 
   def allowed_multi_account_user?(user)
